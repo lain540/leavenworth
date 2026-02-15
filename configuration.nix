@@ -16,7 +16,7 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   # Console keymap - Workman layout
-  console.keyMap = "workman";
+  console.keyMap = "us";
 
   # Nix
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
