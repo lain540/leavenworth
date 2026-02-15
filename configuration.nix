@@ -29,7 +29,7 @@
   # Networking
   networking.networkmanager.enable = true;
 
-  # Fish shell
+  # Fish shell - system-wide (adds to /etc/shells)
   programs.fish.enable = true;
 
   # musnix - audio optimization
@@ -51,7 +51,8 @@
 
   # System packages
   environment.systemPackages = with pkgs; [
-    git wget curl htop
+    curl
+    htop
   ];
 
   system.stateVersion = "24.11";
