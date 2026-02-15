@@ -19,11 +19,10 @@
     };
   };
 
-  # Auto-login for easier testing (remove for production)
-  # services.greetd.settings.initial_session = {
-  #   command = "Hyprland";
-  #   user = "svea";
-  # };
+  # Fonts - Terminus Nerd Font
+  fonts.packages = with pkgs; [
+    terminus-nerdfont
+  ];
 
   # Portals for screen sharing, file pickers, etc.
   xdg.portal = {
@@ -41,6 +40,12 @@
     # Screenshots
     grim
     slurp
+    
+    # Launcher
+    bemenu
+    
+    # Wallpaper
+    hyprpaper
     
     # Blue light filter
     wlsunset
