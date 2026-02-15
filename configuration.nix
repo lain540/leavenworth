@@ -50,7 +50,7 @@
 
   # System packages
   environment.systemPackages = with pkgs; [
-    vim git wget curl htop
+    git wget curl htop
   ];
 
   system.stateVersion = "24.11";
