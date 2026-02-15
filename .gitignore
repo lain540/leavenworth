@@ -1,5 +1,6 @@
-# Hardware configuration (machine-specific, don't commit)
-hardware-configuration.nix
+# Hardware configuration
+# Note: hardware-configuration.nix must be tracked by git for flakes to see it
+# Each machine will have its own version committed
 
 # Backups directory
 backups/
