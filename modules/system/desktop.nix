@@ -19,9 +19,10 @@
     };
   };
 
-  # Fonts - Terminus Nerd Font
+  # Fonts - Terminus Nerd Font and base Terminus
   fonts.packages = with pkgs; [
-    terminus-nerdfont
+    (nerdfonts.override { fonts = [ "Terminus" ]; })
+    terminus-font
   ];
 
   # Portals for screen sharing, file pickers, etc.
