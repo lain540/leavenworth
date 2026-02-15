@@ -3,6 +3,10 @@
 {
   imports = [ ./hardware-configuration.nix ];
 
+  # Boot
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
   # System
   networking.hostName = "leavenworth";
   time.timeZone = "Europe/Stockholm";
@@ -37,6 +41,10 @@
   environment.systemPackages = with pkgs; [
     vim git wget curl htop
   ];
+
+  # VirtualBox (uncomment for VM testing, remove for real hardware)
+  # virtualisation.virtualbox.guest.enable = true;
+  # virtualisation.virtualbox.guest.x11 = true;
 
   system.stateVersion = "24.11";
 }
