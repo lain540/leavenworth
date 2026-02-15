@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ./modules/desktop.nix
+    ./modules/home/desktop.nix
   ];
 
   home.username = "svea";
