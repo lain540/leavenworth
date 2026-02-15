@@ -1,7 +1,10 @@
 { config, pkgs, inputs, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [ 
+    ./hardware-configuration.nix
+    inputs.musnix.nixosModules.musnix
+  ];
 
   # Boot
   boot.loader.systemd-boot.enable = true;
@@ -25,6 +28,14 @@
   # Networking
   networking.networkmanager.enable = true;
 
+  # Audio - musnix for low-latency audio production
+  musnix.enable = true;
+  musnix.kernel.realtime = true;
+  musnix.soundcardPciId = "00:00.0"; # Will be auto-detected, change if needed
+
+  # Fish shell
+  programs.fish.enable = true;
+
   # User
   users.users.svea = {
     isNormalUser = true;
@@ -33,7 +44,7 @@
       "dialout" "plugdev" "storage" "optical" "scanner" "lp"
     ];
     initialPassword = "changeme";
-    shell = pkgs.bash;
+    shell = pkgs.fish;
   };
   security.sudo.wheelNeedsPassword = true;
 

@@ -22,7 +22,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nixvim, ... }@inputs: {
     nixosConfigurations.leavenworth = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
@@ -34,6 +34,9 @@
           home-manager.useUserPackages = true;
           home-manager.users.svea = import ./home.nix;
           home-manager.extraSpecialArgs = { inherit inputs; };
+          home-manager.sharedModules = [
+            nixvim.homeManagerModules.nixvim
+          ];
         }
       ];
     };
