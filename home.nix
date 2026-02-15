@@ -21,7 +21,7 @@
     enable = true;
     shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#leavenworth";
-      update = "cd /etc/nixos && git pull && sudo nixos-rebuild switch --flake .#leavenworth";
+      update = "cd /etc/nixos && sudo ./rebuild.sh";
     };
     shellInit = ''
       # Disable greeting

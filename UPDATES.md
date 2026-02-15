@@ -26,10 +26,32 @@
 - Active in TTY/console mode
 
 ### 5. Rebuild Script (rebuild.sh)
-- Pulls latest config from GitHub
+- **NEW:** Automatically creates timestamped backups before rebuilding
+- **NEW:** Restores from backup if anything fails
+- **NEW:** Keeps last 5 backups, cleans up older ones
+- Pulls latest config from GitHub by cloning fresh
 - Updates flake inputs
 - Rebuilds system
-- Usage: `./rebuild.sh`
+- Usage: `sudo ./rebuild.sh`
+
+## Current Git Error Fix
+
+If you're getting the "untracked working tree files would be overwritten" error:
+
+### Quick Fix (Run this once):
+```bash
+cd /etc/nixos
+sudo chmod +x fix-git.sh
+sudo ./fix-git.sh
+```
+
+This will:
+1. Backup your current config to `backups/manual_backup/`
+2. Remove the problematic git repo
+3. Clone fresh from GitHub
+4. Set up git properly
+
+After running, you can use `sudo ./rebuild.sh` normally.
 
 ## Installation
 
@@ -63,17 +85,27 @@ To use the automatic rebuild script:
 
 ```bash
 cd /etc/nixos
-./rebuild.sh
+sudo ./rebuild.sh
 ```
 
 This will:
-1. Pull latest changes from https://github.com/lain540/leavenworth.git
-2. Update flake inputs
-3. Rebuild the system
+1. **Create a timestamped backup** in `/etc/nixos/backups/YYYYMMDD_HHMMSS/`
+2. Clone latest changes from https://github.com/lain540/leavenworth.git
+3. Update flake inputs
+4. Rebuild the system
+5. **If anything fails, automatically restore from backup**
+6. Keep last 5 backups, delete older ones
 
-Or use the Fish alias:
+### Manual Backup Restore
+
+If you need to manually restore a backup:
 ```bash
-update
+# List available backups
+ls -la /etc/nixos/backups/
+
+# Restore from a specific backup
+sudo cp /etc/nixos/backups/20260215_120000/* /etc/nixos/
+sudo nixos-rebuild switch --flake /etc/nixos#leavenworth
 ```
 
 ## Notes
