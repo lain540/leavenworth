@@ -25,6 +25,10 @@ fi
 
 echo -e "${GREEN}Installing NixOS to $MOUNT_POINT...${NC}"
 
+# Get the config directory (parent of scripts/)
+SCRIPT_DIR="$(dirname "$0")"
+CONFIG_SRC="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 # Generate hardware configuration
 echo -e "${YELLOW}Generating hardware configuration...${NC}"
 nixos-generate-config --root "$MOUNT_POINT"
@@ -33,12 +37,16 @@ nixos-generate-config --root "$MOUNT_POINT"
 echo -e "${YELLOW}Copying configuration files...${NC}"
 CONFIG_DIR="$MOUNT_POINT/etc/nixos"
 
-# Copy our config files
-cp "$(dirname "$0")/flake.nix" "$CONFIG_DIR/"
-cp "$(dirname "$0")/configuration.nix" "$CONFIG_DIR/"
-cp "$(dirname "$0")/home.nix" "$CONFIG_DIR/"
-cp "$(dirname "$0")/README.md" "$CONFIG_DIR/" 2>/dev/null || true
-cp "$(dirname "$0")/.gitignore" "$CONFIG_DIR/" 2>/dev/null || true
+# Copy config files from parent directory
+cp "$CONFIG_SRC/flake.nix" "$CONFIG_DIR/"
+cp "$CONFIG_SRC/configuration.nix" "$CONFIG_DIR/"
+cp "$CONFIG_SRC/home.nix" "$CONFIG_DIR/"
+cp "$CONFIG_SRC/README.md" "$CONFIG_DIR/" 2>/dev/null || true
+cp "$CONFIG_SRC/.gitignore" "$CONFIG_DIR/" 2>/dev/null || true
+
+# Copy scripts directory
+mkdir -p "$CONFIG_DIR/scripts"
+cp "$CONFIG_SRC/scripts/"* "$CONFIG_DIR/scripts/"
 
 # Remove backup file if it exists
 rm -f "$CONFIG_DIR/configuration.nix.bak"
