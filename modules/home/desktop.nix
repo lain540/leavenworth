@@ -14,8 +14,26 @@
     # Launcher
     bemenu
     
-    # Audio control
-    pamixer
+    # Audio control (pipewire native)
+    wireplumber
+    
+    # pw-volume script for waybar
+    (pkgs.writeShellScriptBin "pw-volume" ''
+      #!/usr/bin/env bash
+      case "$1" in
+        status)
+          # Get volume and mute status
+          VOL=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+          if echo "$VOL" | grep -q "MUTED"; then
+            echo "MUTE"
+          else
+            # Extract volume percentage
+            PERCENT=$(echo "$VOL" | awk '{print int($2 * 100)}')
+            echo "VOL $PERCENT%"
+          fi
+          ;;
+      esac
+    '')
   ];
 
   # GTK theme
@@ -173,7 +191,7 @@
         
         modules-left = [ "hyprland/workspaces" "hyprland/window" ];
         modules-center = [ ];
-        modules-right = [ "pulseaudio" "clock" ];
+        modules-right = [ "custom/pipewire" "clock" ];
 
         "hyprland/workspaces" = {
           format = "{id}";
@@ -189,10 +207,12 @@
           format = "{:%H:%M}";
         };
 
-        pulseaudio = {
-          format = "VOL {volume}%";
-          format-muted = "MUTE";
-          on-click = "pamixer -t";
+        "custom/pipewire" = {
+          exec = "pw-volume status";
+          interval = 1;
+          on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          on-scroll-up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+";
+          on-scroll-down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-";
         };
       };
     };
@@ -253,11 +273,11 @@
       splash = false;
       
       preload = [
-        "~/wallpaper.jpg"
+        "/etc/nixos/modules/home/wallpaper.jpg"
       ];
       
       wallpaper = [
-        ",~/wallpaper.jpg"
+        ",/etc/nixos/modules/home/wallpaper.jpg"
       ];
     };
   };
@@ -345,11 +365,5 @@
         foreground = "d8d8d8";
       };
     };
-  };
-
-  # nnn file manager
-  programs.nnn = {
-    enable = true;
-    package = pkgs.nnn.override { withNerdIcons = true; };
   };
 }
