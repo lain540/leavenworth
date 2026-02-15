@@ -2,12 +2,12 @@
 
 {
   imports = [
-    ./modules/home/desktop.nix
+    ./modules/desktop.nix
   ];
 
   home.username = "svea";
   home.homeDirectory = "/home/svea";
-  home.stateVersion = "24.11";
+  home.stateVersion = "25.11";
 
   home.packages = with pkgs; [
     ripgrep
@@ -16,6 +16,12 @@
   ];
 
   programs.home-manager.enable = true;
+  
+  # nnn file manager
+  programs.nnn = {
+    enable = true;
+    package = pkgs.nnn.override { withNerdIcons = true; };
+  };
   
   # Git configuration
   programs.git = {
