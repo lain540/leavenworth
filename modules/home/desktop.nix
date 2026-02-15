@@ -172,8 +172,8 @@
         ", XF86AudioPause, exec, playerctl play-pause"
         ", XF86AudioNext, exec, playerctl next"
         ", XF86AudioPrev, exec, playerctl previous"
-        ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
-        ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+        ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+"
+        ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
         ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
       ];
 
@@ -196,13 +196,13 @@
     
     settings = {
       mainBar = {
-        layer = "top";
+        layer = "bottom";
         position = "top";
         height = 30;
         spacing = 4;
         
-        modules-left = [ "hyprland/workspaces" "hyprland/window" ];
-        modules-center = [ ];
+        modules-left = [ "hyprland/workspaces" ];
+        modules-center = [ "hyprland/window" ];
         modules-right = [ "custom/pipewire" "clock" ];
 
         "hyprland/workspaces" = {
@@ -223,8 +223,8 @@
           exec = "wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{if ($3 == \"[MUTED]\") print \"MUTE\"; else print \"VOL \" int($2 * 100) \"%\"}'";
           interval = 1;
           on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
-          on-scroll-up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+";
-          on-scroll-down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-";
+          on-scroll-up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+";
+          on-scroll-down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-";
         };
       };
     };
