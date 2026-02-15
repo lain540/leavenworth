@@ -48,10 +48,6 @@ cp "$CONFIG_SRC/.gitignore" "$CONFIG_DIR/" 2>/dev/null || true
 echo -e "${YELLOW}Copying modules...${NC}"
 cp -r "$CONFIG_SRC/modules" "$CONFIG_DIR/"
 
-# Copy dotfiles directory
-echo -e "${YELLOW}Copying dotfiles...${NC}"
-cp -r "$CONFIG_SRC/dotfiles" "$CONFIG_DIR/"
-
 # Copy scripts directory
 mkdir -p "$CONFIG_DIR/scripts"
 cp "$CONFIG_SRC/scripts/"* "$CONFIG_DIR/scripts/"
