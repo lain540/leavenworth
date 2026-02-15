@@ -54,10 +54,10 @@ in
     
     settings = {
       # Monitors - ultrawide below, 1080p above
-      monitor = [
-        "DP-1,3440x1440@144,0x1080,1"      # Ultrawide at bottom
-        "HDMI-A-1,1920x1080@60,760x0,1"    # 1080p centered above
-      ];
+      #monitor = [
+       # "DP-1,3440x1440@144,0x1080,1"      # Ultrawide at bottom
+        #"HDMI-A-1,1920x1080@60,760x0,1"    # 1080p centered above
+      #];
 
       # Input configuration
       input = {
