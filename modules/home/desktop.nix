@@ -19,6 +19,9 @@
     
     # Media control
     playerctl
+    
+    # Media player for testing
+    mpv
   ];
 
   # GTK theme
@@ -95,6 +98,12 @@
         "col.active_border" = "rgba(ffffffff)";
         "col.inactive_border" = "rgba(595959aa)";
         layout = "dwindle";
+      };
+
+      # Disable splash
+      misc = {
+        disable_hyprland_logo = true;
+        disable_splash_rendering = true;
       };
 
       # Decoration - disabled for minimal look
@@ -198,7 +207,7 @@
       mainBar = {
         layer = "bottom";
         position = "top";
-        height = 30;
+        height = 20;
         spacing = 4;
         
         modules-left = [ "hyprland/workspaces" ];
