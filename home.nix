@@ -1,15 +1,5 @@
 { config, pkgs, inputs, ... }:
 
-let
-  secrets = if builtins.pathExists /etc/nixos/secrets.nix
-            then import /etc/nixos/secrets.nix
-            else {
-              git = {
-                userName = "svea";
-                userEmail = "svea@leavenworth";
-              };
-            };
-in
 {
   home.username = "svea";
   home.homeDirectory = "/home/svea";
@@ -17,18 +7,18 @@ in
 
   home.packages = with pkgs; [
     ripgrep fd fzf
-    eww  # Widget system for bar
-    pamixer  # Volume control for eww
-    socat  # For eww workspace detection
-    jq  # JSON processing for eww
+    eww
+    pamixer
+    socat
+    jq
   ];
 
   programs.home-manager.enable = true;
   
   programs.git = {
     enable = true;
-    userName = secrets.git.userName;
-    userEmail = secrets.git.userEmail;
+    userName = "lain540";
+    userEmail = "lain540@users.noreply.github.com";
     
     extraConfig = {
       init.defaultBranch = "main";
@@ -47,17 +37,18 @@ in
     '';
   };
 
-  # Hyprland configuration
+  # Hyprland configuration - minimal, no animations
   wayland.windowManager.hyprland = {
     enable = true;
     xwayland.enable = true;
     
     settings = {
-      # Monitors - ultrawide below, 1080p above
-      #monitor = [
-       # "DP-1,3440x1440@144,0x1080,1"      # Ultrawide at bottom
-        #"HDMI-A-1,1920x1080@60,760x0,1"    # 1080p centered above
-      #];
+      # Monitors - commented out for VM testing
+      # Uncomment and adjust for real hardware
+      # monitor = [
+      #   "DP-1,3440x1440@144,0x1080,1"
+      #   "HDMI-A-1,1920x1080@60,760x0,1"
+      # ];
 
       # Input configuration
       input = {
@@ -70,42 +61,28 @@ in
         sensitivity = 0;
       };
 
-      # General settings
+      # General settings - minimal
       general = {
-        gaps_in = 5;
-        gaps_out = 10;
+        gaps_in = 0;
+        gaps_out = 0;
         border_size = 2;
-        "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 45deg";
+        "col.active_border" = "rgba(ffffffff)";
         "col.inactive_border" = "rgba(595959aa)";
         layout = "dwindle";
       };
 
-      # Decoration
+      # Decoration - disabled for minimal look
       decoration = {
-        rounding = 5;
+        rounding = 0;
         blur = {
-          enabled = true;
-          size = 3;
-          passes = 1;
+          enabled = false;
         };
-        drop_shadow = true;
-        shadow_range = 4;
-        shadow_render_power = 3;
-        "col.shadow" = "rgba(1a1a1aee)";
+        drop_shadow = false;
       };
 
-      # Animations
+      # Animations - disabled
       animations = {
-        enabled = true;
-        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
-        animation = [
-          "windows, 1, 7, myBezier"
-          "windowsOut, 1, 7, default, popin 80%"
-          "border, 1, 10, default"
-          "borderangle, 1, 8, default"
-          "fade, 1, 7, default"
-          "workspaces, 1, 6, default"
-        ];
+        enabled = false;
       };
 
       # Layout
@@ -113,11 +90,6 @@ in
         pseudotile = true;
         preserve_split = true;
       };
-
-      # Window rules
-      windowrule = [
-        "float, ^(foot)$"
-      ];
 
       # Keybindings
       "$mod" = "SUPER";
@@ -177,12 +149,11 @@ in
         "eww daemon"
         "eww open bar"
         "dunst"
-        "wlsunset -l 63.8 -L 20.3"  # Umeå coordinates
       ];
     };
   };
 
-  # Dunst notification daemon
+  # Dunst notification daemon - minimal base16 colors
   services.dunst = {
     enable = true;
     settings = {
@@ -191,8 +162,8 @@ in
         height = 300;
         offset = "30x50";
         origin = "top-right";
-        transparency = 10;
-        frame_color = "#33ccff";
+        transparency = 0;
+        frame_color = "#ffffff";
         font = "Terminus 10";
         markup = "full";
         format = "<b>%s</b>\\n%b";
@@ -207,35 +178,45 @@ in
         max_icon_size = 32;
         sticky_history = true;
         history_length = 20;
-        browser = "firefox";
         always_run_script = true;
         title = "Dunst";
         class = "Dunst";
-        corner_radius = 5;
+        corner_radius = 0;
       };
 
       urgency_low = {
-        background = "#1a1a1a";
-        foreground = "#888888";
+        background = "#181818";
+        foreground = "#b8b8b8";
         timeout = 5;
       };
 
       urgency_normal = {
-        background = "#1a1a1a";
-        foreground = "#ffffff";
+        background = "#181818";
+        foreground = "#d8d8d8";
         timeout = 10;
       };
 
       urgency_critical = {
-        background = "#900000";
-        foreground = "#ffffff";
-        frame_color = "#ff0000";
+        background = "#ab4642";
+        foreground = "#f8f8f8";
+        frame_color = "#ab4642";
         timeout = 0;
       };
     };
   };
 
-  # Foot terminal
+  # wlsunset - blue light filter as a service
+  services.wlsunset = {
+    enable = true;
+    latitude = "63.8";
+    longitude = "20.3";
+    temperature = {
+      day = 6500;
+      night = 3500;
+    };
+  };
+
+  # Foot terminal - minimal
   programs.foot = {
     enable = true;
     settings = {
@@ -250,9 +231,9 @@ in
       };
 
       colors = {
-        alpha = 0.9;
-        background = "1a1a1a";
-        foreground = "ffffff";
+        alpha = 1.0;
+        background = "181818";
+        foreground = "d8d8d8";
       };
     };
   };
