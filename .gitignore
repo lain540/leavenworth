@@ -1,0 +1,49 @@
+# Hardware configuration (machine-specific, don't commit)
+hardware-configuration.nix
+
+# Backups directory
+backups/
+
+# Build results
+result
+result-*
+
+# Secrets and sensitive data
+secrets.nix
+*.secret
+*.key
+*.pem
+*.age
+*.asc
+.env
+.env.local
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+*.tmp
+*.bak
+*.old
+*.backup
+
+# Git files
+*.orig
+
+# Nix build artifacts
+.direnv/
+.envrc
+
+# Private notes
+PRIVATE.md
+notes/private/
+TODO.private
+
+# Don't ignore flake.lock - it ensures reproducible builds
+# Uncomment the next line if you want to ignore it
+# flake.lock
