@@ -16,24 +16,6 @@
     
     # Audio control (pipewire native)
     wireplumber
-    
-    # pw-volume script for waybar
-    (pkgs.writeShellScriptBin "pw-volume" ''
-      #!/usr/bin/env bash
-      case "$1" in
-        status)
-          # Get volume and mute status
-          VOL=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
-          if echo "$VOL" | grep -q "MUTED"; then
-            echo "MUTE"
-          else
-            # Extract volume percentage
-            PERCENT=$(echo "$VOL" | awk '{print int($2 * 100)}')
-            echo "VOL $PERCENT%"
-          fi
-          ;;
-      esac
-    '')
   ];
 
   # GTK theme
@@ -108,7 +90,9 @@
         blur = {
           enabled = false;
         };
-        drop_shadow.enabled = false;
+        drop_shadow = {
+          enabled = false;
+        };
       };
 
       # Animations - disabled
@@ -208,7 +192,7 @@
         };
 
         "custom/pipewire" = {
-          exec = "pw-volume status";
+          exec = "wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{if ($3 == \"[MUTED]\") print \"MUTE\"; else print \"VOL \" int($2 * 100) \"%\"}'";
           interval = 1;
           on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
           on-scroll-up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+";
@@ -254,32 +238,15 @@
       }
 
       #clock,
-      #pulseaudio {
+      #custom-pipewire {
           padding: 0 10px;
           color: #d8d8d8;
       }
 
-      #pulseaudio {
+      #custom-pipewire {
           color: #b8b8b8;
       }
     '';
-  };
-
-  # hyprpaper - wallpaper daemon
-  services.hyprpaper = {
-    enable = true;
-    settings = {
-      ipc = "on";
-      splash = false;
-      
-      preload = [
-        "/etc/nixos/modules/home/wallpaper.jpg"
-      ];
-      
-      wallpaper = [
-        ",/etc/nixos/modules/home/wallpaper.jpg"
-      ];
-    };
   };
 
   # Dunst notification daemon - minimal base16 colors
