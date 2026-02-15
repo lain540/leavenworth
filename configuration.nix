@@ -36,7 +36,6 @@
 
   # musnix - audio optimization for music production
   musnix.enable = true;
-  musnix.kernel.realtime = true;
   musnix.rtirq.enable = true;
 
   # User
