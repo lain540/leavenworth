@@ -15,6 +15,9 @@
   time.timeZone = "Europe/Stockholm";
   i18n.defaultLocale = "en_US.UTF-8";
 
+  # Console keymap - Workman layout
+  console.keyMap = "workman";
+
   # Nix
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.auto-optimise-store = true;
@@ -28,13 +31,13 @@
   # Networking
   networking.networkmanager.enable = true;
 
-  # Audio - musnix for low-latency audio production
+  # Fish shell - enable system-wide to add to /etc/shells
+  programs.fish.enable = true;
+
+  # musnix - audio optimization for music production
   musnix.enable = true;
   musnix.kernel.realtime = true;
-  musnix.soundcardPciId = "00:00.0"; # Will be auto-detected, change if needed
-
-  # Fish shell
-  programs.fish.enable = true;
+  musnix.rtirq.enable = true;
 
   # User
   users.users.svea = {
@@ -44,7 +47,7 @@
       "dialout" "plugdev" "storage" "optical" "scanner" "lp"
     ];
     initialPassword = "changeme";
-    shell = pkgs.fish;
+    shell = pkgs.fish;  # Set Fish as default shell
   };
   security.sudo.wheelNeedsPassword = true;
 

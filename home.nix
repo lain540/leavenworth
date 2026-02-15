@@ -6,107 +6,113 @@
   home.stateVersion = "24.11";
 
   home.packages = with pkgs; [
-    ripgrep fd fzf bat eza
+    ripgrep fd fzf
   ];
 
   programs.home-manager.enable = true;
-
-  # Git
+  
   programs.git = {
     enable = true;
     userName = "svea";
     userEmail = "svea@leavenworth";
   };
 
-  # Fish shell configuration
   programs.fish = {
     enable = true;
-    
     shellAliases = {
-      # Nix shortcuts
       rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#leavenworth";
-      update = "cd /etc/nixos && nix flake update";
-      
-      # Better commands
-      ls = "eza";
-      ll = "eza -l";
-      la = "eza -la";
-      cat = "bat";
+      update = "cd /etc/nixos && git pull && sudo nixos-rebuild switch --flake .#leavenworth";
     };
-    
     shellInit = ''
       # Disable greeting
       set fish_greeting
     '';
   };
 
-  # Neovim via nixvim
+  # nixvim - Neovim configuration
   programs.nixvim = {
     enable = true;
     
-    # Basic options
-    options = {
-      number = true;
-      relativenumber = true;
-      shiftwidth = 2;
-      tabstop = 2;
-      expandtab = true;
-      smartindent = true;
-      wrap = false;
-      ignorecase = true;
-      smartcase = true;
-      termguicolors = true;
-    };
-
-    # Minimal colorscheme
+    # Color scheme
     colorschemes.base16 = {
       enable = true;
       colorscheme = "default-dark";
     };
 
-    # Language support - syntax highlighting
+    # General settings
+    opts = {
+      number = true;
+      relativenumber = true;
+      tabstop = 2;
+      shiftwidth = 2;
+      expandtab = true;
+      smartindent = true;
+      wrap = false;
+      swapfile = false;
+      backup = false;
+      hlsearch = true;
+      incsearch = true;
+      termguicolors = true;
+      scrolloff = 8;
+      updatetime = 50;
+    };
+
+    # Keymaps
+    globals.mapleader = " ";
+
+    # LSP for languages
     plugins = {
+      lsp = {
+        enable = true;
+        servers = {
+          lua-ls.enable = true;
+          nixd.enable = true;
+          rust-analyzer = {
+            enable = true;
+            installCargo = true;
+            installRustc = true;
+          };
+          clangd.enable = true;       # C
+          pyright.enable = true;       # Python
+        };
+      };
+
+      # Treesitter for syntax highlighting
       treesitter = {
         enable = true;
-        nixGrammars = true;
         settings = {
           highlight.enable = true;
           indent.enable = true;
         };
         grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
           lua
-          python
+          nix
           rust
           c
-          nix
+          python
           bash
-          julia
         ];
       };
 
-      # LSP support (basic)
-      lsp = {
-        enable = true;
-        servers = {
-          nil_ls.enable = true;  # Nix
-          rust-analyzer = {
-            enable = true;
-            installCargo = true;
-            installRustc = true;
-          };
-          lua-ls.enable = true;
-          pyright.enable = true;
-        };
-      };
+      # File explorer
+      neo-tree.enable = true;
+
+      # Fuzzy finder
+      telescope.enable = true;
 
       # Autocompletion
       cmp = {
         enable = true;
         autoEnableSources = true;
+        settings.sources = [
+          { name = "nvim_lsp"; }
+          { name = "path"; }
+          { name = "buffer"; }
+        ];
       };
-    };
 
-    # Basic keymaps
-    globals.mapleader = " ";
+      # Status line
+      lualine.enable = true;
+    };
   };
 }
