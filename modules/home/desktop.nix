@@ -157,13 +157,6 @@
         "$mod, mouse:272, movewindow"
         "$mod, mouse:273, resizewindow"
       ];
-
-      # Autostart
-      exec-once = [
-        "waybar"
-        "dunst"
-        "hyprpaper"
-      ];
     };
   };
 
@@ -256,13 +249,15 @@
   services.hyprpaper = {
     enable = true;
     settings = {
+      ipc = "on";
+      splash = false;
+      
       preload = [
-        # Add wallpaper path here later
-        # "~/wallpapers/background.png"
+        "~/wallpaper.jpg"
       ];
+      
       wallpaper = [
-        # Monitor,wallpaper
-        # ",~/wallpapers/background.png"
+        ",~/wallpaper.jpg"
       ];
     };
   };
