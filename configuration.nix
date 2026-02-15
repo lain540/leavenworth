@@ -15,7 +15,7 @@
   time.timeZone = "Europe/Stockholm";
   i18n.defaultLocale = "en_US.UTF-8";
 
-  # Console keymap - Workman layout
+  # Console keymap - using US for now (Workman setup requires custom config)
   console.keyMap = "us";
 
   # Nix
@@ -36,6 +36,9 @@
 
   # musnix - audio optimization for music production
   musnix.enable = true;
+  # Realtime kernel disabled for now (can cause build issues)
+  # Enable later if needed for ultra-low latency
+  musnix.kernel.realtime = false;
   musnix.rtirq.enable = true;
 
   # User

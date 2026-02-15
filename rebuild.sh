@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Rebuild script - pulls latest config from GitHub and rebuilds system
-# Creates backups and can restore on failure
+# Preserves hardware-configuration.nix (machine-specific)
 
 set -e
 
@@ -37,7 +37,7 @@ create_backup() {
   echo -e "${YELLOW}Creating backup at $CURRENT_BACKUP...${NC}"
   mkdir -p "$CURRENT_BACKUP"
   
-  # Backup all config files
+  # Backup all config files INCLUDING hardware-configuration.nix
   for file in *.nix *.sh *.md .gitignore flake.lock; do
     if [ -f "$file" ]; then
       cp "$file" "$CURRENT_BACKUP/" 2>/dev/null || true
@@ -52,10 +52,7 @@ restore_backup() {
   echo -e "${YELLOW}Restoring from backup...${NC}"
   
   if [ -d "$CURRENT_BACKUP" ]; then
-    # Remove failed files
-    rm -f *.nix *.sh *.md .gitignore flake.lock 2>/dev/null || true
-    
-    # Restore from backup
+    # Restore all files from backup
     cp "$CURRENT_BACKUP"/* "$CONFIG_DIR/" 2>/dev/null || true
     
     echo -e "${GREEN}Restored from backup${NC}"
@@ -76,35 +73,39 @@ cleanup_old_backups() {
 # Create backup before doing anything
 create_backup
 
-# Remove any existing git repo and start fresh
-if [ -d ".git" ]; then
-  echo -e "${YELLOW}Removing existing git repository...${NC}"
-  rm -rf .git
+# Save hardware-configuration.nix separately (machine-specific, never from git)
+echo -e "${YELLOW}Preserving hardware-configuration.nix...${NC}"
+cp hardware-configuration.nix /tmp/hardware-configuration.nix.preserve
+
+# Check if git repo exists and is properly configured
+if [ ! -d ".git" ]; then
+  echo -e "${YELLOW}No git repository found. Initializing...${NC}"
+  git init
+  git remote add origin "$REPO_URL" || true
 fi
 
-# Clone the repository
-echo -e "${YELLOW}Cloning from GitHub...${NC}"
-if ! git clone "$REPO_URL" /tmp/leavenworth-temp; then
-  echo -e "${RED}Failed to clone repository${NC}"
-  restore_backup
-  exit 1
+# Fetch latest changes
+echo -e "${YELLOW}Fetching from GitHub...${NC}"
+if ! git fetch origin main; then
+  echo -e "${RED}Failed to fetch from GitHub${NC}"
+  echo -e "${YELLOW}Continuing with local configuration...${NC}"
+else
+  # Reset to match remote (but we'll restore hardware-configuration.nix after)
+  echo -e "${YELLOW}Pulling latest changes...${NC}"
+  git reset --hard origin/main || {
+    echo -e "${RED}Failed to reset to origin/main${NC}"
+    restore_backup
+    exit 1
+  }
 fi
 
-# Copy files from cloned repo
-echo -e "${YELLOW}Copying files from repository...${NC}"
-rm -f *.nix *.sh *.md .gitignore 2>/dev/null || true
-cp /tmp/leavenworth-temp/* "$CONFIG_DIR/" 2>/dev/null || true
-cp /tmp/leavenworth-temp/.gitignore "$CONFIG_DIR/" 2>/dev/null || true
+# ALWAYS restore the machine-specific hardware-configuration.nix
+echo -e "${YELLOW}Restoring machine-specific hardware-configuration.nix...${NC}"
+cp /tmp/hardware-configuration.nix.preserve hardware-configuration.nix
+rm /tmp/hardware-configuration.nix.preserve
 
-# Initialize git in /etc/nixos
-echo -e "${YELLOW}Initializing git repository...${NC}"
-git init
-git remote add origin "$REPO_URL"
-git add .
-git commit -m "Initial commit from clone" || true
-
-# Cleanup temp directory
-rm -rf /tmp/leavenworth-temp
+# Make sure hardware-configuration.nix is tracked (but won't be pushed)
+git add hardware-configuration.nix 2>/dev/null || true
 
 # Update flake inputs
 echo -e "${YELLOW}Updating flake inputs...${NC}"
@@ -118,6 +119,7 @@ fi
 echo -e "${YELLOW}Rebuilding system...${NC}"
 if ! sudo nixos-rebuild switch --flake .#leavenworth; then
   echo -e "${RED}Failed to rebuild system${NC}"
+  echo -e "${YELLOW}Restoring from backup...${NC}"
   restore_backup
   exit 1
 fi
@@ -133,4 +135,4 @@ echo ""
 cleanup_old_backups
 
 echo -e "${BLUE}Backup saved at: $CURRENT_BACKUP${NC}"
-echo -e "${BLUE}To restore this backup: cp $CURRENT_BACKUP/* /etc/nixos/${NC}"
+echo -e "${BLUE}To restore this backup manually: sudo cp $CURRENT_BACKUP/* /etc/nixos/${NC}"
