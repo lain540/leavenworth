@@ -44,6 +44,7 @@ Remove before deploying to real hardware.
 ├── flake.nix              # Main config
 ├── configuration.nix      # System config
 ├── home.nix              # User config
-├── hardware-configuration.nix  # Hardware (auto-generated)
 └── install.sh            # Install script
 ```
+
+Note: `hardware-configuration.nix` is auto-generated during installation.
