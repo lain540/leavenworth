@@ -56,7 +56,7 @@
     };
     
     font = {
-      name = "Terminus Nerd Font Mono";
+      name = "Hack Nerd Font Mono";
       size = 11;
     };
   };
@@ -221,7 +221,7 @@
       * {
           border: none;
           border-radius: 0;
-          font-family: "Terminus Nerd Font Mono";
+          font-family: "Hack Nerd Font Mono";
           font-size: 12px;
           min-height: 0;
       }
@@ -293,7 +293,7 @@
         origin = "top-right";
         transparency = 0;
         frame_color = "#ffffff";
-        font = "Terminus Nerd Font Mono 10";
+        font = "Hack Nerd Font Mono 10";
         markup = "full";
         format = "<b>%s</b>\\n%b";
         alignment = "left";
@@ -345,13 +345,13 @@
     };
   };
 
-  # Foot terminal - minimal with Terminus Nerd Font
+  # Foot terminal - minimal with Hack Nerd Font
   programs.foot = {
     enable = true;
     settings = {
       main = {
         term = "xterm-256color";
-        font = "Terminus Nerd Font Mono:size=11";
+        font = "Hack Nerd Font Mono:size=11";
         dpi-aware = "yes";
       };
 
