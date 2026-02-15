@@ -21,7 +21,7 @@
 
   # Fonts - Terminus Nerd Font and base Terminus
   fonts.packages = with pkgs; [
-    (nerdfonts.override { fonts = [ "Terminus" ]; })
+    (nerd-fonts.override { fonts = [ "Terminus" ]; })
     terminus-font
   ];
 
