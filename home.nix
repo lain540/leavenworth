@@ -1,5 +1,16 @@
 { config, pkgs, inputs, ... }:
 
+let
+  # Import secrets if file exists, otherwise use defaults
+  secrets = if builtins.pathExists /etc/nixos/secrets.nix
+            then import /etc/nixos/secrets.nix
+            else {
+              git = {
+                userName = "svea";
+                userEmail = "svea@leavenworth";
+              };
+            };
+in
 {
   home.username = "svea";
   home.homeDirectory = "/home/svea";
@@ -13,8 +24,13 @@
   
   programs.git = {
     enable = true;
-    userName = "svea";
-    userEmail = "svea@leavenworth";
+    userName = secrets.git.userName;
+    userEmail = secrets.git.userEmail;
+    
+    extraConfig = {
+      init.defaultBranch = "main";
+      pull.rebase = false;
+    };
   };
 
   programs.fish = {
