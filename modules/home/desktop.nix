@@ -16,6 +16,9 @@
     
     # Audio control (pipewire native)
     wireplumber
+    
+    # Media control
+    playerctl
   ];
 
   # GTK theme
@@ -74,6 +77,16 @@
         sensitivity = 0;
       };
 
+      # Cursor theme
+      cursor = {
+        no_hardware_cursors = true;
+      };
+      
+      env = [
+        "XCURSOR_THEME,Adwaita"
+        "XCURSOR_SIZE,24"
+      ];
+
       # General settings - minimal
       general = {
         gaps_in = 0;
@@ -90,7 +103,7 @@
         blur = {
           enabled = false;
         };
-        drop_shadow = {
+        shadow = {
           enabled = false;
         };
       };
@@ -117,6 +130,7 @@
         "$mod, M, exit"
         "$mod, E, exec, foot nnn"
         "$mod, V, togglefloating"
+        "$mod, F, fullscreen"
         "$mod, P, pseudo"
         "$mod, J, togglesplit"
 
@@ -152,12 +166,26 @@
 
         # Screenshot
         ", Print, exec, grim -g \"$(slurp)\" - | wl-copy"
+        
+        # Media controls
+        ", XF86AudioPlay, exec, playerctl play-pause"
+        ", XF86AudioPause, exec, playerctl play-pause"
+        ", XF86AudioNext, exec, playerctl next"
+        ", XF86AudioPrev, exec, playerctl previous"
+        ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+        ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+        ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
       ];
 
       # Mouse bindings
       bindm = [
         "$mod, mouse:272, movewindow"
         "$mod, mouse:273, resizewindow"
+      ];
+
+      # Autostart
+      exec-once = [
+        "waybar"
       ];
     };
   };
