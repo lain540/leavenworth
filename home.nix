@@ -7,10 +7,8 @@
 
   home.packages = with pkgs; [
     ripgrep fd fzf
-    eww
+    waybar
     pamixer
-    socat
-    jq
   ];
 
   programs.home-manager.enable = true;
@@ -37,7 +35,39 @@
     '';
   };
 
-  # Hyprland configuration - minimal, no animations
+  # GTK theme
+  gtk = {
+    enable = true;
+    
+    theme = {
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
+    };
+    
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+    
+    cursorTheme = {
+      name = "Adwaita";
+      package = pkgs.adwaita-icon-theme;
+    };
+    
+    font = {
+      name = "Terminus Nerd Font Mono";
+      size = 11;
+    };
+  };
+
+  # Qt theme to match GTK
+  qt = {
+    enable = true;
+    platformTheme.name = "gtk";
+    style.name = "adwaita-dark";
+  };
+
+  # Hyprland configuration - minimal
   wayland.windowManager.hyprland = {
     enable = true;
     xwayland.enable = true;
@@ -97,6 +127,7 @@
       bind = [
         # Applications
         "$mod, Return, exec, foot"
+        "$mod, D, exec, bemenu-run"
         "$mod, Q, killactive"
         "$mod, M, exit"
         "$mod, E, exec, foot nnn"
@@ -146,9 +177,24 @@
 
       # Autostart
       exec-once = [
-        "eww daemon"
-        "eww open bar"
+        "waybar"
         "dunst"
+        "hyprpaper"
+      ];
+    };
+  };
+
+  # hyprpaper - wallpaper daemon
+  services.hyprpaper = {
+    enable = true;
+    settings = {
+      preload = [
+        # Add wallpaper path here later
+        # "~/wallpapers/background.png"
+      ];
+      wallpaper = [
+        # Monitor,wallpaper
+        # ",~/wallpapers/background.png"
       ];
     };
   };
@@ -164,7 +210,7 @@
         origin = "top-right";
         transparency = 0;
         frame_color = "#ffffff";
-        font = "Terminus 10";
+        font = "Terminus Nerd Font Mono 10";
         markup = "full";
         format = "<b>%s</b>\\n%b";
         alignment = "left";
@@ -216,13 +262,13 @@
     };
   };
 
-  # Foot terminal - minimal
+  # Foot terminal - minimal with Terminus Nerd Font
   programs.foot = {
     enable = true;
     settings = {
       main = {
         term = "xterm-256color";
-        font = "Terminus:size=11";
+        font = "Terminus Nerd Font Mono:size=11";
         dpi-aware = "yes";
       };
 
@@ -296,6 +342,9 @@
         grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
           lua nix rust c python bash
         ];
+        # Fix treesitter log file error
+        folding = false;
+        nixvimInjections = true;
       };
 
       neo-tree.enable = true;
@@ -321,7 +370,7 @@
     createDirectories = true;
   };
 
-  # eww configuration
-  xdg.configFile."eww/eww.yuck".source = ./dotfiles/eww/eww.yuck;
-  xdg.configFile."eww/eww.scss".source = ./dotfiles/eww/eww.scss;
+  # Waybar configuration
+  xdg.configFile."waybar/config".source = ./dotfiles/waybar/config;
+  xdg.configFile."waybar/style.css".source = ./dotfiles/waybar/style.css;
 }
