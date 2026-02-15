@@ -1,7 +1,6 @@
 { config, pkgs, inputs, ... }:
 
 let
-  # Import secrets if file exists, otherwise use defaults
   secrets = if builtins.pathExists /etc/nixos/secrets.nix
             then import /etc/nixos/secrets.nix
             else {
@@ -37,25 +36,21 @@ in
     enable = true;
     shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#leavenworth";
-      update = "cd /etc/nixos && sudo ./rebuild.sh";
+      update = "cd /etc/nixos && sudo ./scripts/rebuild.sh";
     };
     shellInit = ''
-      # Disable greeting
       set fish_greeting
     '';
   };
 
-  # nixvim - Neovim configuration
   programs.nixvim = {
     enable = true;
     
-    # Color scheme
     colorschemes.base16 = {
       enable = true;
       colorscheme = "default-dark";
     };
 
-    # General settings
     opts = {
       number = true;
       relativenumber = true;
@@ -73,10 +68,8 @@ in
       updatetime = 50;
     };
 
-    # Keymaps
     globals.mapleader = " ";
 
-    # LSP for languages
     plugins = {
       lsp = {
         enable = true;
@@ -88,12 +81,11 @@ in
             installCargo = true;
             installRustc = true;
           };
-          clangd.enable = true;       # C
-          pyright.enable = true;       # Python
+          clangd.enable = true;
+          pyright.enable = true;
         };
       };
 
-      # Treesitter for syntax highlighting
       treesitter = {
         enable = true;
         settings = {
@@ -101,22 +93,13 @@ in
           indent.enable = true;
         };
         grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
-          lua
-          nix
-          rust
-          c
-          python
-          bash
+          lua nix rust c python bash
         ];
       };
 
-      # File explorer
       neo-tree.enable = true;
-
-      # Fuzzy finder
       telescope.enable = true;
-
-      # Autocompletion
+      
       cmp = {
         enable = true;
         autoEnableSources = true;
@@ -127,7 +110,6 @@ in
         ];
       };
 
-      # Status line
       lualine.enable = true;
     };
   };

@@ -15,9 +15,6 @@
   time.timeZone = "Europe/Stockholm";
   i18n.defaultLocale = "en_US.UTF-8";
 
-  # Console keymap - using US for now (Workman setup requires custom config)
-  console.keyMap = "us";
-
   # Nix
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.auto-optimise-store = true;
@@ -31,13 +28,11 @@
   # Networking
   networking.networkmanager.enable = true;
 
-  # Fish shell - enable system-wide to add to /etc/shells
+  # Fish shell
   programs.fish.enable = true;
 
-  # musnix - audio optimization for music production
+  # musnix - audio optimization
   musnix.enable = true;
-  # Realtime kernel disabled for now (can cause build issues)
-  # Enable later if needed for ultra-low latency
   musnix.kernel.realtime = false;
   musnix.rtirq.enable = true;
 
@@ -49,7 +44,7 @@
       "dialout" "plugdev" "storage" "optical" "scanner" "lp"
     ];
     initialPassword = "changeme";
-    shell = pkgs.fish;  # Set Fish as default shell
+    shell = pkgs.fish;
   };
   security.sudo.wheelNeedsPassword = true;
 
@@ -57,10 +52,6 @@
   environment.systemPackages = with pkgs; [
     vim git wget curl htop
   ];
-
-  # VirtualBox (uncomment for VM testing, remove for real hardware)
-  # virtualisation.virtualbox.guest.enable = true;
-  # virtualisation.virtualbox.guest.x11 = true;
 
   system.stateVersion = "24.11";
 }
