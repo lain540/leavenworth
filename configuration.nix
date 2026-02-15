@@ -3,6 +3,8 @@
 {
   imports = [ 
     ./hardware-configuration.nix
+    ./modules/desktop.nix
+    ./modules/tools.nix
     inputs.musnix.nixosModules.musnix
   ];
 
@@ -50,7 +52,7 @@
 
   # System packages
   environment.systemPackages = with pkgs; [
-    git wget curl htop
+    vim git wget curl htop
   ];
 
   system.stateVersion = "24.11";

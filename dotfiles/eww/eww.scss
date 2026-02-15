@@ -1,0 +1,58 @@
+* {
+  all: unset;
+  font-family: "Terminus";
+  font-size: 12px;
+}
+
+.bar {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  padding: 0 10px;
+}
+
+.workspaces {
+  padding: 0 5px;
+}
+
+.workspace {
+  padding: 0 8px;
+  margin: 0 2px;
+  background-color: #2a2a2a;
+  border-radius: 3px;
+}
+
+.workspace.focused {
+  background-color: #33ccff;
+  color: #000000;
+}
+
+.workspace.occupied {
+  background-color: #3a3a3a;
+}
+
+.window-title {
+  padding: 0 10px;
+  color: #ffffff;
+}
+
+.sidestuff {
+  padding: 0 5px;
+}
+
+.metric {
+  padding: 0 8px;
+}
+
+.metric .label {
+  color: #888888;
+  margin-right: 5px;
+}
+
+.metric .value {
+  color: #33ccff;
+}
+
+.time {
+  padding: 0 10px;
+  color: #33ccff;
+}
