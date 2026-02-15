@@ -19,10 +19,10 @@
     };
   };
 
-  # Fonts - Terminus Nerd Font (25.05+ syntax)
+  # Fonts - Hack Nerd Font (25.05+ syntax)
   fonts.packages = with pkgs; [
-    nerd-fonts.terminus
-    terminus-font
+    nerd-fonts.hack
+    hack-font
   ];
 
   # Portals for screen sharing, file pickers, etc.
