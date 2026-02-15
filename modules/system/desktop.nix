@@ -19,9 +19,9 @@
     };
   };
 
-  # Fonts - Terminus Nerd Font and base Terminus
+  # Fonts - Terminus Nerd Font (25.05+ syntax)
   fonts.packages = with pkgs; [
-    (nerd-fonts.override { fonts = [ "Terminus" ]; })
+    nerd-fonts.terminus
     terminus-font
   ];
 
