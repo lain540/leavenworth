@@ -50,7 +50,6 @@
     user = "svea";
     group = "users";
     domain = "localhost";
-    environmentFile = null;  # No environment file needed for basic setup
     
     settings = {
       # Network
