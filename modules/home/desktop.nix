@@ -87,7 +87,11 @@
       
       env = [
         "XCURSOR_THEME,Adwaita"
-        "XCURSOR_SIZE,24"
+        "XCURSOR_SIZE,16"
+        # nnn configuration
+        "NNN_OPENER,nvim"
+        # bemenu base16-default-dark colors
+        "BEMENU_OPTS,--fn 'Hack Nerd Font Mono 12' --tb '#181818' --tf '#d8d8d8' --fb '#181818' --ff '#d8d8d8' --nb '#181818' --nf '#d8d8d8' --hb '#d8d8d8' --hf '#181818' --sb '#383838' --sf '#d8d8d8' --scb '#181818' --scf '#d8d8d8'"
       ];
 
       # General settings - minimal
@@ -176,6 +180,9 @@
         # Screenshot
         ", Print, exec, grim -g \"$(slurp)\" - | wl-copy"
         
+        # Audio output switcher
+        "$mod, A, exec, foot -e sh -c 'wpctl status | grep -A 50 Audio && echo && read -p \"Enter sink ID to switch: \" sink && wpctl set-default $sink'"
+        
         # Media controls
         ", XF86AudioPlay, exec, playerctl play-pause"
         ", XF86AudioPause, exec, playerctl play-pause"
@@ -259,6 +266,11 @@
           margin: 0 2px;
       }
 
+      #workspaces button:hover {
+          background-color: #383838;
+          color: #d8d8d8;
+      }
+
       #workspaces button.active {
           background-color: #d8d8d8;
           color: #181818;
@@ -271,13 +283,20 @@
 
       #window {
           padding: 0 10px;
+          background-color: #181818;
           color: #d8d8d8;
       }
 
       #clock,
       #custom-pipewire {
           padding: 0 10px;
+          background-color: #181818;
           color: #d8d8d8;
+      }
+
+      #clock:hover,
+      #custom-pipewire:hover {
+          background-color: #282828;
       }
 
       #custom-pipewire {
@@ -286,63 +305,12 @@
     '';
   };
 
-  # Dunst notification daemon - minimal base16 colors
-  services.dunst = {
-    enable = true;
-    settings = {
-      global = {
-        width = 300;
-        height = 300;
-        offset = "30x50";
-        origin = "top-right";
-        transparency = 0;
-        frame_color = "#ffffff";
-        font = "Hack Nerd Font Mono 10";
-        markup = "full";
-        format = "<b>%s</b>\\n%b";
-        alignment = "left";
-        show_age_threshold = 60;
-        word_wrap = true;
-        ignore_newline = false;
-        stack_duplicates = true;
-        hide_duplicate_count = false;
-        show_indicators = true;
-        icon_position = "left";
-        max_icon_size = 32;
-        sticky_history = true;
-        history_length = 20;
-        always_run_script = true;
-        title = "Dunst";
-        class = "Dunst";
-        corner_radius = 0;
-      };
-
-      urgency_low = {
-        background = "#181818";
-        foreground = "#b8b8b8";
-        timeout = 5;
-      };
-
-      urgency_normal = {
-        background = "#181818";
-        foreground = "#d8d8d8";
-        timeout = 10;
-      };
-
-      urgency_critical = {
-        background = "#ab4642";
-        foreground = "#f8f8f8";
-        frame_color = "#ab4642";
-        timeout = 0;
-      };
-    };
-  };
-
-  # wlsunset - blue light filter as a service
+  # wlsunset - blue light filter with custom times
+  # Daylight: 6:30 - 18:00, Night: 18:00 - 6:30
   services.wlsunset = {
     enable = true;
-    latitude = "63.8";
-    longitude = "20.3";
+    sunrise = "06:30";
+    sunset = "18:00";
     temperature = {
       day = 6500;
       night = 3500;
