@@ -49,6 +49,7 @@
     enable = true;
     user = "svea";
     group = "users";
+    domain = "localhost";  # Required: domain for web UI access
     
     settings = {
       # Network
