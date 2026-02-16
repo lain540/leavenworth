@@ -11,9 +11,6 @@
     grim
     slurp
     
-    # Launcher
-    bemenu
-    
     # Audio control (pipewire native)
     wireplumber
     
@@ -23,6 +20,32 @@
     # Media player for testing
     mpv
   ];
+
+  # bemenu launcher - base16-default-dark colors
+  programs.bemenu = {
+    enable = true;
+    settings = {
+      fn = "Hack Nerd Font Mono 12";
+      # Title bar
+      tb = "#181818";
+      tf = "#d8d8d8";
+      # Filter bar
+      fb = "#181818";
+      ff = "#d8d8d8";
+      # Normal item
+      nb = "#181818";
+      nf = "#d8d8d8";
+      # Highlighted item
+      hb = "#d8d8d8";
+      hf = "#181818";
+      # Selected item
+      sb = "#383838";
+      sf = "#d8d8d8";
+      # Scrollbar
+      scb = "#181818";
+      scf = "#d8d8d8";
+    };
+  };
 
   # GTK theme
   gtk = {
@@ -90,8 +113,6 @@
         "XCURSOR_SIZE,16"
         # nnn configuration
         "NNN_OPENER,nvim"
-        # bemenu base16-default-dark colors
-        "BEMENU_OPTS,--fn 'Hack Nerd Font Mono 12' --tb '#181818' --tf '#d8d8d8' --fb '#181818' --ff '#d8d8d8' --nb '#181818' --nf '#d8d8d8' --hb '#d8d8d8' --hf '#181818' --sb '#383838' --sf '#d8d8d8' --scb '#181818' --scf '#d8d8d8'"
       ];
 
       # General settings - minimal
@@ -214,8 +235,8 @@
       mainBar = {
         layer = "bottom";
         position = "top";
-        height = 20;
-        spacing = 4;
+        height = 24;
+        spacing = 0;
         
         modules-left = [ "hyprland/workspaces" ];
         modules-center = [ "hyprland/window" ];
