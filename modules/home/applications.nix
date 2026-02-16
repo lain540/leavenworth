@@ -1,15 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  # Applications
-  home.packages = with pkgs; [
-    # Music management
-    beets
-    
-    # Music downloads
-    slskd
-  ];
-
   # Create music directories
   home.file = {
     "Music/.keep".text = "";
@@ -18,116 +9,122 @@
     "Downloads/slskd/complete/.keep".text = "";
   };
 
-  # Beets music library management configuration
-  xdg.configFile."beets/config.yaml".text = ''
-    # Library location
-    directory: ~/Music
-    library: ~/Music/library.db
+  # Beets music library management
+  programs.beets = {
+    enable = true;
     
-    # Import settings
-    import:
-      move: yes                # Move files (not copy) into library
-      write: yes               # Write tags to files
-      copy: no                 # Don't copy, move instead
-      delete: no               # Don't delete originals after import
-      timid: no                # Don't ask for confirmation on every album
-      quiet_fallback: skip     # Skip albums without good matches
-      incremental: yes         # Skip already-imported albums
+    settings = {
+      # Library location
+      directory = "~/Music";
+      library = "~/Music/library.db";
       
-    # Auto-tagging
-    match:
-      strong_rec_thresh: 0.10  # Threshold for very strong matches
-      medium_rec_thresh: 0.25  # Threshold for medium matches
-      rec_gap_thresh: 0.25     # Gap between first and second match
+      # Import settings
+      import = {
+        move = true;              # Move files (not copy) into library
+        write = true;             # Write tags to files
+        copy = false;             # Don't copy, move instead
+        delete = false;           # Don't delete originals after import
+        timid = false;            # Don't ask for confirmation on every album
+        quiet_fallback = "skip";  # Skip albums without good matches
+        incremental = true;       # Skip already-imported albums
+      };
       
-    # Paths - organize music by artist/album
-    paths:
-      default: $albumartist/$album%aunique{}/$track $title
-      singleton: $artist/Singles/$title
-      comp: Compilations/$album%aunique{}/$track $title
+      # Auto-tagging
+      match = {
+        strong_rec_thresh = 0.10;  # Threshold for very strong matches
+        medium_rec_thresh = 0.25;  # Threshold for medium matches
+        rec_gap_thresh = 0.25;     # Gap between first and second match
+      };
       
-    # Replace characters in filenames
-    replace:
-      '[\\\/]': _
-      '^\.': _
-      '[\x00-\x1f]': _
-      '[<>:"\?\*\|]': _
-      '\.$': _
-      '\s+$': ''
+      # Paths - organize music by artist/album
+      paths = {
+        default = "$albumartist/$album%aunique{}/$track $title";
+        singleton = "$artist/Singles/$title";
+        comp = "Compilations/$album%aunique{}/$track $title";
+      };
       
-    # Plugins
-    plugins: fetchart embedart scrub replaygain lastgenre chroma
-    
-    # Plugin settings
-    fetchart:
-      auto: yes
-      cautious: yes
+      # Replace characters in filenames
+      replace = {
+        "[\\\\\/]" = "_";
+        "^\\." = "_";
+        "[\\x00-\\x1f]" = "_";
+        "[<>:\"\\?\\*\\|]" = "_";
+        "\\.$" = "_";
+        "\\s+$" = "";
+      };
       
-    embedart:
-      auto: yes
+      # Plugins
+      plugins = [ "fetchart" "embedart" "scrub" "replaygain" "lastgenre" "chroma" ];
       
-    replaygain:
-      auto: no  # Manual, as it can be CPU intensive
+      # Plugin settings
+      fetchart = {
+        auto = true;
+        cautious = true;
+      };
       
-    lastgenre:
-      auto: yes
-      source: track
-  '';
-
-  # slskd systemd service
-  systemd.user.services.slskd = {
-    Unit = {
-      Description = "slskd - Soulseek client";
-      After = [ "network.target" ];
-    };
-    
-    Service = {
-      Type = "simple";
-      ExecStart = "${pkgs.slskd}/bin/slskd --config ~/.config/slskd";
-      Restart = "on-failure";
-      RestartSec = "5s";
-    };
-    
-    Install = {
-      WantedBy = [ "default.target" ];
+      embedart = {
+        auto = true;
+      };
+      
+      replaygain = {
+        auto = false;  # Manual, as it can be CPU intensive
+      };
+      
+      lastgenre = {
+        auto = true;
+        source = "track";
+      };
     };
   };
 
-  # slskd configuration
-  xdg.configFile."slskd/slskd.yml".text = ''
-    # Network
-    listen:
-      host: 127.0.0.1
-      port: 5030
+  # slskd Soulseek client
+  services.slskd = {
+    enable = true;
     
-    # Web UI
-    web:
-      authentication:
-        username: svea
-        # Password will be set on first run
-        # Visit http://localhost:5030 to set it up
-    
-    # Directories
-    directories:
-      downloads: ~/Downloads/slskd/complete
-      incomplete: ~/Downloads/slskd/incomplete
+    settings = {
+      # Network
+      listen = {
+        host = "127.0.0.1";
+        port = 5030;
+      };
       
-    # Shared directories for uploading
-    shares:
-      directories:
-        - ~/Music
-    
-    # Global settings
-    global:
-      upload:
-        slots: 2
-      download:
-        slots: 5
-    
-    # Soulseek settings
-    soulseek:
-      description: "Music collector"
-      listen_port: 50300
-      enable_distributed_network: true
-  '';
+      # Web UI authentication
+      web = {
+        authentication = {
+          username = "svea";
+          # Password will be set on first run via web UI
+        };
+      };
+      
+      # Directories
+      directories = {
+        downloads = "${config.home.homeDirectory}/Downloads/slskd/complete";
+        incomplete = "${config.home.homeDirectory}/Downloads/slskd/incomplete";
+      };
+      
+      # Shared directories for uploading
+      shares = {
+        directories = [
+          "${config.home.homeDirectory}/Music"
+        ];
+      };
+      
+      # Global settings
+      global = {
+        upload = {
+          slots = 2;
+        };
+        download = {
+          slots = 5;
+        };
+      };
+      
+      # Soulseek settings
+      soulseek = {
+        description = "Music collector";
+        listen_port = 50300;
+        enable_distributed_network = true;
+      };
+    };
+  };
 }
