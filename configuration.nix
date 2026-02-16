@@ -15,6 +15,9 @@
   networking.hostName = "leavenworth";
   time.timeZone = "Europe/Stockholm";
   i18n.defaultLocale = "en_US.UTF-8";
+  
+  # Console (TTY) keyboard layout
+  console.keyMap = "workman";
 
   # Nix
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
