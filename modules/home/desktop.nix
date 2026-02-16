@@ -53,9 +53,8 @@
       esac
     '')
     
-    # mpv with wayland support and sponsorblock
+    # mpv with sponsorblock script
     (mpv.override {
-      waylandSupport = true;
       scripts = [ pkgs.mpvScripts.sponsorblock ];
     })
   ];
