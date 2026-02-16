@@ -75,6 +75,16 @@
 
     globals.mapleader = " ";
 
+    keymaps = [
+      {
+        key = "<leader>n";
+        action = ":NnnPicker<CR>";
+        options = {
+          desc = "Open nnn file picker";
+        };
+      }
+    ];
+
     plugins = {
       lsp = {
         enable = true;
@@ -118,6 +128,19 @@
       };
 
       lualine.enable = true;
+      
+      # nnn file manager integration
+      nnn = {
+        enable = true;
+        settings = {
+          explorer = {
+            width = 30;
+          };
+          picker = {
+            border = "rounded";
+          };
+        };
+      };
     };
   };
 
