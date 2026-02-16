@@ -52,11 +52,6 @@
           ;;
       esac
     '')
-    
-    # mpv with sponsorblock script
-    (mpv.override {
-      scripts = [ pkgs.mpvScripts.sponsorblock ];
-    })
   ];
 
   # GTK theme

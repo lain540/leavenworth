@@ -1,6 +1,11 @@
 { config, pkgs, ... }:
 
 {
+  # Applications
+  home.packages = with pkgs; [
+    mpv  # Media player
+  ];
+
   # Create music directories
   home.file = {
     "Music/.keep".text = "";
@@ -73,57 +78,6 @@
       lastgenre = {
         auto = true;
         source = "track";
-      };
-    };
-  };
-
-  # slskd Soulseek client
-  services.slskd = {
-    enable = true;
-    
-    settings = {
-      # Network
-      listen = {
-        host = "127.0.0.1";
-        port = 5030;
-      };
-      
-      # Web UI authentication
-      web = {
-        authentication = {
-          username = "svea";
-          # Password will be set on first run via web UI
-        };
-      };
-      
-      # Directories
-      directories = {
-        downloads = "${config.home.homeDirectory}/Downloads/slskd/complete";
-        incomplete = "${config.home.homeDirectory}/Downloads/slskd/incomplete";
-      };
-      
-      # Shared directories for uploading
-      shares = {
-        directories = [
-          "${config.home.homeDirectory}/Music"
-        ];
-      };
-      
-      # Global settings
-      global = {
-        upload = {
-          slots = 2;
-        };
-        download = {
-          slots = 5;
-        };
-      };
-      
-      # Soulseek settings
-      soulseek = {
-        description = "Music collector";
-        listen_port = 50300;
-        enable_distributed_network = true;
       };
     };
   };
