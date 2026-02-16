@@ -20,9 +20,6 @@
     # Media control
     playerctl
     
-    # Media player for testing
-    mpv
-    
     # bemenu wrapper with base16 colors (avoids # comment issues in Hyprland)
     (pkgs.writeShellScriptBin "bemenu-themed" ''
       #!/usr/bin/env bash
@@ -55,6 +52,12 @@
           ;;
       esac
     '')
+    
+    # mpv with wayland support and sponsorblock
+    (mpv.override {
+      waylandSupport = true;
+      scripts = [ pkgs.mpvScripts.sponsorblock ];
+    })
   ];
 
   # GTK theme
