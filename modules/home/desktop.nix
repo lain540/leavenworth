@@ -23,6 +23,19 @@
     # Media player for testing
     mpv
     
+    # bemenu wrapper with base16 colors (avoids # comment issues in Hyprland)
+    (pkgs.writeShellScriptBin "bemenu-themed" ''
+      #!/usr/bin/env bash
+      bemenu-run -H 20 \
+        --fn 'Hack Nerd Font Mono 12' \
+        --tb '#181818' --tf '#d8d8d8' \
+        --fb '#181818' --ff '#d8d8d8' \
+        --nb '#181818' --nf '#d8d8d8' \
+        --hb '#d8d8d8' --hf '#181818' \
+        --sb '#383838' --sf '#d8d8d8' \
+        --scb '#181818' --scf '#d8d8d8'
+    '')
+    
     # nnn opener script - opens text files in nvim
     (pkgs.writeShellScriptBin "nnn-open" ''
       #!/usr/bin/env bash
@@ -159,7 +172,7 @@
       bind = [
         # Applications
         "$mod, Return, exec, foot"
-        "$mod, D, exec, bemenu-run -H 20 --fn 'Hack Nerd Font Mono 12' --tb '#181818' --tf '#d8d8d8' --fb '#181818' --ff '#d8d8d8' --nb '#181818' --nf '#d8d8d8' --hb '#d8d8d8' --hf '#181818' --sb '#383838' --sf '#d8d8d8' --scb '#181818' --scf '#d8d8d8'"
+        "$mod, D, exec, bemenu-themed"
         "$mod, Q, killactive"
         "$mod, M, exit"
         "$mod, E, exec, foot nnn"
