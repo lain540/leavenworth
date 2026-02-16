@@ -49,7 +49,8 @@
     enable = true;
     user = "svea";
     group = "users";
-    domain = "localhost";  # Required: domain for web UI access
+    domain = "localhost";
+    environmentFile = null;  # No environment file needed for basic setup
     
     settings = {
       # Network
