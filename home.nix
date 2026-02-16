@@ -78,7 +78,7 @@
     keymaps = [
       {
         key = "<leader>n";
-        action = ":NnnPicker<CR>";
+        action = "<cmd>NnnPicker<CR>";
         options = {
           desc = "Open nnn file picker";
         };
@@ -108,10 +108,12 @@
           indent.enable = true;
         };
         grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
-          lua nix rust c python bash
+          lua nix rust c python bash julia
         ];
         folding = false;
         nixvimInjections = true;
+        # Prevent log file errors
+        logLevel = "off";
       };
 
       neo-tree.enable = true;
@@ -128,20 +130,23 @@
       };
 
       lualine.enable = true;
-      
-      # nnn file manager integration
-      nnn = {
-        enable = true;
-        settings = {
-          explorer = {
-            width = 30;
-          };
-          picker = {
-            border = "rounded";
-          };
-        };
-      };
     };
+    
+    # nnn.vim plugin - simpler integration
+    extraPlugins = with pkgs.vimPlugins; [
+      nnn-vim
+    ];
+    
+    extraConfigLua = ''
+      -- nnn.vim configuration
+      vim.g.nnn_command = 'nnn -e'
+      vim.g.nnn_layout = { window = { width = 0.9, height = 0.6, highlight = 'Debug' } }
+      vim.g.nnn_action = {
+        ['<c-t>'] = 'tab split',
+        ['<c-x>'] = 'split',
+        ['<c-v>'] = 'vsplit',
+      }
+    '';
   };
 
   # XDG user directories
