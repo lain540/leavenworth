@@ -3,15 +3,14 @@
 {
   # Applications
   home.packages = with pkgs; [
-    mpv  # Media player
+    mpv           # Media player
+    nicotine-plus # Soulseek client (GUI)
   ];
 
   # Create music directories
   home.file = {
     "Music/.keep".text = "";
-    "Downloads/slskd/.keep".text = "";
-    "Downloads/slskd/incomplete/.keep".text = "";
-    "Downloads/slskd/complete/.keep".text = "";
+    "Downloads/nicotine/.keep".text = "";
   };
 
   # Beets music library management
