@@ -11,6 +11,9 @@
     grim
     slurp
     
+    # Launcher
+    bemenu
+    
     # Audio control (pipewire native)
     wireplumber
     
@@ -19,33 +22,27 @@
     
     # Media player for testing
     mpv
+    
+    # nnn opener script - opens text files in nvim
+    (pkgs.writeShellScriptBin "nnn-open" ''
+      #!/usr/bin/env bash
+      
+      # Get mime type
+      MIME=$(file --brief --mime-type "$1")
+      
+      # Open text files and common code files in nvim
+      case "$MIME" in
+        text/*|application/json|application/x-shellscript|application/javascript)
+          foot -e nvim "$1"
+          ;;
+        inode/directory)
+          ;;
+        *)
+          xdg-open "$1" 2>/dev/null
+          ;;
+      esac
+    '')
   ];
-
-  # bemenu launcher - base16-default-dark colors
-  programs.bemenu = {
-    enable = true;
-    settings = {
-      fn = "Hack Nerd Font Mono 12";
-      # Title bar
-      tb = "#181818";
-      tf = "#d8d8d8";
-      # Filter bar
-      fb = "#181818";
-      ff = "#d8d8d8";
-      # Normal item
-      nb = "#181818";
-      nf = "#d8d8d8";
-      # Highlighted item
-      hb = "#d8d8d8";
-      hf = "#181818";
-      # Selected item
-      sb = "#383838";
-      sf = "#d8d8d8";
-      # Scrollbar
-      scb = "#181818";
-      scf = "#d8d8d8";
-    };
-  };
 
   # GTK theme
   gtk = {
@@ -111,8 +108,11 @@
       env = [
         "XCURSOR_THEME,Adwaita"
         "XCURSOR_SIZE,16"
-        # nnn configuration
-        "NNN_OPENER,nvim"
+        # Set default editor
+        "EDITOR,nvim"
+        "VISUAL,nvim"
+        # nnn configuration - use custom opener script
+        "NNN_OPENER,nnn-open"
       ];
 
       # General settings - minimal
@@ -159,7 +159,7 @@
       bind = [
         # Applications
         "$mod, Return, exec, foot"
-        "$mod, D, exec, bemenu-run"
+        "$mod, D, exec, bemenu-run -H 20 --fn 'Hack Nerd Font Mono 12' --tb '#181818' --tf '#d8d8d8' --fb '#181818' --ff '#d8d8d8' --nb '#181818' --nf '#d8d8d8' --hb '#d8d8d8' --hf '#181818' --sb '#383838' --sf '#d8d8d8' --scb '#181818' --scf '#d8d8d8'"
         "$mod, Q, killactive"
         "$mod, M, exit"
         "$mod, E, exec, foot nnn"
@@ -235,7 +235,7 @@
       mainBar = {
         layer = "bottom";
         position = "top";
-        height = 24;
+        height = 20;
         spacing = 0;
         
         modules-left = [ "hyprland/workspaces" ];
@@ -245,15 +245,18 @@
         "hyprland/workspaces" = {
           format = "{id}";
           on-click = "activate";
+          tooltip = false;
         };
 
         "hyprland/window" = {
           format = "{}";
           max-length = 50;
+          tooltip = false;
         };
 
         clock = {
           format = "{:%H:%M}";
+          tooltip = false;
         };
 
         "custom/pipewire" = {
@@ -262,6 +265,7 @@
           on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
           on-scroll-up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+";
           on-scroll-down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-";
+          tooltip = false;
         };
       };
     };
