@@ -44,60 +44,6 @@
   # Fish shell - system-wide (adds to /etc/shells)
   programs.fish.enable = true;
 
-  # slskd - Soulseek client
-  services.slskd = {
-    enable = true;
-    user = "svea";
-    group = "users";
-    domain = "localhost";
-    
-    settings = {
-      # Network
-      listen = {
-        host = "127.0.0.1";
-        port = 5030;
-      };
-      
-      # Web UI authentication
-      web = {
-        authentication = {
-          username = "svea";
-          # Password will be set on first run via web UI
-        };
-      };
-      
-      # Directories
-      directories = {
-        downloads = "/home/svea/Downloads/slskd/complete";
-        incomplete = "/home/svea/Downloads/slskd/incomplete";
-      };
-      
-      # Shared directories for uploading
-      shares = {
-        directories = [
-          "/home/svea/Music"
-        ];
-      };
-      
-      # Global settings
-      global = {
-        upload = {
-          slots = 2;
-        };
-        download = {
-          slots = 5;
-        };
-      };
-      
-      # Soulseek settings
-      soulseek = {
-        description = "Music collector";
-        listen_port = 50300;
-        enable_distributed_network = true;
-      };
-    };
-  };
-
   # musnix - audio optimization
   musnix.enable = true;
   musnix.kernel.realtime = false;
