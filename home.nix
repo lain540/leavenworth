@@ -21,6 +21,16 @@
   programs.nnn = {
     enable = true;
     package = pkgs.nnn.override { withNerdIcons = true; };
+    
+    # nnn plugins and configuration
+    extraPackages = with pkgs; [ ffmpeg mediainfo ];
+    
+    plugins = {
+      src = "${pkgs.nnn}/share/plugins";
+      mappings = {
+        e = "!nvim \"$nnn\"*";
+      };
+    };
   };
   
   # Git configuration
