@@ -101,13 +101,10 @@
         servers = {
           lua-ls.enable = true;
           nixd.enable = true;
-          rust-analyzer = {
-            enable = true;
-            installCargo = true;
-            installRustc = true;
-          };
+          # C/C++ language server
           clangd.enable = true;
-          pyright.enable = true;
+          # Julia language server
+          julials.enable = true;
         };
       };
 
