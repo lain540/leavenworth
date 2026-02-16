@@ -118,7 +118,7 @@
           indent.enable = true;
         };
         grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
-          lua nix rust c python bash julia
+          cpp lua nix julia
         ];
         folding = false;
         nixvimInjections = true;
