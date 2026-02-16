@@ -33,6 +33,41 @@
     };
   };
   
+  # mpv media player with wayland and sponsorblock
+  programs.mpv = {
+    enable = true;
+    package = pkgs.mpv.override {
+      scripts = [ pkgs.mpvScripts.sponsorblock ];
+    };
+    
+    config = {
+      # Wayland support
+      vo = "gpu";
+      gpu-context = "wayland";
+      
+      # Better video quality
+      profile = "gpu-hq";
+      scale = "ewa_lanczossharp";
+      cscale = "ewa_lanczossharp";
+      
+      # Audio
+      audio-pitch-correction = "yes";
+      
+      # Subtitles
+      sub-auto = "fuzzy";
+      
+      # Performance
+      hwdec = "auto";
+    };
+    
+    # sponsorblock configuration
+    scriptOpts = {
+      sponsorblock = {
+        skip_categories = "sponsor,intro,outro,interaction,selfpromo";
+      };
+    };
+  };
+  
   # Git configuration
   programs.git = {
     enable = true;
@@ -100,11 +135,7 @@
         enable = true;
         servers = {
           lua-ls.enable = true;
-          nixd.enable = true;
-          # C/C++ language server
-          clangd.enable = true;
-          # Julia language server
-          julials.enable = true;
+          clangd.enable = true;  # C/C++
         };
       };
 
