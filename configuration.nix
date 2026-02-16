@@ -16,17 +16,17 @@
   time.timeZone = "Europe/Stockholm";
   i18n.defaultLocale = "en_US.UTF-8";
   
-  # Console (TTY) keyboard layout
-console = {
+  # Console (TTY) keyboard layout - uses XKB configuration
+  console = {
     useXkbConfig = true;
-    earlySetup = true; # Ensures the layout loads as early as possible (boot time)
+    earlySetup = true;  # Ensures the layout loads as early as possible (boot time)
   };
-
+  
   # Even if you don't use X11, NixOS uses these variables to derive the console map
   services.xserver.xkb = {
     layout = "us";
     variant = "workman";
-  }; 
+  };
 
   # Nix
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
