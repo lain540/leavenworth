@@ -304,11 +304,6 @@
           margin: 0 2px;
       }
 
-      #workspaces button:hover {
-          background-color: #383838;
-          color: #d8d8d8;
-      }
-
       #workspaces button.active {
           background-color: #d8d8d8;
           color: #181818;
