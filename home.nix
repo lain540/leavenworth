@@ -30,7 +30,8 @@
     enable = true;
     shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#leavenworth";
-      update = "cd /etc/nixos && sudo ./scripts/rebuild.sh";
+      update  = "cd /etc/nixos && sudo ./scripts/rebuild.sh";
+      cleanup = "sudo /etc/nixos/scripts/cleanup.sh";
     };
     shellInit = ''
       set fish_greeting
