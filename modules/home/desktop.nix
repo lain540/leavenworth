@@ -256,7 +256,10 @@
 
       # Autostart
       exec-once = [
-        "waybar"
+        # Wait for pipewire to fully initialize then start waybar and signal audio
+        # The sleep gives pipewire/wireplumber time to enumerate sinks before
+        # the waybar volume module runs its first wpctl query
+        "bash -c 'sleep 2 && waybar & sleep 1 && pkill -RTMIN+8 waybar'"
       ];
     };
   };
