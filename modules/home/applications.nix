@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   # Applications
@@ -6,8 +6,24 @@
     mpv           # Media player
     nicotine-plus # Soulseek client (GUI)
 
-    # DAW
-    reaper
+    # DAW - wrapped with required runtime libraries
+    (pkgs.reaper.overrideAttrs (old: {
+      nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ pkgs.makeWrapper ];
+      postFixup = (old.postFixup or "") + ''
+        wrapProgram $out/bin/reaper \
+          --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath (with pkgs; [
+            libjack2
+            alsa-lib
+            vulkan-loader
+            libGL
+            xorg.libX11
+            xorg.libXext
+            xorg.libXi
+            xorg.libXcursor
+            xorg.libXrandr
+          ])}"
+      '';
+    }))
 
     # Audio plugins
     lsp-plugins    # Linux Studio Plugins
