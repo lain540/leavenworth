@@ -77,6 +77,12 @@
       name = "Hack Nerd Font Mono";
       size = 11;
     };
+    
+    # GTK4 apps don't use the theme file from gnome-themes-extra
+    # instead we tell them to prefer the built-in dark variant
+    gtk4.extraConfig = {
+      gtk-application-prefer-dark-theme = 1;
+    };
   };
 
   # Qt theme to match GTK
@@ -92,8 +98,12 @@
     xwayland.enable = true;
     
     settings = {
-      # Monitors - commented out for VM testing
-      # Uncomment and adjust for real hardware
+      # Monitors
+      # VirtualBox - comment out when running on real hardware
+      monitor = [
+        "Virtual-1,1920x1080@60,0x0,1"
+      ];
+      # Real hardware monitors - uncomment when running on real hardware
       # monitor = [
       #   "DP-1,3440x1440@144,0x1080,1"
       #   "HDMI-A-1,1920x1080@60,760x0,1"
