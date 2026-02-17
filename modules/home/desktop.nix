@@ -32,26 +32,6 @@
         --sb '#383838' --sf '#d8d8d8' \
         --scb '#181818' --scf '#d8d8d8'
     '')
-    
-    # nnn opener script - opens text files in nvim
-    (pkgs.writeShellScriptBin "nnn-open" ''
-      #!/usr/bin/env bash
-      
-      # Get mime type
-      MIME=$(file --brief --mime-type "$1")
-      
-      # Open text files and common code files in nvim
-      case "$MIME" in
-        text/*|application/json|application/x-shellscript|application/javascript)
-          foot -e nvim "$1"
-          ;;
-        inode/directory)
-          ;;
-        *)
-          xdg-open "$1" 2>/dev/null
-          ;;
-      esac
-    '')
   ];
 
   # GTK theme
@@ -131,8 +111,6 @@
         # Set default editor
         "EDITOR,nvim"
         "VISUAL,nvim"
-        # nnn configuration - use custom opener script
-        "NNN_OPENER,nnn-open"
       ];
 
       # General settings - minimal
@@ -182,7 +160,7 @@
         "$mod, D, exec, bemenu-themed"
         "$mod, Q, killactive"
         "$mod, M, exit"
-        "$mod, E, exec, foot nnn"
+        "$mod, E, exec, foot -e yazi"
         "$mod, V, togglefloating"
         "$mod, F, fullscreen"
         "$mod, P, pseudo"
@@ -375,6 +353,11 @@
         alpha = 1.0;
         background = "181818";
         foreground = "d8d8d8";
+      };
+
+      # Enable sixel for yazi image previews
+      tweak = {
+        sixel = "yes";
       };
     };
   };
