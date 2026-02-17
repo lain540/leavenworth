@@ -124,8 +124,6 @@
     createDirectories = true;
   };
 
-  programs.home-manager.enable = true;
-
   # Yazi file manager - with RAR support and image preview in foot
   programs.yazi = {
     enable = true;
