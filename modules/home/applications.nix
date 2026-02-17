@@ -91,9 +91,9 @@ in
     airwindows-lv2   # Airwindows — hundreds of subtle effect ports (LV2)
     dragonfly-reverb # Dragonfly — hall/room/plate reverb suite (VST3/LV2)
     chow-tape-model  # CHOWTapeModel — analog tape machine emulation (VST3)
-    ChowPhaser       # Chowdhury DSP phaser (VST3)
-    ChowKick         # Chowdhury DSP kick drum synth (VST3)
-    ChowCentaur      # Chowdhury DSP Klon Centaur emulation (VST3)
+    chow-phaser      # Chowdhury DSP phaser (VST3)       [was: ChowPhaser]
+    chow-kick        # Chowdhury DSP kick drum synth (VST3) [was: ChowKick]
+    chow-centaur     # Chowdhury DSP Klon Centaur emulation (VST3) [was: ChowCentaur]
 
     # Voxengo SPAN — spectrum analyzer (VST3, defined inline above)
     # Needs hash filled in before it will build — see the let block at the top.
