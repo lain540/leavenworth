@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 {
   # Applications
@@ -6,30 +6,20 @@
     mpv           # Media player
     nicotine-plus # Soulseek client (GUI)
 
-    # DAW - wrapped with required runtime libraries
-    (pkgs.reaper.overrideAttrs (old: {
-      nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ pkgs.makeWrapper ];
-      postFixup = (old.postFixup or "") + ''
-        wrapProgram $out/bin/reaper \
-          --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath (with pkgs; [
-            libjack2
-            alsa-lib
-            vulkan-loader
-            libGL
-            xorg.libX11
-            xorg.libXext
-            xorg.libXi
-            xorg.libXcursor
-            xorg.libXrandr
-          ])}"
-      '';
-    }))
+    # DAW
+    reaper
 
     # Audio plugins
-    lsp-plugins    # Linux Studio Plugins
-    surge-XT       # Surge synthesizer
-    cardinal       # Cardinal (VCV Rack based) modular synthesizer
-    dexed          # FM synthesizer (Yamaha DX7 emulation)
+    lsp-plugins      # Linux Studio Plugins (LSP)
+    surge-XT         # Surge synthesizer
+    cardinal         # Cardinal modular (VCV Rack based)
+    dexed            # FM synthesizer (Yamaha DX7 emulation)
+    airwindows-lv2   # Airwindows consolidated (hundreds of effects, LV2)
+    dragonfly-reverb # Dragonfly hall/room/plate/early reverb suite
+    CHOWTapeModel    # Chowdhury DSP tape machine emulation
+    ChowPhaser       # Chowdhury DSP phaser
+    ChowKick         # Chowdhury DSP kick drum synth
+    ChowCentaur      # Chowdhury DSP Centaur pedal emulation
 
     # PipeWire graph/patchbay
     qpwgraph

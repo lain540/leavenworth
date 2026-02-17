@@ -15,6 +15,9 @@
 
     # Media control
     playerctl
+
+    # Blue light filter (launched via exec-once, not as a systemd service)
+    wlsunset
   ];
 
   # fuzzel application launcher - base16-default-dark theme
@@ -276,7 +279,7 @@
 
         # ── Audio ──────────────────────────────────────────────────────
         # Physical A = A in Workman (home row, left hand)
-        "$mod, a,       exec, foot -e sh -c 'wpctl status | grep -A 50 Audio && echo && read -p \"Enter sink ID to switch: \" sink && wpctl set-default $sink'"
+        "$mod, a,       exec, qpwgraph"                # PipeWire graph - visual audio routing
 
         # Media keys
         ", XF86AudioPlay,        exec, playerctl play-pause"
@@ -407,14 +410,6 @@
       }
     '';
   };
-
-  # wlsunset - blue light filter
-  # Launched via Hyprland exec-once (NOT as a systemd service) because the
-  # systemd user service starts before Hyprland initializes display outputs,
-  # causing "gamma control failed" errors. Launching after a short delay
-  # ensures outputs are registered before wlsunset tries to grab gamma control.
-  # Toggle manually: pkill wlsunset (off) / hyprctl dispatch exec wlsunset ... (on)
-  home.packages = [ pkgs.wlsunset ];
 
   # Foot terminal - minimal with Hack Nerd Font
   programs.foot = {
