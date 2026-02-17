@@ -23,12 +23,13 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, nvf, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nvf, musnix, ... }@inputs: {
     nixosConfigurations.leavenworth = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
         ./configuration.nix
+        musnix.nixosModules.musnix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
@@ -36,7 +37,6 @@
           home-manager.users.svea = import ./home.nix;
           home-manager.extraSpecialArgs = { inherit inputs; };
           home-manager.sharedModules = [
-            # nvf home-manager module
             nvf.homeManagerModules.default
           ];
         }

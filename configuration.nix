@@ -56,8 +56,9 @@
   users.users.svea = {
     isNormalUser = true;
     extraGroups = [
-      "wheel" "networkmanager" "audio" "video" "input" 
+      "wheel" "networkmanager" "audio" "video" "input"
       "dialout" "plugdev" "storage" "optical" "scanner" "lp"
+      "adbusers"  # Android MTP / ADB access
     ];
     initialPassword = "changeme";
     shell = pkgs.fish;

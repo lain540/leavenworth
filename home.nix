@@ -28,14 +28,6 @@
   # Fish shell configuration
   programs.fish = {
     enable = true;
-    shellAliases = {
-      rebuild  = "sudo nixos-rebuild switch --flake /etc/nixos#leavenworth";
-      update   = "cd /etc/nixos && sudo ./scripts/rebuild.sh";
-      cleanup  = "sudo /etc/nixos/scripts/cleanup.sh";
-      # Blue light filter toggle
-      nighton  = "pkill wlsunset; wlsunset -l 59.3 -L 18.1 -t 3500 -T 6500 &";
-      nightoff = "pkill wlsunset";
-    };
     shellInit = ''
       set fish_greeting
     '';
