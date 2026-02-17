@@ -10,6 +10,9 @@
   # Boot
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  # Limit boot menu entries - only show the last 3 generations
+  # This matches the cleanup.sh KEEP_GENERATIONS setting
+  boot.loader.systemd-boot.configurationLimit = 3;
 
   # System
   networking.hostName = "leavenworth";
