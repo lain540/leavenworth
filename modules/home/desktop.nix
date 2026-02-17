@@ -6,55 +6,41 @@
     # Wayland utilities
     wl-clipboard
     wlr-randr
-    
+
     # Screenshots
     hyprshot
-    
+
     # Audio control (pipewire native)
     wireplumber
-    
+
     # Media control
     playerctl
-
-    # bemenu wrapper - shell script needed because Hyprland config
-    # treats '#' as comments so hex colors can't be passed inline
-    (pkgs.writeShellScriptBin "bemenu-launcher" ''
-      exec bemenu-run \
-        -H 20 \
-        --fn 'Hack Nerd Font Mono 12' \
-        --tb '#181818' --tf '#d8d8d8' \
-        --fb '#181818' --ff '#d8d8d8' \
-        --nb '#181818' --nf '#d8d8d8' \
-        --hb '#d8d8d8' --hf '#181818' \
-        --sb '#383838' --sf '#d8d8d8' \
-        --scb '#181818' --scf '#d8d8d8'
-    '')
   ];
 
-  # bemenu launcher - base16-default-dark colors via nix config
-  programs.bemenu = {
+  # fuzzel application launcher - base16-default-dark theme
+  programs.fuzzel = {
     enable = true;
     settings = {
-      line-height = 20;               # Correct option name (-H / --line-height)
-      fn = "Hack Nerd Font Mono 12";
-      # Title bar
-      tb = "#181818";
-      tf = "#d8d8d8";
-      # Filter bar
-      fb = "#181818";
-      ff = "#d8d8d8";
-      # Normal item
-      nb = "#181818";
-      nf = "#d8d8d8";
-      # Highlighted item
-      hb = "#d8d8d8";
-      hf = "#181818";
-      # Selected item
-      sb = "#383838";
-      sf = "#d8d8d8";
-      # Scrollbar
-      scb = "#181818";
-      scf = "#d8d8d8";
+      main = {
+        font = "Hack Nerd Font Mono:size=12";
+        lines = 10;
+        width = 40;
+        terminal = "foot";
+      };
+      colors = {
+        # base16-default-dark
+        background = "181818ff";
+        text = "d8d8d8ff";
+        match = "ffffffff";
+        selection = "383838ff";
+        selection-text = "d8d8d8ff";
+        selection-match = "ffffffff";
+        border = "585858ff";
+      };
+      border = {
+        width = 1;
+        radius = 0;
+      };
     };
   };
 
@@ -190,7 +176,7 @@
       bind = [
         # Applications
         "$mod, Return, exec, foot"
-        "$mod, D, exec, bemenu-launcher"
+        "$mod, D, exec, fuzzel"
         "$mod, Q, killactive"
         "$mod, M, exit"
         "$mod, E, exec, foot -e yazi"
@@ -254,8 +240,6 @@
 
       # Autostart
       exec-once = [
-        # Import session environment so apps like bemenu pick up BEMENU_OPTS etc.
-        "dbus-update-activation-environment --systemd --all"
         "waybar"
       ];
     };
