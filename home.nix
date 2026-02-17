@@ -11,7 +11,7 @@
   home.stateVersion = "25.11";
 
   programs.home-manager.enable = true;
- 
+  
   # Git configuration
   programs.git = {
     enable = true;
@@ -124,13 +124,12 @@
     createDirectories = true;
   };
 
+  programs.home-manager.enable = true;
+
   # Yazi file manager - with RAR support and image preview in foot
   programs.yazi = {
     enable = true;
     enableFishIntegration = true;
-
-    # Extra packages needed for previews and archive support
-    package = pkgs.yazi;
 
     settings = {
       manager = {
@@ -158,7 +157,7 @@
     ffmpegthumbnailer  # Video thumbnails
     unar               # RAR and other archive extraction
     jq                 # JSON previews
-    poppler_utils      # PDF previews
+    poppler-utils      # PDF previews
     imagemagick        # Image previews
     file               # File type detection
   ];
