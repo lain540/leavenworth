@@ -33,6 +33,21 @@
 
     # PipeWire graph/patchbay
     qpwgraph
+
+    # Video editing
+    davinci-resolve
+
+    # 3D creation
+    blender
+
+    # Torrents
+    qbittorrent
+
+    # Screen recording / streaming
+    obs-studio
+
+    # Digital painting / illustration
+    krita
   ];
 
   # Create directories
