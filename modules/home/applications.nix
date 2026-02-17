@@ -16,7 +16,7 @@
     dexed            # FM synthesizer (Yamaha DX7 emulation)
     airwindows-lv2   # Airwindows consolidated (hundreds of effects, LV2)
     dragonfly-reverb # Dragonfly hall/room/plate/early reverb suite
-    CHOWTapeModel    # Chowdhury DSP tape machine emulation
+    chow-tape-model  # Chowdhury DSP tape machine emulation (renamed from CHOWTapeModel)
     ChowPhaser       # Chowdhury DSP phaser
     ChowKick         # Chowdhury DSP kick drum synth
     ChowCentaur      # Chowdhury DSP Centaur pedal emulation
