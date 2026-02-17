@@ -105,10 +105,26 @@
     
     settings = {
       # Monitors
+      # Real hardware - dual monitor setup
+      # HDMI-A-1: 3440x1440 ultrawide (primary, below), 125% scaling
+      # DP-1:     1920x1080 (secondary, centered above the ultrawide)
+      #
+      # Logical sizes after scaling:
+      #   HDMI-A-1 → 2752x1152 logical pixels (3440/1.25 × 1440/1.25)
+      #   DP-1     → 1920x1080 logical pixels (no scaling)
+      #
+      # DP-1 is centered above HDMI-A-1:
+      #   x offset = (2752 - 1920) / 2 = 416
+      #   y offset = 0 (sits at top)
+      #   HDMI-A-1 y offset = 1080 (height of DP-1)
       monitor = [
-         "DP-1,3440x1440@60,0x1080,1"
-         "HDMI-A-1,1920x1080@60,760x0,1"
-       ];
+        "HDMI-A-1,3440x1440@60,0x1080,1.25"
+        "DP-1,1920x1080@60,416x0,1"
+      ];
+      # VirtualBox - uncomment and comment out real monitors above when testing in VM
+      # monitor = [
+      #   "Virtual-1,1920x1080@60,0x0,1"
+      # ];
 
       # Input configuration
       input = {
@@ -282,6 +298,11 @@
       exec-once = [
         "waybar"
         "udiskie --tray"   # Auto-mount removable drives and phones
+        # wlsunset started after a short delay so Hyprland has time to
+        # register both display outputs before gamma control is requested
+        "bash -c 'sleep 3 && wlsunset -l 59.3 -L 18.1 -t 3500 -T 6500'"
+        # 59.3°N 18.1°E = Stockholm - wlsunset uses location to calculate
+        # sunrise/sunset times automatically. Update if you move.
       ];
     };
   };
@@ -387,17 +408,13 @@
     '';
   };
 
-  # wlsunset - blue light filter with custom times
-  # Daylight: 6:30 - 18:00, Night: 18:00 - 6:30
-  services.wlsunset = {
-    enable = true;
-    sunrise = "06:30";
-    sunset = "18:00";
-    temperature = {
-      day = 6500;
-      night = 3500;
-    };
-  };
+  # wlsunset - blue light filter
+  # Launched via Hyprland exec-once (NOT as a systemd service) because the
+  # systemd user service starts before Hyprland initializes display outputs,
+  # causing "gamma control failed" errors. Launching after a short delay
+  # ensures outputs are registered before wlsunset tries to grab gamma control.
+  # Toggle manually: pkill wlsunset (off) / hyprctl dispatch exec wlsunset ... (on)
+  home.packages = [ pkgs.wlsunset ];
 
   # Foot terminal - minimal with Hack Nerd Font
   programs.foot = {
