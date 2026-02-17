@@ -236,16 +236,16 @@
         "SHIFT, Print, exec, hyprshot -m output --output-folder ~/Pictures/Screenshots"
         
         # Audio output switcher
-        "$mod, A, exec, foot -e sh -c 'wpctl status | grep -A 50 Audio && echo && read -p \"Enter sink ID to switch: \" sink && wpctl set-default $sink && pkill -RTMIN+8 waybar'"
+        "$mod, A, exec, foot -e sh -c 'wpctl status | grep -A 50 Audio && echo && read -p \"Enter sink ID to switch: \" sink && wpctl set-default $sink'"
         
         # Media controls
         ", XF86AudioPlay, exec, playerctl play-pause"
         ", XF86AudioPause, exec, playerctl play-pause"
         ", XF86AudioNext, exec, playerctl next"
         ", XF86AudioPrev, exec, playerctl previous"
-        ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+ && pkill -RTMIN+8 waybar"
-        ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%- && pkill -RTMIN+8 waybar"
-        ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && pkill -RTMIN+8 waybar"
+        ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+"
+        ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
+        ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
       ];
 
       # Mouse bindings
@@ -256,10 +256,8 @@
 
       # Autostart
       exec-once = [
-        # Wait for pipewire to fully initialize then start waybar and signal audio
-        # The sleep gives pipewire/wireplumber time to enumerate sinks before
-        # the waybar volume module runs its first wpctl query
-        "bash -c 'sleep 2 && waybar & sleep 1 && pkill -RTMIN+8 waybar'"
+        "waybar"
+        "udiskie --tray"   # Auto-mount removable drives and phones
       ];
     };
   };
@@ -297,12 +295,14 @@
         };
 
         "custom/pipewire" = {
-          exec = "wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{if ($3 == \"[MUTED]\") print \"MUTE\"; else print \"VOL \" int($2 * 100) \"%\"}'";
-          interval = "once";
-          signal = 8;
-          on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && pkill -RTMIN+8 waybar";
-          on-scroll-up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+ && pkill -RTMIN+8 waybar";
-          on-scroll-down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%- && pkill -RTMIN+8 waybar";
+          # Poll every second with a script that retries until a sink exists.
+          # This handles the race between waybar starting and wireplumber
+          # enumerating sinks - the module will show as soon as audio is ready.
+          exec = ''wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk 'NF{if ($3=="[MUTED]") print "MUTE"; else print "VOL " int($2*100) "%"}' '';
+          interval = 1;
+          on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          on-scroll-up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+";
+          on-scroll-down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-";
           tooltip = false;
         };
       };
