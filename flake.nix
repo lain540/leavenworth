@@ -23,11 +23,30 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, nvf, musnix, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nvf, musnix, ... }@inputs:
+  let
+    system = "x86_64-linux";
+
+    # ── Custom packages overlay ───────────────────────────────────────────────
+    # Adds locally-defined packages (pkgs/*) into the nixpkgs package set so
+    # they can be referenced as pkgs.voxengo-span anywhere in the config.
+    customOverlay = final: prev: {
+      voxengo-span = final.callPackage ./pkgs/voxengo-span/default.nix {};
+    };
+
+    pkgs = import nixpkgs {
+      inherit system;
+      config.allowUnfree = true;
+      overlays = [ customOverlay ];
+    };
+  in
+  {
     nixosConfigurations.leavenworth = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
+      inherit system;
       specialArgs = { inherit inputs; };
       modules = [
+        # Apply the overlay system-wide so nixpkgs.pkgs also has our custom pkgs
+        { nixpkgs.overlays = [ customOverlay ]; }
         ./configuration.nix
         musnix.nixosModules.musnix
         home-manager.nixosModules.home-manager

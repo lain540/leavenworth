@@ -14,7 +14,8 @@
   boot.loader.systemd-boot.configurationLimit = 3;
 
   # AMD Ryzen 7 5700G - Radeon Vega iGPU
-  # Enables OpenGL, Vulkan and ROCm (needed for DaVinci Resolve GPU acceleration)
+  # RADV (Vulkan) is enabled by default in nixpkgs - no need to add amdvlk manually.
+  # amdvlk was removed from nixpkgs because RADV is now the preferred driver.
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
@@ -22,8 +23,6 @@
       # AMD ROCm OpenCL - required for DaVinci Resolve GPU compute
       rocmPackages.clr
       rocmPackages.clr.icd
-      # Vulkan
-      amdvlk
       # VDPAU / VAAPI video decode acceleration
       libvdpau-va-gl
       vaapiVdpau
@@ -42,10 +41,10 @@
   # Console (TTY) keyboard layout - uses XKB configuration
   console = {
     useXkbConfig = true;
-    earlySetup = true;  # Ensures the layout loads as early as possible (boot time)
+    earlySetup = true;
   };
   
-  # Even if you don't use X11, NixOS uses these variables to derive the console map
+  # Even if you don't use X11, NixOS uses these settings to derive the console map
   services.xserver.xkb = {
     layout = "us";
     variant = "workman";
@@ -65,7 +64,7 @@
   # Without this DaVinci Resolve can't detect the GPU for compute tasks
   environment.variables = {
     ROC_ENABLE_PRE_VEGA = "1";
-    HSA_OVERRIDE_GFX_VERSION = "9.0.0";  # Cezanne/Lucienne iGPU target
+    HSA_OVERRIDE_GFX_VERSION = "9.0.0";
   };
 
   # Networking
@@ -85,7 +84,7 @@
     extraGroups = [
       "wheel" "networkmanager" "audio" "video" "input"
       "dialout" "plugdev" "storage" "optical" "scanner" "lp"
-      "adbusers"  # Android MTP / ADB access
+      "adbusers"
     ];
     initialPassword = "changeme";
     shell = pkgs.fish;
