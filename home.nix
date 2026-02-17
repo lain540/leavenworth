@@ -4,6 +4,7 @@
   imports = [
     ./modules/home/desktop.nix
     ./modules/home/applications.nix
+    ./modules/home/nvf.nix
   ];
 
   home.username = "svea";
@@ -11,13 +12,13 @@
   home.stateVersion = "25.11";
 
   programs.home-manager.enable = true;
-  
+
   # Git configuration
   programs.git = {
     enable = true;
     userName = "lain540";
     userEmail = "lain540@users.noreply.github.com";
-    
+
     extraConfig = {
       init.defaultBranch = "main";
       pull.rebase = false;
@@ -34,88 +35,6 @@
     shellInit = ''
       set fish_greeting
     '';
-  };
-
-  # Neovim via nixvim
-  programs.nixvim = {
-    enable = true;
-    
-    colorschemes.base16 = {
-      enable = true;
-      colorscheme = "default-dark";
-    };
-
-    opts = {
-      number = true;
-      relativenumber = true;
-      tabstop = 2;
-      shiftwidth = 2;
-      expandtab = true;
-      smartindent = true;
-      wrap = false;
-      swapfile = false;
-      backup = false;
-      hlsearch = true;
-      incsearch = true;
-      termguicolors = true;
-      scrolloff = 8;
-      updatetime = 50;
-    };
-
-    globals.mapleader = " ";
-
-    keymaps = [
-      {
-        key = "<leader>e";
-        action = "<cmd>Yazi<CR>";
-        options = {
-          desc = "Open yazi file manager";
-        };
-      }
-    ];
-
-    plugins = {
-      lsp = {
-        enable = true;
-        servers = {
-          lua-ls.enable = true;
-          clangd.enable = true;  # C/C++
-        };
-      };
-
-      treesitter = {
-        enable = true;
-        settings = {
-          highlight.enable = true;
-          indent.enable = true;
-        };
-        grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
-          cpp lua nix julia
-        ];
-        folding = false;
-        nixvimInjections = true;
-        # Prevent log file errors
-        logLevel = "off";
-      };
-
-      neo-tree.enable = true;
-      telescope.enable = true;
-      
-      cmp = {
-        enable = true;
-        autoEnableSources = true;
-        settings.sources = [
-          { name = "nvim_lsp"; }
-          { name = "path"; }
-          { name = "buffer"; }
-        ];
-      };
-
-      lualine.enable = true;
-      
-      # yazi file manager integration
-      yazi.enable = true;
-    };
   };
 
   # XDG user directories
@@ -145,7 +64,7 @@
     };
   };
 
-  # Packages required by yazi for full functionality
+  # Packages
   home.packages = with pkgs; [
     ripgrep
     fd
@@ -160,3 +79,4 @@
     file               # File type detection
   ];
 }
+
