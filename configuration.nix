@@ -25,7 +25,7 @@
       rocmPackages.clr.icd
       # VDPAU / VAAPI video decode acceleration
       libvdpau-va-gl
-      vaapiVdpau
+      libva-vdpau-driver  # renamed from vaapiVdpau in nixpkgs-unstable
     ];
   };
 
