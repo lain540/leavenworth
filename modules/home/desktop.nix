@@ -119,8 +119,10 @@
       input = {
         kb_layout = "us,se";
         kb_variant = "workman,";
-        kb_options = "grp:alt_shift_toggle";
-        
+        # No grp toggle here - layout switch is handled by $mod+Space bind below
+        # so it shows up as an intentional action rather than an accidental keystroke
+        kb_options = "";
+
         follow_mouse = 1;
         touchpad.natural_scroll = false;
         sensitivity = 0;
@@ -186,28 +188,54 @@
         preserve_split = true;
       };
 
-      # Keybindings
+      # Keybindings - optimized for Workman keyboard layout
+      # ─────────────────────────────────────────────────────
+      # Workman physical key → produced keysym reference:
+      #   Physical HJKL → Y N E O  (used for navigation, same finger positions as vim)
+      #   Physical QWERTY rows:
+      #     Q D R W B J F U P ;     (top row)
+      #     A S H T G Y N E O I     (home row)
+      #     Z X M C V K L , . /     (bottom row)
       "$mod" = "SUPER";
-      
+
       bind = [
-        # Applications
-        "$mod, Return, exec, foot"
-        "$mod, D, exec, fuzzel"
-        "$mod, Q, killactive"
-        "$mod, M, exit"
-        "$mod, E, exec, foot -e yazi"
-        "$mod, V, togglefloating"
-        "$mod, F, fullscreen"
-        "$mod, P, pseudo"
-        "$mod, J, togglesplit"
+        # ── Applications ───────────────────────────────────────────────
+        "$mod, Return,  exec, foot"              # Terminal (Return = universal)
+        "$mod, d,       exec, fuzzel"            # Launcher       (physical W, top row)
+        "$mod, w,       exec, foot -e yazi"      # Files          (physical R, top row)
+        "$mod, q,       killactive"              # Close window   (physical Q, easy reach, mnemonic quit)
+        "$mod SHIFT, q, exit"                    # Exit Hyprland  (shift guard to avoid accidents)
+        "$mod, f,       fullscreen"              # Fullscreen     (physical U, mnemonic full)
+        "$mod, t,       togglefloating"          # Float toggle   (physical F, mnemonic tile/float)
+        "$mod, s,       togglesplit"             # Toggle split   (physical S, home row)
+        "$mod, p,       pseudo"                  # Pseudo tile    (physical O)
 
-        # Focus
-        "$mod, left, movefocus, l"
-        "$mod, right, movefocus, r"
-        "$mod, up, movefocus, u"
-        "$mod, down, movefocus, d"
+        # ── Keyboard layout switch ─────────────────────────────────────
+        # Cycles through us/workman and se layouts
+        "$mod, Space,   exec, hyprctl switchxkblayout all next"
 
-        # Workspaces
+        # ── Focus - YNEO = physical HJKL (vi-style on Workman) ─────────
+        "$mod, y,       movefocus, l"            # physical H
+        "$mod, n,       movefocus, d"            # physical J
+        "$mod, e,       movefocus, u"            # physical K
+        "$mod, o,       movefocus, r"            # physical L
+        # Arrow keys kept as fallback
+        "$mod, left,    movefocus, l"
+        "$mod, right,   movefocus, r"
+        "$mod, up,      movefocus, u"
+        "$mod, down,    movefocus, d"
+
+        # ── Move windows - SHIFT + YNEO ────────────────────────────────
+        "$mod SHIFT, y, movewindow, l"
+        "$mod SHIFT, n, movewindow, d"
+        "$mod SHIFT, e, movewindow, u"
+        "$mod SHIFT, o, movewindow, r"
+        "$mod SHIFT, left,  movewindow, l"
+        "$mod SHIFT, right, movewindow, r"
+        "$mod SHIFT, up,    movewindow, u"
+        "$mod SHIFT, down,  movewindow, d"
+
+        # ── Workspaces ─────────────────────────────────────────────────
         "$mod, 1, workspace, 1"
         "$mod, 2, workspace, 2"
         "$mod, 3, workspace, 3"
@@ -219,7 +247,7 @@
         "$mod, 9, workspace, 9"
         "$mod, 0, workspace, 10"
 
-        # Move to workspace
+        # ── Move window to workspace ────────────────────────────────────
         "$mod SHIFT, 1, movetoworkspace, 1"
         "$mod SHIFT, 2, movetoworkspace, 2"
         "$mod SHIFT, 3, movetoworkspace, 3"
@@ -231,21 +259,22 @@
         "$mod SHIFT, 9, movetoworkspace, 9"
         "$mod SHIFT, 0, movetoworkspace, 10"
 
-        # Screenshots - save to ~/Pictures/Screenshots/
-        ", Print, exec, hyprshot -m region --output-folder ~/Pictures/Screenshots"
-        "SHIFT, Print, exec, hyprshot -m output --output-folder ~/Pictures/Screenshots"
-        
-        # Audio output switcher
-        "$mod, A, exec, foot -e sh -c 'wpctl status | grep -A 50 Audio && echo && read -p \"Enter sink ID to switch: \" sink && wpctl set-default $sink'"
-        
-        # Media controls
-        ", XF86AudioPlay, exec, playerctl play-pause"
-        ", XF86AudioPause, exec, playerctl play-pause"
-        ", XF86AudioNext, exec, playerctl next"
-        ", XF86AudioPrev, exec, playerctl previous"
+        # ── Screenshots ────────────────────────────────────────────────
+        ", Print,       exec, hyprshot -m region --output-folder ~/Pictures/Screenshots"
+        "SHIFT, Print,  exec, hyprshot -m output --output-folder ~/Pictures/Screenshots"
+
+        # ── Audio ──────────────────────────────────────────────────────
+        # Physical A = A in Workman (home row, left hand)
+        "$mod, a,       exec, foot -e sh -c 'wpctl status | grep -A 50 Audio && echo && read -p \"Enter sink ID to switch: \" sink && wpctl set-default $sink'"
+
+        # Media keys
+        ", XF86AudioPlay,        exec, playerctl play-pause"
+        ", XF86AudioPause,       exec, playerctl play-pause"
+        ", XF86AudioNext,        exec, playerctl next"
+        ", XF86AudioPrev,        exec, playerctl previous"
         ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+"
         ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
-        ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+        ", XF86AudioMute,        exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
       ];
 
       # Mouse bindings
