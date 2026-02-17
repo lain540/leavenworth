@@ -41,4 +41,18 @@
     pulse.enable = true;
     jack.enable = true;
   };
+
+  # Automounting - udisks2 is the backend udiskie talks to
+  services.udisks2.enable = true;
+
+  # gvfs - needed for MTP (phones), SFTP, and trash support in file managers
+  services.gvfs.enable = true;
+
+  # System packages for device mounting
+  environment.systemPackages = with pkgs; [
+    # MTP support for Android phones
+    jmtpfs
+    # udiskie tray icon and auto-mount daemon (also launched in Hyprland exec-once)
+    udiskie
+  ];
 }
