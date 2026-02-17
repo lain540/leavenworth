@@ -27,13 +27,34 @@
         vim.g.maplocalleader   = " "
       '';
 
-      # ── Theme - base16 via nvf's built-in theme system ────────────────
+      # ── Theme - base16-default-dark matching foot/waybar ─────────────
+      # base16 theme requires all 16 colors to be explicitly provided
       # https://nvf.notashelf.dev/options.html#option-vim-theme-enable
       theme = {
-        enable = true;
-        name   = "base16";
-        style  = "dark";
+        enable      = true;
+        name        = "base16";
+        style       = "dark";
         transparent = false;
+
+        # Same hex values used in foot terminal and waybar
+        base16-colors = {
+          base00 = "181818"; # background
+          base01 = "282828"; # lighter background
+          base02 = "383838"; # selection background
+          base03 = "585858"; # comments / inactive
+          base04 = "b8b8b8"; # dark foreground
+          base05 = "d8d8d8"; # foreground
+          base06 = "e8e8e8"; # light foreground
+          base07 = "f8f8f8"; # light background
+          base08 = "ab4642"; # red
+          base09 = "dc9656"; # orange
+          base0A = "f7ca88"; # yellow
+          base0B = "a1b56c"; # green
+          base0C = "86c1b9"; # cyan
+          base0D = "7cafc2"; # blue
+          base0E = "ba8baf"; # magenta
+          base0F = "a16946"; # brown
+        };
       };
 
       # ── Keymaps ───────────────────────────────────────────────────────
