@@ -14,6 +14,31 @@
     "Pictures/Screenshots/.keep".text = "";
   };
 
+  # Librewolf browser - Firefox-based, privacy focused
+  programs.librewolf = {
+    enable = true;
+
+    settings = {
+      # Firefox sync - sign in at about:preferences#sync
+      "identity.fxaccounts.enabled" = true;
+
+      # Restore tabs on restart
+      "browser.startup.page" = 3;            # 3 = restore previous session
+      "browser.sessionstore.resume_session_once" = true;
+      "browser.sessionstore.max_tabs_undo" = 10;
+
+      # Titlebar - keep native window decorations
+      "browser.tabs.inTitlebar" = 0;         # 0 = use system titlebar
+
+      # LibreWolf overrides some Firefox defaults; restore sane ones
+      "browser.aboutConfig.showWarning" = false;
+      "privacy.resistFingerprinting" = false; # Can break sync; disable if needed
+
+      # Search
+      "browser.search.defaultenginename" = "DuckDuckGo";
+    };
+  };
+
   # Beets music library management
   programs.beets = {
     enable = true;

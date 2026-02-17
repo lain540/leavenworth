@@ -21,7 +21,7 @@
   programs.bemenu = {
     enable = true;
     settings = {
-      height = 20;
+      line-height = 20;               # Correct option name (-H / --line-height)
       fn = "Hack Nerd Font Mono 12";
       # Title bar
       tb = "#181818";
@@ -235,6 +235,8 @@
 
       # Autostart
       exec-once = [
+        # Import session environment so apps like bemenu pick up BEMENU_OPTS etc.
+        "dbus-update-activation-environment --systemd --all"
         "waybar"
       ];
     };
