@@ -1,17 +1,10 @@
 { config, pkgs, lib, ... }:
 
 # ── Plugin path explanation ────────────────────────────────────────────────────
-# musnix handles real-time kernel/CPU scheduling — it knows nothing about
-# plugin discovery. On NixOS every package lands at a content-addressed path
-# inside /nix/store, so hosts like Reaper can't find them without help.
-#
-# When home-manager installs a package it symlinks its outputs into:
-#   ~/.nix-profile/lib/vst3   (VST3)
-#   ~/.nix-profile/lib/lv2    (LV2)
-#
-# Setting VST3_PATH and LV2_PATH to these symlink trees makes Reaper (and any
-# other host) pick up all installed plugins automatically on its next scan.
-# Both variables are set in home.sessionVariables below.
+# musnix (enabled in configuration.nix) automatically sets VST_PATH, VST3_PATH,
+# LXVST_PATH, LADSPA_PATH, LV2_PATH and DSSI_PATH to the correct NixOS store
+# locations at the system level — no manual env var setup needed here.
+# See: https://github.com/musnix/musnix
 #
 # ── Voxengo SPAN — inline derivation ─────────────────────────────────────────
 # Defined here in a let block so the package lives alongside everything else
@@ -79,30 +72,6 @@ let
 
 in
 {
-  # ── Plugin search paths — makes ALL installed plugins visible to Reaper ─────
-  # These paths are stable symlink trees maintained by nix/home-manager.
-  # Add them once to Reaper's scan list: Preferences → Plug-ins → VST
-  # and Reaper will always find every plugin you install declaratively.
-  home.sessionVariables = {
-    # VST3 — covers surge-XT, cardinal, dexed, chow*, voxengo-span, etc.
-    VST3_PATH = lib.concatStringsSep ":" [
-      "$HOME/.nix-profile/lib/vst3"       # home-manager installed plugins
-      "/run/current-system/sw/lib/vst3"   # system-level plugins (if any)
-    ];
-
-    # LV2 — covers lsp-plugins, airwindows, dragonfly-reverb, etc.
-    LV2_PATH = lib.concatStringsSep ":" [
-      "$HOME/.nix-profile/lib/lv2"
-      "/run/current-system/sw/lib/lv2"
-    ];
-
-    # VST2 — only needed if any plugins ship a VST2 .so (uncommon on Linux)
-    VST_PATH = lib.concatStringsSep ":" [
-      "$HOME/.nix-profile/lib/vst"
-      "/run/current-system/sw/lib/vst"
-    ];
-  };
-
   # ── Packages ──────────────────────────────────────────────────────────────
   home.packages = with pkgs; [
     mpv           # Media player
