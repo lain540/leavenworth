@@ -10,65 +10,8 @@
   home.homeDirectory = "/home/svea";
   home.stateVersion = "25.11";
 
-  home.packages = with pkgs; [
-    ripgrep
-    fd
-    fzf
-  ];
-
   programs.home-manager.enable = true;
-  
-  # nnn file manager
-  programs.nnn = {
-    enable = true;
-    package = pkgs.nnn.override { withNerdIcons = true; };
-    
-    # nnn plugins and configuration
-    extraPackages = with pkgs; [ ffmpeg mediainfo ];
-    
-    plugins = {
-      src = "${pkgs.nnn}/share/plugins";
-      mappings = {
-        e = "!nvim \"$nnn\"*";
-      };
-    };
-  };
-  
-  # mpv media player with wayland and sponsorblock
-  programs.mpv = {
-    enable = true;
-    package = pkgs.mpv.override {
-      scripts = [ pkgs.mpvScripts.sponsorblock ];
-    };
-    
-    config = {
-      # Wayland support
-      vo = "gpu";
-      gpu-context = "wayland";
-      
-      # Better video quality
-      profile = "gpu-hq";
-      scale = "ewa_lanczossharp";
-      cscale = "ewa_lanczossharp";
-      
-      # Audio
-      audio-pitch-correction = "yes";
-      
-      # Subtitles
-      sub-auto = "fuzzy";
-      
-      # Performance
-      hwdec = "auto";
-    };
-    
-    # sponsorblock configuration
-    scriptOpts = {
-      sponsorblock = {
-        skip_categories = "sponsor,intro,outro,interaction,selfpromo";
-      };
-    };
-  };
-  
+ 
   # Git configuration
   programs.git = {
     enable = true;
@@ -123,10 +66,10 @@
 
     keymaps = [
       {
-        key = "<leader>n";
-        action = "<cmd>NnnPicker<CR>";
+        key = "<leader>e";
+        action = "<cmd>Yazi<CR>";
         options = {
-          desc = "Open nnn file picker";
+          desc = "Open yazi file manager";
         };
       }
     ];
@@ -169,23 +112,10 @@
       };
 
       lualine.enable = true;
+      
+      # yazi file manager integration
+      yazi.enable = true;
     };
-    
-    # nnn.vim plugin - simpler integration
-    extraPlugins = with pkgs.vimPlugins; [
-      nnn-vim
-    ];
-    
-    extraConfigLua = ''
-      -- nnn.vim configuration
-      vim.g.nnn_command = 'nnn -e'
-      vim.g.nnn_layout = { window = { width = 0.9, height = 0.6, highlight = 'Debug' } }
-      vim.g.nnn_action = {
-        ['<c-t>'] = 'tab split',
-        ['<c-x>'] = 'split',
-        ['<c-v>'] = 'vsplit',
-      }
-    '';
   };
 
   # XDG user directories
@@ -193,4 +123,43 @@
     enable = true;
     createDirectories = true;
   };
+
+  # Yazi file manager - with RAR support and image preview in foot
+  programs.yazi = {
+    enable = true;
+    enableFishIntegration = true;
+
+    # Extra packages needed for previews and archive support
+    package = pkgs.yazi;
+
+    settings = {
+      manager = {
+        show_hidden = false;
+        sort_by = "natural";
+        sort_dir_first = true;
+      };
+
+      preview = {
+        # Image preview via sixel protocol (supported by foot)
+        image_protocol = "sixel";
+        max_width = 600;
+        max_height = 900;
+      };
+    };
+  };
+
+  # Packages required by yazi for full functionality
+  home.packages = with pkgs; [
+    ripgrep
+    fd
+    fzf
+
+    # Yazi dependencies
+    ffmpegthumbnailer  # Video thumbnails
+    unar               # RAR and other archive extraction
+    jq                 # JSON previews
+    poppler_utils      # PDF previews
+    imagemagick        # Image previews
+    file               # File type detection
+  ];
 }
