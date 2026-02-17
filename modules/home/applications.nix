@@ -5,6 +5,18 @@
   home.packages = with pkgs; [
     mpv           # Media player
     nicotine-plus # Soulseek client (GUI)
+
+    # DAW
+    reaper
+
+    # Audio plugins
+    lsp-plugins    # Linux Studio Plugins
+    surge-XT       # Surge synthesizer
+    cardinal       # Cardinal (VCV Rack based) modular synthesizer
+    dexed          # FM synthesizer (Yamaha DX7 emulation)
+
+    # PipeWire graph/patchbay
+    qpwgraph
   ];
 
   # Create directories
@@ -19,30 +31,57 @@
     enable = true;
 
     settings = {
-      # Firefox sync - sign in at about:preferences#sync
+      # ── Sync ─────────────────────────────────────────────────────────────
+      # Sign in at about:preferences#sync after first launch
       "identity.fxaccounts.enabled" = true;
 
-      # Restore tabs on restart
+      # ── Session / tabs ────────────────────────────────────────────────────
+      # Restore previous session (open tabs) on every start
       "browser.startup.page" = 3;
-      "browser.sessionstore.resume_session_once" = true;
+      "browser.sessionstore.resume_session_once" = false; # Always restore, not just once
       "browser.sessionstore.max_tabs_undo" = 10;
 
-      # Titlebar - use system titlebar
+      # ── Logins / passwords ────────────────────────────────────────────────
+      # Remember which sites you're logged in to
+      "signon.rememberSignons" = true;
+      # Do NOT clear logins on shutdown
+      "privacy.clearOnShutdown.passwords" = false;
+      "privacy.clearOnShutdown_v2.passwords" = false;
+      # Do NOT clear cookies on shutdown (needed to stay logged in)
+      "privacy.clearOnShutdown.cookies" = false;
+      "privacy.clearOnShutdown_v2.cookiesAndStorage" = false;
+      # Keep site data between sessions
+      "privacy.clearOnShutdown.offlineApps" = false;
+      "privacy.clearOnShutdown.sessions" = false;
+
+      # ── History - only clear search/URL bar history ────────────────────────
+      # Clear typed history (address bar searches) on shutdown
+      "privacy.clearOnShutdown.formdata" = true;
+      # But keep full browsing history so session works
+      "privacy.clearOnShutdown.history" = false;
+      "privacy.clearOnShutdown.downloads" = false;
+
+      # LibreWolf by default clears everything; disable the global setting
+      # so per-item settings above are respected
+      "privacy.sanitize.sanitizeOnShutdown" = true; # Still sanitize, but only formdata
+
+      # ── Appearance ────────────────────────────────────────────────────────
+      # System titlebar
       "browser.tabs.inTitlebar" = 0;
-
-      # Force dark mode - uses GTK theme from environment
+      # Dark mode
       "ui.systemUsesDarkTheme" = 1;
-      "browser.theme.content-theme" = 0;   # 0 = dark
-      "browser.theme.toolbar-theme" = 0;   # 0 = dark
+      "browser.theme.content-theme" = 0;
+      "browser.theme.toolbar-theme" = 0;
 
-      # Wayland rendering
+      # ── Performance ───────────────────────────────────────────────────────
       "gfx.webrender.all" = true;
 
-      # LibreWolf overrides
+      # ── LibreWolf overrides ───────────────────────────────────────────────
       "browser.aboutConfig.showWarning" = false;
+      # resistFingerprinting breaks Firefox sync; disable it
       "privacy.resistFingerprinting" = false;
 
-      # Search
+      # ── Search ────────────────────────────────────────────────────────────
       "browser.search.defaultenginename" = "DuckDuckGo";
     };
   };
@@ -69,9 +108,9 @@
       
       # Auto-tagging
       match = {
-        strong_rec_thresh = 0.10;  # Threshold for very strong matches
-        medium_rec_thresh = 0.25;  # Threshold for medium matches
-        rec_gap_thresh = 0.25;     # Gap between first and second match
+        strong_rec_thresh = 0.10;
+        medium_rec_thresh = 0.25;
+        rec_gap_thresh = 0.25;
       };
       
       # Paths - organize music by artist/album
@@ -81,7 +120,7 @@
         comp = "Compilations/$album%aunique{}/$track $title";
       };
       
-      # Replace characters in filenames
+      # Replace illegal characters in filenames
       replace = {
         "[\\\\\/]" = "_";
         "^\\." = "_";
@@ -94,7 +133,6 @@
       # Plugins
       plugins = [ "fetchart" "embedart" "scrub" "replaygain" "lastgenre" "chroma" ];
       
-      # Plugin settings
       fetchart = {
         auto = true;
         cautious = true;
@@ -105,7 +143,7 @@
       };
       
       replaygain = {
-        auto = false;  # Manual, as it can be CPU intensive
+        auto = false;  # Manual - CPU intensive
       };
       
       lastgenre = {
