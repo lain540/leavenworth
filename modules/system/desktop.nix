@@ -48,10 +48,15 @@
   # gvfs - needed for MTP (phones), SFTP, and trash support in file managers
   services.gvfs.enable = true;
 
+  # Android phone support - udev rules let the user access USB devices
+  # without needing root. Required for MTP file transfer.
+  services.udev.packages = [ pkgs.android-udev-rules ];
+
   # System packages for device mounting
   environment.systemPackages = with pkgs; [
     # MTP support for Android phones
     jmtpfs
+    libmtp
     # udiskie tray icon and auto-mount daemon (also launched in Hyprland exec-once)
     udiskie
   ];
