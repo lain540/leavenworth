@@ -50,11 +50,33 @@
     krita
   ];
 
-  # Create directories
+  # Create directories on install - using .keep files to create empty dirs
+  # home-manager will create the parent directories automatically
   home.file = {
-    "Music/.keep".text = "";
-    "Downloads/nicotine/.keep".text = "";
-    "Pictures/Screenshots/.keep".text = "";
+    # Music & downloads
+    "Music/.keep".text                        = "";
+    "Downloads/nicotine/.keep".text           = "";
+
+    # Screenshots
+    "Pictures/Screenshots/.keep".text         = "";
+
+    # Audio production
+    "Documents/Samples/.keep".text            = "";
+    "Documents/Reaper/.keep".text             = "";
+    "Documents/Reaper/Peaks/.keep".text       = "";
+    "Documents/Reaper/Projects/.keep".text    = "";
+    "Documents/Reaper/Backups/.keep".text     = "";
+
+    # Video editing
+    "Documents/Resolve/Projects/.keep".text   = "";
+
+    # Creative apps
+    "Documents/Blender/.keep".text            = "";
+    "Documents/Krita/.keep".text              = "";
+
+    # Video library
+    "Videos/Movies/.keep".text                = "";
+    "Videos/Shows/.keep".text                 = "";
   };
 
   # Librewolf browser - Firefox-based, privacy focused
