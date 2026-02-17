@@ -11,8 +11,28 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   # Limit boot menu entries - only show the last 3 generations
-  # This matches the cleanup.sh KEEP_GENERATIONS setting
   boot.loader.systemd-boot.configurationLimit = 3;
+
+  # AMD Ryzen 7 5700G - Radeon Vega iGPU
+  # Enables OpenGL, Vulkan and ROCm (needed for DaVinci Resolve GPU acceleration)
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+    extraPackages = with pkgs; [
+      # AMD ROCm OpenCL - required for DaVinci Resolve GPU compute
+      rocmPackages.clr
+      rocmPackages.clr.icd
+      # Vulkan
+      amdvlk
+      # VDPAU / VAAPI video decode acceleration
+      libvdpau-va-gl
+      vaapiVdpau
+    ];
+  };
+
+  # amdgpu kernel driver - enables the iGPU properly
+  boot.initrd.kernelModules = [ "amdgpu" ];
+  services.xserver.videoDrivers = [ "amdgpu" ];
 
   # System
   networking.hostName = "leavenworth";
@@ -40,6 +60,13 @@
     options = "--delete-older-than 7d";
   };
   nixpkgs.config.allowUnfree = true;
+
+  # ROCm GPU target for Ryzen 7 5700G (Radeon Vega / gfx90c)
+  # Without this DaVinci Resolve can't detect the GPU for compute tasks
+  environment.variables = {
+    ROC_ENABLE_PRE_VEGA = "1";
+    HSA_OVERRIDE_GFX_VERSION = "9.0.0";  # Cezanne/Lucienne iGPU target
+  };
 
   # Networking
   networking.networkmanager.enable = true;
