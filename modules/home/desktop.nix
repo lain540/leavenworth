@@ -105,15 +105,10 @@
     
     settings = {
       # Monitors
-      # VirtualBox - comment out when running on real hardware
       monitor = [
-        "Virtual-1,1920x1080@60,0x0,1"
-      ];
-      # Real hardware monitors - uncomment when running on real hardware
-      # monitor = [
-      #   "DP-1,3440x1440@144,0x1080,1"
-      #   "HDMI-A-1,1920x1080@60,760x0,1"
-      # ];
+         "DP-1,3440x1440@60,0x1080,1"
+         "HDMI-A-1,1920x1080@60,760x0,1"
+       ];
 
       # Input configuration
       input = {
