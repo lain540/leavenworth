@@ -23,16 +23,24 @@
       "identity.fxaccounts.enabled" = true;
 
       # Restore tabs on restart
-      "browser.startup.page" = 3;            # 3 = restore previous session
+      "browser.startup.page" = 3;
       "browser.sessionstore.resume_session_once" = true;
       "browser.sessionstore.max_tabs_undo" = 10;
 
-      # Titlebar - keep native window decorations
-      "browser.tabs.inTitlebar" = 0;         # 0 = use system titlebar
+      # Titlebar - use system titlebar
+      "browser.tabs.inTitlebar" = 0;
 
-      # LibreWolf overrides some Firefox defaults; restore sane ones
+      # Force dark mode - uses GTK theme from environment
+      "ui.systemUsesDarkTheme" = 1;
+      "browser.theme.content-theme" = 0;   # 0 = dark
+      "browser.theme.toolbar-theme" = 0;   # 0 = dark
+
+      # Wayland rendering
+      "gfx.webrender.all" = true;
+
+      # LibreWolf overrides
       "browser.aboutConfig.showWarning" = false;
-      "privacy.resistFingerprinting" = false; # Can break sync; disable if needed
+      "privacy.resistFingerprinting" = false;
 
       # Search
       "browser.search.defaultenginename" = "DuckDuckGo";

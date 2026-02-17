@@ -15,6 +15,20 @@
     
     # Media control
     playerctl
+
+    # bemenu wrapper - shell script needed because Hyprland config
+    # treats '#' as comments so hex colors can't be passed inline
+    (pkgs.writeShellScriptBin "bemenu-launcher" ''
+      exec bemenu-run \
+        -H 20 \
+        --fn 'Hack Nerd Font Mono 12' \
+        --tb '#181818' --tf '#d8d8d8' \
+        --fb '#181818' --ff '#d8d8d8' \
+        --nb '#181818' --nf '#d8d8d8' \
+        --hb '#d8d8d8' --hf '#181818' \
+        --sb '#383838' --sf '#d8d8d8' \
+        --scb '#181818' --scf '#d8d8d8'
+    '')
   ];
 
   # bemenu launcher - base16-default-dark colors via nix config
@@ -125,6 +139,11 @@
         # Set default editor
         "EDITOR,nvim"
         "VISUAL,nvim"
+        # GTK theme - forces GTK apps including LibreWolf to use Materia dark
+        "GTK_THEME,Materia-dark:dark"
+        # Mozilla Wayland support and theme
+        "MOZ_ENABLE_WAYLAND,1"
+        "MOZ_GTK_TITLEBAR_DECORATION,client"
       ];
 
       # General settings - minimal
@@ -171,7 +190,7 @@
       bind = [
         # Applications
         "$mod, Return, exec, foot"
-        "$mod, D, exec, bemenu-run"
+        "$mod, D, exec, bemenu-launcher"
         "$mod, Q, killactive"
         "$mod, M, exit"
         "$mod, E, exec, foot -e yazi"
