@@ -3,18 +3,15 @@
 {
   # Applications
   home.packages = with pkgs; [
+    mpv           # Media player
     nicotine-plus # Soulseek client (GUI)
   ];
 
-  programs.mpv = {
-    enable = true;
-    #scripts = [ pkgs.mpvScripts.mpris ]; # Add any scripts you want here
-  };
-
-  # Create music directories
+  # Create directories
   home.file = {
     "Music/.keep".text = "";
     "Downloads/nicotine/.keep".text = "";
+    "Pictures/Screenshots/.keep".text = "";
   };
 
   # Beets music library management

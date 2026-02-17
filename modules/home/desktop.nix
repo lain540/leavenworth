@@ -8,39 +8,49 @@
     wlr-randr
     
     # Screenshots
-    grim
-    slurp
-    
-    # Launcher
-    bemenu
+    hyprshot
     
     # Audio control (pipewire native)
     wireplumber
     
     # Media control
     playerctl
-    
-    # bemenu wrapper with base16 colors (avoids # comment issues in Hyprland)
-    (pkgs.writeShellScriptBin "bemenu-themed" ''
-      #!/usr/bin/env bash
-      bemenu-run -H 20 \
-        --fn 'Hack Nerd Font Mono 12' \
-        --tb '#181818' --tf '#d8d8d8' \
-        --fb '#181818' --ff '#d8d8d8' \
-        --nb '#181818' --nf '#d8d8d8' \
-        --hb '#d8d8d8' --hf '#181818' \
-        --sb '#383838' --sf '#d8d8d8' \
-        --scb '#181818' --scf '#d8d8d8'
-    '')
   ];
+
+  # bemenu launcher - base16-default-dark colors via nix config
+  programs.bemenu = {
+    enable = true;
+    settings = {
+      height = 20;
+      fn = "Hack Nerd Font Mono 12";
+      # Title bar
+      tb = "#181818";
+      tf = "#d8d8d8";
+      # Filter bar
+      fb = "#181818";
+      ff = "#d8d8d8";
+      # Normal item
+      nb = "#181818";
+      nf = "#d8d8d8";
+      # Highlighted item
+      hb = "#d8d8d8";
+      hf = "#181818";
+      # Selected item
+      sb = "#383838";
+      sf = "#d8d8d8";
+      # Scrollbar
+      scb = "#181818";
+      scf = "#d8d8d8";
+    };
+  };
 
   # GTK theme
   gtk = {
     enable = true;
     
     theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
+      name = "Materia-dark";
+      package = pkgs.materia-theme;
     };
     
     iconTheme = {
@@ -58,10 +68,14 @@
       size = 11;
     };
     
-    # GTK4 apps don't use the theme file from gnome-themes-extra
-    # instead we tell them to prefer the built-in dark variant
+    # GTK4 dark mode and disable window decorations (titlebars)
     gtk4.extraConfig = {
       gtk-application-prefer-dark-theme = 1;
+      gtk-decoration-layout = "";  # Removes close/minimize/maximize buttons
+    };
+
+    gtk3.extraConfig = {
+      gtk-decoration-layout = "";  # Also disable for GTK3 apps
     };
   };
 
@@ -157,7 +171,7 @@
       bind = [
         # Applications
         "$mod, Return, exec, foot"
-        "$mod, D, exec, bemenu-themed"
+        "$mod, D, exec, bemenu-run"
         "$mod, Q, killactive"
         "$mod, M, exit"
         "$mod, E, exec, foot -e yazi"
@@ -196,8 +210,9 @@
         "$mod SHIFT, 9, movetoworkspace, 9"
         "$mod SHIFT, 0, movetoworkspace, 10"
 
-        # Screenshot
-        ", Print, exec, grim -g \"$(slurp)\" - | wl-copy"
+        # Screenshots - save to ~/Pictures/Screenshots/
+        ", Print, exec, hyprshot -m region --output-folder ~/Pictures/Screenshots"
+        "SHIFT, Print, exec, hyprshot -m output --output-folder ~/Pictures/Screenshots"
         
         # Audio output switcher
         "$mod, A, exec, foot -e sh -c 'wpctl status | grep -A 50 Audio && echo && read -p \"Enter sink ID to switch: \" sink && wpctl set-default $sink && pkill -RTMIN+8 waybar'"
