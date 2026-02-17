@@ -26,19 +26,22 @@
         lines = 10;
         width = 40;
         terminal = "foot";
+        # No icons for minimal look
+        icons-enabled = false;
       };
       colors = {
-        # base16-default-dark
-        background = "181818ff";
-        text = "d8d8d8ff";
-        match = "ffffffff";
-        selection = "383838ff";
-        selection-text = "d8d8d8ff";
-        selection-match = "ffffffff";
-        border = "585858ff";
+        # base16-default-dark - all values are RRGGBBAA format
+        background     = "181818ff"; # base00 - background
+        text           = "d8d8d8ff"; # base05 - foreground
+        match          = "f7ca88ff"; # base0A - yellow (matched chars)
+        selection      = "383838ff"; # base02 - selection bg
+        selection-text = "f8f8f8ff"; # base07 - selection fg
+        selection-match= "f7ca88ff"; # base0A - matched chars in selection
+        counter        = "585858ff"; # base03 - counter text
+        border         = "585858ff"; # base03 - border
       };
       border = {
-        width = 1;
+        width  = 1;
         radius = 0;
       };
     };
@@ -79,11 +82,20 @@
     };
   };
 
-  # Qt theme to match GTK
+  # Qt theme to match GTK - dark mode
   qt = {
     enable = true;
     platformTheme.name = "gtk";
-    style.name = "adwaita-dark";
+    style = {
+      name = "adwaita-dark";
+      package = pkgs.adwaita-qt;
+    };
+  };
+
+  # Force Qt dark mode via environment
+  home.sessionVariables = {
+    QT_QPA_PLATFORMTHEME = "gtk2";
+    QT_STYLE_OVERRIDE = "adwaita-dark";
   };
 
   # Hyprland configuration - minimal
@@ -130,6 +142,10 @@
         # Mozilla Wayland support and theme
         "MOZ_ENABLE_WAYLAND,1"
         "MOZ_GTK_TITLEBAR_DECORATION,client"
+        # Qt dark mode
+        "QT_QPA_PLATFORMTHEME,gtk2"
+        "QT_STYLE_OVERRIDE,adwaita-dark"
+        "QT_AUTO_SCREEN_SCALE_FACTOR,1"
       ];
 
       # General settings - minimal
