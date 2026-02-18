@@ -3,20 +3,8 @@
 {
   # ── Packages ──────────────────────────────────────────────────────────────────
   home.packages = with pkgs; [
-    # DAW
+    # DAW — launch with `pw-jack reaper` for JACK/MIDI support
     reaper
-
-    # Audio plugins (musnix sets VST/LV2 paths automatically)
-    lsp-plugins       # Linux Studio Plugins — EQs, compressors, dynamics (LV2/VST3)
-    surge-XT          # subtractive / wavetable synth (VST3/LV2)
-    cardinal          # VCV Rack modular (VST3/LV2)
-    dexed             # Yamaha DX7 FM emulation (VST3)
-    airwindows-lv2    # hundreds of subtle effect ports (LV2)
-    dragonfly-reverb  # hall / room / plate reverb suite (VST3/LV2)
-    chow-tape-model   # analog tape machine emulation (VST3)
-    chow-phaser       # phaser (VST3)
-    chow-kick         # kick drum synth (VST3)
-    chow-centaur      # Klon Centaur emulation (VST3)
 
     # PipeWire patchbay
     qpwgraph
@@ -31,7 +19,7 @@
     obs-studio
 
     # Misc
-    nicotine-plus  # Soulseek client
+    nicotine-plus
     qbittorrent
   ];
 
@@ -91,7 +79,7 @@
         # Misc
         "gfx.webrender.all"                = true;
         "browser.aboutConfig.showWarning"  = false;
-        "privacy.resistFingerprinting"     = false;  # breaks Firefox Sync
+        "privacy.resistFingerprinting"     = false;
         "browser.search.defaultenginename" = "DuckDuckGo";
       };
     };
@@ -122,20 +110,20 @@
       };
 
       replace = {
-        "[\\\\/]"         = "_";
-        "^\\."            = "_";
-        "[\\x00-\\x1f]"   = "_";
-        "[<>:\"\\?\\*\\|]"= "_";
-        "\\.$"            = "_";
-        "\\s+$"           = "";
+        "[\\\\/]"          = "_";
+        "^\\."             = "_";
+        "[\\x00-\\x1f]"    = "_";
+        "[<>:\"\\?\\*\\|]" = "_";
+        "\\.$"             = "_";
+        "\\s+$"            = "";
       };
 
       plugins = [ "fetchart" "embedart" "scrub" "replaygain" "lastgenre" "chroma" ];
 
-      fetchart  = { auto = true; cautious = true; };
-      embedart  = { auto = true; };
+      fetchart   = { auto = true; cautious = true; };
+      embedart   = { auto = true; };
       replaygain = { auto = false; };
-      lastgenre = { auto = true; source = "track"; };
+      lastgenre  = { auto = true; source = "track"; };
     };
   };
 }

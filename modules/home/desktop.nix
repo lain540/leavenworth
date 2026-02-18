@@ -9,13 +9,12 @@
     # Audio / media control
     wireplumber playerctl
 
-    # Blue light filter — toggle via `killall wlsunset` or rebind a key
+    # Blue light filter
     wlsunset
   ];
 
   # ── GTK ───────────────────────────────────────────────────────────────────────
   # stylix owns gtk.theme, gtk.font, gtk.cursorTheme — only icons live here.
-  # home.pointerCursor is set automatically by stylix.cursor in configuration.nix.
   gtk = {
     enable    = true;
     iconTheme = { name = "Tela-Black"; package = pkgs.tela-icon-theme; };
@@ -27,20 +26,19 @@
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
-      "inode/directory"              = "yazi.desktop";
-      "application/zip"              = "yazi.desktop";
-      "application/x-tar"            = "yazi.desktop";
-      "application/x-bzip2"          = "yazi.desktop";
-      "application/x-gzip"           = "yazi.desktop";
-      "application/x-xz"             = "yazi.desktop";
-      "application/x-zstd"           = "yazi.desktop";
-      "application/x-rar"            = "yazi.desktop";
-      "application/x-7z-compressed"  = "yazi.desktop";
+      "inode/directory"             = "yazi.desktop";
+      "application/zip"             = "yazi.desktop";
+      "application/x-tar"           = "yazi.desktop";
+      "application/x-bzip2"         = "yazi.desktop";
+      "application/x-gzip"          = "yazi.desktop";
+      "application/x-xz"            = "yazi.desktop";
+      "application/x-zstd"          = "yazi.desktop";
+      "application/x-rar"           = "yazi.desktop";
+      "application/x-7z-compressed" = "yazi.desktop";
     };
   };
 
   # ── Fuzzel launcher ───────────────────────────────────────────────────────────
-  # Colors and font set by stylix.targets.fuzzel
   programs.fuzzel = {
     enable   = true;
     settings = {
@@ -55,17 +53,31 @@
     xwayland.enable = true;
 
     settings = {
-      # Monitors
-      # Real hardware: 3440×1440 ultrawide (bottom) + 1920×1080 centred above it
-      # x-offset = (2752 - 1920) / 2 = 416
+      # ── Monitors ────────────────────────────────────────────────────────────
+      # Ultrawide primary (bottom), 1080p secondary (centred above).
+      # DP-1 x-offset = (3440 - 1920) / 2 = 760
       monitor = [
-        "HDMI-A-1,3440x1440@60,0x1080,1.25"
-        "DP-1,1920x1080@60,416x0,1"
+        "HDMI-A-1,3440x1440@60,0x1080,1"
+        "DP-1,1920x1080@60,760x0,1"
       ];
-      # VirtualBox: comment out above, uncomment below
-      # monitor = [ "Virtual-1,1920x1080@60,0x0,1" ];
 
-      # Input
+      # Pin workspaces so the ultrawide always owns 1–9, DP-1 owns 10.
+      # Without this Hyprland assigns workspace 1 to whichever output it
+      # initialises first, which may be DP-1.
+      workspace = [
+        "1,  monitor:HDMI-A-1, default:true"
+        "2,  monitor:HDMI-A-1"
+        "3,  monitor:HDMI-A-1"
+        "4,  monitor:HDMI-A-1"
+        "5,  monitor:HDMI-A-1"
+        "6,  monitor:HDMI-A-1"
+        "7,  monitor:HDMI-A-1"
+        "8,  monitor:HDMI-A-1"
+        "9,  monitor:HDMI-A-1"
+        "10, monitor:DP-1, default:true"
+      ];
+
+      # ── Input ───────────────────────────────────────────────────────────────
       input = {
         kb_layout  = "us,se";
         kb_variant = "workman,";
@@ -78,14 +90,28 @@
       cursor.no_hardware_cursors = true;
 
       env = [
+        # Cursor
         "XCURSOR_THEME,Adwaita" "XCURSOR_SIZE,24"
-        "EDITOR,nvim"           "VISUAL,nvim"
-        "MOZ_ENABLE_WAYLAND,1"  "MOZ_GTK_TITLEBAR_DECORATION,client"
+
+        # Editor
+        "EDITOR,nvim" "VISUAL,nvim"
+
+        # Mozilla native Wayland
+        "MOZ_ENABLE_WAYLAND,1" "MOZ_GTK_TITLEBAR_DECORATION,client"
+
+        # Qt
         "QT_AUTO_SCREEN_SCALE_FACTOR,1"
+
+        # File manager
         "FILE_MANAGER,yazi"
+
+        # XWayland scaling — tell XWayland apps not to scale themselves
+        # (avoids blurry/doubled scaling on the native-resolution ultrawide)
+        "XCURSOR_SIZE,24"
+        "GDK_SCALE,1"
+        "QT_SCALE_FACTOR,1"
       ];
 
-      # Borders pull from the active stylix scheme automatically
       general = {
         gaps_in     = 0;
         gaps_out    = 0;
@@ -98,7 +124,6 @@
       decoration = { rounding = 0; blur.enabled = false; shadow.enabled = false; };
       animations.enabled = false;
       dwindle = { pseudotile = true; preserve_split = true; };
-
       misc = { disable_hyprland_logo = true; disable_splash_rendering = true; };
 
       "$mod" = "SUPER";
@@ -116,12 +141,12 @@
         "$mod, p,       pseudo"
         "$mod, a,       exec, qpwgraph"
 
-        # Keyboard layout — cycle us/workman ↔ se
+        # Layout switch us/workman ↔ se
         "$mod, Space, exec, hyprctl switchxkblayout all next"
 
         # Focus (Workman: Y N E O = H J K L)
-        "$mod, y, movefocus, l"   "$mod, n, movefocus, d"
-        "$mod, e, movefocus, u"   "$mod, o, movefocus, r"
+        "$mod, y, movefocus, l"  "$mod, n, movefocus, d"
+        "$mod, e, movefocus, u"  "$mod, o, movefocus, r"
         "$mod, left,  movefocus, l"  "$mod, right, movefocus, r"
         "$mod, up,    movefocus, u"  "$mod, down,  movefocus, d"
 
@@ -147,13 +172,11 @@
         ", Print,      exec, hyprshot -m region --clipboard-only"
         "SHIFT, Print, exec, hyprshot -m output --output-folder ~/Pictures/Screenshots"
 
-        # Media keys
+        # Media keys (keyboard hardware buttons)
         ", XF86AudioPlay,        exec, playerctl play-pause"
         ", XF86AudioPause,       exec, playerctl play-pause"
         ", XF86AudioNext,        exec, playerctl next"
         ", XF86AudioPrev,        exec, playerctl previous"
-        ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+"
-        ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
         ", XF86AudioMute,        exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
       ];
 
@@ -162,25 +185,25 @@
         "$mod, mouse:273, resizewindow"
       ];
 
-      # Gaomon M10K touch dial → volume
-      # In otd-gui: set dial output type to "Scroll" → XF86AudioRaise/LowerVolume
+      # bindel — repeatable binds for volume (keyboard keys + tablet dial).
+      # The tablet dial sends XF86AudioRaise/LowerVolume via OTD.
+      # In otd-gui: Bindings → set dial to output type "Key" →
+      #   clockwise = XF86AudioRaiseVolume, counter = XF86AudioLowerVolume.
       bindel = [
-        ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+"
+        ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 2%+"
         ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
       ];
 
       exec-once = [
         "waybar"
         "udiskie --tray"
-        # wlsunset: day 06:30–18:30 at 6500K, night 18:30–06:30 at 2700K
+        # wlsunset: day 06:30–18:30 at 6500K, night at 2700K
         "bash -c 'sleep 3 && wlsunset -S 06:30 -s 18:30 -T 6500 -t 2700'"
       ];
     };
   };
 
   # ── Waybar ────────────────────────────────────────────────────────────────────
-  # Colours reference config.lib.stylix.colors — update with the scheme automatically.
-  # stylix.targets.waybar is disabled so we own the full CSS.
   programs.waybar = {
     enable = true;
 
@@ -210,20 +233,19 @@
 
     style = with config.lib.stylix.colors; ''
       * { border: none; border-radius: 0; font-family: "Hack Nerd Font Mono"; font-size: 12px; min-height: 0; }
-      window#waybar                { background-color: #${base00}; color: #${base05}; }
-      #workspaces button           { padding: 0 8px; background-color: #${base01}; color: #${base05}; margin: 0 2px; }
-      #workspaces button.active    { background-color: #${base05}; color: #${base00}; }
-      #workspaces button.urgent    { background-color: #${base08}; color: #${base07}; }
-      #window                      { padding: 0 10px; background-color: #${base00}; color: #${base05}; }
-      #clock, #custom-pipewire     { padding: 0 10px; background-color: #${base00}; color: #${base05}; }
-      #clock:hover,
-      #custom-pipewire:hover       { background-color: #${base01}; }
-      #custom-pipewire             { color: #${base04}; }
+      window#waybar             { background-color: #${base00}; color: #${base05}; }
+      #workspaces button        { padding: 0 8px; background-color: #${base01}; color: #${base05}; margin: 0 2px; }
+      #workspaces button.active { background-color: #${base05}; color: #${base00}; }
+      #workspaces button.urgent { background-color: #${base08}; color: #${base07}; }
+      #window                   { padding: 0 10px; background-color: #${base00}; color: #${base05}; }
+      #clock, #custom-pipewire  { padding: 0 10px; background-color: #${base00}; color: #${base05}; }
+      #clock:hover, #custom-pipewire:hover { background-color: #${base01}; }
+      #custom-pipewire          { color: #${base04}; }
     '';
   };
 
   # ── Foot terminal ─────────────────────────────────────────────────────────────
-  # Colors, font, and dpi-aware set by stylix.targets.foot
+  # Colors, font, dpi-aware set by stylix.targets.foot
   programs.foot = {
     enable   = true;
     settings = {
@@ -237,7 +259,7 @@
   stylix.targets = {
     waybar.enable    = false;  # CSS managed manually above
     hyprland.enable  = false;  # borders managed manually above
-    librewolf.enable = false;  # unthemed — browser uses its own default appearance
+    librewolf.enable = false;
     gtk.enable       = true;
     qt.enable        = true;
     fuzzel.enable    = true;
