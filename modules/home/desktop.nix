@@ -355,9 +355,10 @@
     qt.enable        = true;
     fuzzel.enable    = true;
     foot.enable      = true;
-    librewolf.enable = false;  # conflicts with programs.librewolf.settings
-    # Disable the wallpaper target — we don't want any wallpaper displayed.
-    # stylix.image in configuration.nix is kept only because stylix requires it.
+    # librewolf — stylix writes userChrome.css/userContent.css which is separate
+    # from programs.librewolf.settings (user.js) — no conflict, enable theming
+    librewolf.enable = true;
+    # swaybg — no image is set so there is nothing to display; keep disabled
     swaybg.enable    = false;
   };
 }
