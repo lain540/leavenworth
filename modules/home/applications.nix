@@ -59,20 +59,80 @@
   };
 
   # ── Librewolf ─────────────────────────────────────────────────────────────
-  # Settings are placed inside an explicit named profile so that
-  # stylix.targets.librewolf.profileNames can find and theme it.
-  # Without an explicit profile block, stylix doesn't know where to write
-  # userChrome.css / userContent.css and the browser stays unthemed.
   programs.librewolf = {
     enable = true;
 
     profiles.default = {
-      id   = 0;
-      name = "default";
+      id        = 0;
+      name      = "default";
       isDefault = true;
 
+      # ── userChrome.css — base16 toolbar theming ────────────────────────────
+      # toolkit.legacyUserProfileCustomizations.stylesheets (below) MUST be
+      # true or Firefox/Librewolf silently ignores this file entirely.
+      # Colors are pulled from config.lib.stylix.colors at build time so
+      # changing the scheme in configuration.nix recolors the browser too.
+      userChrome = with config.lib.stylix.colors; ''
+        /* ── base16 toolbar / chrome theme ── */
+        :root {
+          --base00: #${base00};  /* background */
+          --base01: #${base01};  /* lighter bg / tab bar */
+          --base02: #${base02};  /* selection */
+          --base03: #${base03};  /* comments / inactive */
+          --base04: #${base04};  /* dark fg */
+          --base05: #${base05};  /* default fg */
+          --base06: #${base06};  /* light fg */
+          --base07: #${base07};  /* light bg */
+          --base08: #${base08};  /* red / errors */
+          --base0D: #${base0D};  /* blue / links */
+        }
+
+        /* Window background */
+        #navigator-toolbox {
+          background-color: var(--base00) !important;
+          border-bottom: 1px solid var(--base02) !important;
+        }
+
+        /* Tab bar */
+        .tabbrowser-tab {
+          background-color: var(--base01) !important;
+          color: var(--base04) !important;
+        }
+        .tabbrowser-tab[selected] {
+          background-color: var(--base02) !important;
+          color: var(--base05) !important;
+        }
+        .tabbrowser-tab:hover {
+          background-color: var(--base02) !important;
+          color: var(--base05) !important;
+        }
+
+        /* URL bar */
+        #urlbar, #urlbar-input {
+          background-color: var(--base01) !important;
+          color: var(--base05) !important;
+          border-color: var(--base03) !important;
+        }
+        #urlbar:focus-within {
+          border-color: var(--base0D) !important;
+        }
+
+        /* Toolbar buttons */
+        toolbar {
+          background-color: var(--base00) !important;
+          color: var(--base05) !important;
+        }
+        toolbarbutton:hover {
+          background-color: var(--base02) !important;
+        }
+      '';
+
       settings = {
-        # Sync — sign in at about:preferences#sync after first launch
+        # REQUIRED: load userChrome.css / userContent.css
+        # Without this Firefox silently ignores the files above.
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+
+        # Sync
         "identity.fxaccounts.enabled" = true;
 
         # Session restore
@@ -89,13 +149,12 @@
         "privacy.clearOnShutdown.offlineApps"          = false;
         "privacy.clearOnShutdown.sessions"             = false;
 
-        # Only clear form/search bar history on exit
         "privacy.clearOnShutdown.formdata"    = true;
         "privacy.clearOnShutdown.history"     = false;
         "privacy.clearOnShutdown.downloads"   = false;
         "privacy.sanitize.sanitizeOnShutdown" = true;
 
-        # Appearance — dark mode, no titlebar
+        # Appearance
         "browser.tabs.inTitlebar"     = 0;
         "ui.systemUsesDarkTheme"      = 1;
         "browser.theme.content-theme" = 0;
@@ -103,7 +162,6 @@
 
         "gfx.webrender.all"                = true;
         "browser.aboutConfig.showWarning"  = false;
-        # resistFingerprinting breaks Firefox Sync — keep it off
         "privacy.resistFingerprinting"     = false;
         "browser.search.defaultenginename" = "DuckDuckGo";
       };

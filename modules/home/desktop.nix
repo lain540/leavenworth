@@ -231,10 +231,9 @@
         "udiskie --tray"
 
         # ── Solid base00 background ───────────────────────────────────────────
-        # swaybg -c sets a solid colour on all outputs.
-        # The hex comes from the active stylix scheme so it updates automatically.
-        # charcoal-dark base00 = #212121
-        "swaybg -c '#${config.lib.stylix.colors.base00}'"
+        # Hyprland exec-once uses execve (no shell), so we wrap in bash so the
+        # shell strips the quotes before passing the colour string to swaybg.
+        "bash -c 'swaybg -c #${config.lib.stylix.colors.base00}'"
 
         # ── wlsunset — fixed schedule blue light filter ───────────────────────
         # Day:   06:30–18:30 → 6500K (neutral/cool)
@@ -351,12 +350,10 @@
     qt.enable        = true;
     fuzzel.enable    = true;
     foot.enable      = true;
-    # librewolf — profileNames tells stylix which profile to write CSS into.
-    # Must match the profile name in programs.librewolf.profiles above.
-    librewolf = {
-      enable       = true;
-      profileNames = [ "default" ];
-    };
+    # librewolf — disable the stylix target; theming is applied directly via
+    # userChrome in programs.librewolf.profiles in applications.nix instead.
+    # The stylix target's profileNames option is version-dependent and unreliable.
+    librewolf.enable = false;
     # swaybg: no valid stylix target exists for it — background is set via
     # exec-once with swaybg -c in the Hyprland config above
   };
