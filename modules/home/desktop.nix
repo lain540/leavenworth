@@ -9,8 +9,6 @@
     wireplumber
     playerctl
     wlsunset
-    swaybg          # used in exec-once to paint the base00 background colour
-    xdotool         # browser back/forward for MX Master 3S side buttons
   ];
 
   # ── Cursor ───────────────────────────────────────────────────────────────────
@@ -195,12 +193,6 @@
 
         "$mod, a, exec, qpwgraph"
 
-        # ── MX Master 3S side buttons — browser back / forward ─────────────────
-        # mouse:276 = back button, mouse:275 = forward button
-        # xdotool sends Alt+Left / Alt+Right which all major browsers recognise
-        ", mouse:276, exec, xdotool key alt+Left"
-        ", mouse:275, exec, xdotool key alt+Right"
-
         ", XF86AudioPlay,        exec, playerctl play-pause"
         ", XF86AudioPause,       exec, playerctl play-pause"
         ", XF86AudioNext,        exec, playerctl next"
@@ -229,12 +221,6 @@
       exec-once = [
         "waybar"
         "udiskie --tray"
-
-        # ── Solid base00 background ───────────────────────────────────────────
-        # Hyprland exec-once uses execve (no shell), so we wrap in bash so the
-        # shell strips the quotes before passing the colour string to swaybg.
-        "bash -c 'swaybg -c #${config.lib.stylix.colors.base00}'"
-
         # ── wlsunset — fixed schedule blue light filter ───────────────────────
         # Day:   06:30–18:30 → 6500K (neutral/cool)
         # Night: 18:30–06:30 → 2700K (very warm amber — obviously visible)
@@ -344,17 +330,13 @@
 
   # ── Stylix targets ────────────────────────────────────────────────────────────
   stylix.targets = {
-    waybar.enable    = false;  # CSS managed manually above with stylix color refs
+    waybar.enable    = false;  # CSS managed manually with config.lib.stylix.colors
     hyprland.enable  = false;  # borders set manually via config.lib.stylix.colors
     gtk.enable       = true;
     qt.enable        = true;
     fuzzel.enable    = true;
     foot.enable      = true;
-    # librewolf — disable the stylix target; theming is applied directly via
-    # userChrome in programs.librewolf.profiles in applications.nix instead.
-    # The stylix target's profileNames option is version-dependent and unreliable.
-    librewolf.enable = false;
-    # swaybg: no valid stylix target exists for it — background is set via
-    # exec-once with swaybg -c in the Hyprland config above
+    librewolf.enable = false;  # no theming — browser uses its own default appearance
+    # swaybg is handled by stylix automatically via stylix.image in configuration.nix
   };
 }
