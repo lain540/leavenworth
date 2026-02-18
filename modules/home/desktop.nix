@@ -355,6 +355,8 @@
   };
 
   # ── Foot terminal ────────────────────────────────────────────────────────────
+  # Colours are managed by stylix (charcoal-dark scheme) — do not set them here
+  # or they will conflict. Only non-colour settings live in this block.
   programs.foot = {
     enable = true;
     settings = {
@@ -363,17 +365,22 @@
         font      = "Hack Nerd Font Mono:size=11";
         dpi-aware = "yes";
       };
-      mouse = {
-        hide-when-typing = "yes";
-      };
-      colors = {
-        alpha      = 1.0;
-        background = "181818";
-        foreground = "d8d8d8";
-      };
-      tweak = {
-        sixel = "yes";  # image previews in yazi
-      };
+      mouse.hide-when-typing = "yes";
+      tweak.sixel = "yes";  # image previews in yazi
     };
+  };
+
+  # ── Stylix target overrides ───────────────────────────────────────────────────
+  # Stylix themes programs automatically. Disable targets for programs where we
+  # manage colours manually so the two configs don't conflict.
+  stylix.targets = {
+    # waybar — we have a fully custom CSS stylesheet in this file above
+    waybar.enable = false;
+    # fuzzel — manually themed with base16-default-dark colours above
+    fuzzel.enable = false;
+    # hyprland borders — we set col.active_border / col.inactive_border manually
+    hyprland.enable = false;
+    # gtk — stylix can own this; comment out the gtk block above if you enable it
+    gtk.enable = false;
   };
 }
