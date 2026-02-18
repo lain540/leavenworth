@@ -10,6 +10,7 @@
     playerctl
     wlsunset
     swaybg          # used in exec-once to paint the base00 background colour
+    xdotool         # browser back/forward for MX Master 3S side buttons
   ];
 
   # ── Cursor ───────────────────────────────────────────────────────────────────
@@ -194,6 +195,12 @@
 
         "$mod, a, exec, qpwgraph"
 
+        # ── MX Master 3S side buttons — browser back / forward ─────────────────
+        # mouse:276 = back button, mouse:275 = forward button
+        # xdotool sends Alt+Left / Alt+Right which all major browsers recognise
+        ", mouse:276, exec, xdotool key alt+Left"
+        ", mouse:275, exec, xdotool key alt+Right"
+
         ", XF86AudioPlay,        exec, playerctl play-pause"
         ", XF86AudioPause,       exec, playerctl play-pause"
         ", XF86AudioNext,        exec, playerctl next"
@@ -206,15 +213,6 @@
       bindm = [
         "$mod, mouse:272, movewindow"
         "$mod, mouse:273, resizewindow"
-      ];
-
-      # ── MX Master 3S extra buttons ─────────────────────────────────────────────
-      # mouse:276 = back button (left side, lower)
-      # mouse:275 = forward button (left side, upper)
-      # Bound to workspace prev/next — remove $mod to trigger without modifier.
-      bind = bind ++ [
-        ", mouse:276, workspace, -1"
-        ", mouse:275, workspace, +1"
       ];
 
       # ── Gaomon M10K touch dial → volume ───────────────────────────────────────
