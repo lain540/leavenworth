@@ -10,17 +10,16 @@
     qpwgraph
 
     # Creative
-    davinci-resolve
-    blender
-    krita
+    davinci-resolve blender krita
 
     # Media
-    mpv
-    obs-studio
+    mpv obs-studio
 
     # Misc
-    nicotine-plus
-    qbittorrent
+    nicotine-plus qbittorrent
+
+    # Yazi previewer dependencies
+    ffmpegthumbnailer unar jq poppler-utils imagemagick file
   ];
 
   # ── Directory scaffold ────────────────────────────────────────────────────────
@@ -49,16 +48,6 @@
       preview = { image_protocol = "sixel"; max_width = 600; max_height = 900; };
     };
   };
-
-  # Yazi file previewer dependencies
-  home.packages = with pkgs; [
-    ffmpegthumbnailer  # video thumbnails
-    unar               # archive extraction
-    jq                 # JSON previews
-    poppler-utils      # PDF previews
-    imagemagick        # image previews
-    file               # file type detection
-  ];
 
   # ── Librewolf ─────────────────────────────────────────────────────────────────
   programs.librewolf = {
@@ -144,8 +133,7 @@
   };
 
   # ── Neovim via nvf ────────────────────────────────────────────────────────────
-  # stylix.targets.nvf (bottom) owns vim.theme + lualine.theme.
-  # Do not set either above or evaluation fails with "conflicting definition".
+  # stylix.targets.nvf (bottom) owns vim.theme + lualine.theme — do not set them above.
   programs.nvf = {
     enable = true;
 
@@ -225,6 +213,5 @@
     };
   };
 
-  # Owns vim.theme and lualine.theme
   stylix.targets.nvf.enable = true;
 }
