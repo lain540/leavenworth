@@ -9,35 +9,59 @@
     wireplumber
     playerctl
     wlsunset
-    papirus-icon-theme  # icon theme (stylix doesn't manage icons)
+    papirus-icon-theme
   ];
 
+  # ── Cursor — system pointer theme ────────────────────────────────────────────
+  # home.pointerCursor propagates the cursor to all Wayland clients and GTK apps.
+  # stylix.cursor in configuration.nix sets it at the system level (greetd etc).
+  # Both need to agree on the same theme or you get mixed cursors.
+  home.pointerCursor = {
+    gtk.enable = true;
+    package    = pkgs.adwaita-icon-theme;
+    name       = "Adwaita";
+    size       = 24;
+  };
+
   # ── GTK icon theme ────────────────────────────────────────────────────────────
-  # Stylix owns gtk.theme, gtk.font, and gtk.cursorTheme.
-  # Icon theme is not touched by stylix, so we set it here independently.
   gtk = {
     enable    = true;
     iconTheme = {
       name    = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
     };
-    # Disable window decoration buttons (close/min/max) for all GTK apps
     gtk4.extraConfig.gtk-decoration-layout = "";
     gtk3.extraConfig.gtk-decoration-layout = "";
   };
 
+  # ── Yazi — default file manager ───────────────────────────────────────────────
+  # Associates inode/directory and common archive types with yazi so that apps
+  # (file pickers, terminal openers, etc.) know to launch it.
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "inode/directory"         = "yazi.desktop";
+      "application/zip"         = "yazi.desktop";
+      "application/x-tar"       = "yazi.desktop";
+      "application/x-bzip2"     = "yazi.desktop";
+      "application/x-gzip"      = "yazi.desktop";
+      "application/x-xz"        = "yazi.desktop";
+      "application/x-zstd"      = "yazi.desktop";
+      "application/x-rar"       = "yazi.desktop";
+      "application/x-7z-compressed" = "yazi.desktop";
+    };
+  };
+
   # ── Fuzzel launcher ───────────────────────────────────────────────────────────
-  # Colors are handled by stylix (stylix.targets.fuzzel enabled below).
-  # Only layout/behaviour settings live here.
   programs.fuzzel = {
     enable = true;
     settings = {
       main = {
-        # font is set by stylix via stylix.targets.fuzzel — do not set here
         lines         = 10;
         width         = 40;
         terminal      = "foot";
         icons-enabled = false;
+        # font set by stylix.targets.fuzzel
       };
       border = {
         width  = 1;
@@ -53,10 +77,6 @@
 
     settings = {
       # ── Monitors ──────────────────────────────────────────────────────────────
-      # Real hardware — dual monitor setup:
-      #   HDMI-A-1: 3440x1440 ultrawide (primary, bottom), 1.25× scaling
-      #   DP-1:     1920x1080 (secondary, centred above the ultrawide)
-      #     x offset = (2752 − 1920) / 2 = 416
       monitor = [
         "HDMI-A-1,3440x1440@60,0x1080,1.25"
         "DP-1,1920x1080@60,416x0,1"
@@ -79,25 +99,24 @@
       cursor.no_hardware_cursors = true;
 
       env = [
-        # Cursor
-        "XCURSOR_SIZE,16"
+        # Cursor — must match stylix.cursor.name in configuration.nix
+        "XCURSOR_THEME,Adwaita"
+        "XCURSOR_SIZE,24"
         # Editor
         "EDITOR,nvim"
         "VISUAL,nvim"
-        # Wayland for Mozilla apps
+        # Mozilla Wayland
         "MOZ_ENABLE_WAYLAND,1"
         "MOZ_GTK_TITLEBAR_DECORATION,client"
-        # Qt scaling
+        # Qt
         "QT_AUTO_SCREEN_SCALE_FACTOR,1"
-        # GTK_THEME, QT_QPA_PLATFORMTHEME, QT_STYLE_OVERRIDE are set by stylix
+        # Default file manager — apps that respect XDG_CURRENT_DESKTOP pick this up
+        "FILE_MANAGER,yazi"
       ];
 
-      # ── Borders — pull colours from the active stylix scheme ──────────────────
-      # base05 = foreground (active), base03 = comment/inactive
-      # Changing stylix.base16Scheme in configuration.nix updates these automatically.
       general = {
-        gaps_in    = 0;
-        gaps_out   = 0;
+        gaps_in     = 0;
+        gaps_out    = 0;
         border_size = 2;
         "col.active_border"   = "rgba(${config.lib.stylix.colors.base05}ff)";
         "col.inactive_border" = "rgba(${config.lib.stylix.colors.base03}aa)";
@@ -122,8 +141,6 @@
         preserve_split = true;
       };
 
-      # ── Keybindings ───────────────────────────────────────────────────────────
-      # Workman layout: Y N E O  =  physical H J K L
       "$mod" = "SUPER";
 
       bind = [
@@ -137,10 +154,8 @@
         "$mod, s,       togglesplit"
         "$mod, p,       pseudo"
 
-        # Keyboard layout switch (us/workman ↔ se)
         "$mod, Space, exec, hyprctl switchxkblayout all next"
 
-        # Focus
         "$mod, y,     movefocus, l"
         "$mod, n,     movefocus, d"
         "$mod, e,     movefocus, u"
@@ -150,7 +165,6 @@
         "$mod, up,    movefocus, u"
         "$mod, down,  movefocus, d"
 
-        # Move windows
         "$mod SHIFT, y,     movewindow, l"
         "$mod SHIFT, n,     movewindow, d"
         "$mod SHIFT, e,     movewindow, u"
@@ -160,7 +174,6 @@
         "$mod SHIFT, up,    movewindow, u"
         "$mod SHIFT, down,  movewindow, d"
 
-        # Workspaces
         "$mod, 1, workspace, 1"
         "$mod, 2, workspace, 2"
         "$mod, 3, workspace, 3"
@@ -172,7 +185,6 @@
         "$mod, 9, workspace, 9"
         "$mod, 0, workspace, 10"
 
-        # Move window to workspace
         "$mod SHIFT, 1, movetoworkspace, 1"
         "$mod SHIFT, 2, movetoworkspace, 2"
         "$mod SHIFT, 3, movetoworkspace, 3"
@@ -184,14 +196,11 @@
         "$mod SHIFT, 9, movetoworkspace, 9"
         "$mod SHIFT, 0, movetoworkspace, 10"
 
-        # Screenshots
         ", Print,      exec, hyprshot -m region --clipboard-only"
         "SHIFT, Print, exec, hyprshot -m output --output-folder ~/Pictures/Screenshots"
 
-        # Audio
         "$mod, a, exec, qpwgraph"
 
-        # Media keys
         ", XF86AudioPlay,        exec, playerctl play-pause"
         ", XF86AudioPause,       exec, playerctl play-pause"
         ", XF86AudioNext,        exec, playerctl next"
@@ -206,19 +215,40 @@
         "$mod, mouse:273, resizewindow"
       ];
 
+      # ── Gaomon M10K touch dial → volume ───────────────────────────────────────
+      # The touch strip/dial is exposed as scroll events on the tablet device.
+      # These binds catch scroll events from any device and route them to volume.
+      # If you want ONLY the tablet dial to control volume (not mouse wheel), you
+      # can scope these to the tablet device name via `bindle` with a device filter.
+      # Map the dial in otd-gui to "Scroll" output type for this to work.
+      bindel = [
+        ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+"
+        ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
+      ];
+
       exec-once = [
         "waybar"
         "udiskie --tray"
-        # wlsunset — 59.3°N 18.1°E = Stockholm
-        # Brief delay so Hyprland finishes registering outputs before gamma is set
-        "bash -c 'sleep 3 && wlsunset -l 59.3 -L 18.1 -t 3500 -T 6500'"
+
+        # ── wlsunset — fixed schedule blue light filter ────────────────────────
+        # Uses explicit times instead of GPS location for predictable behaviour.
+        #
+        # Flags:
+        #   -S HH:MM  sunrise  — when to start transitioning TO day temperature
+        #   -s HH:MM  sunset   — when to start transitioning TO night temperature
+        #   -T        day colour temperature  (6500K = neutral / slightly cool)
+        #   -t        night colour temperature (2700K = very warm amber)
+        #
+        # 2700K at night is quite obvious — screens go clearly orange.
+        # Raise -t toward 4000K if you want a subtler effect.
+        #
+        # Schedule: day 06:30–18:30 / night 18:30–06:30
+        "bash -c 'sleep 3 && wlsunset -S 06:30 -s 18:30 -T 6500 -t 2700'"
       ];
     };
   };
 
   # ── Waybar ────────────────────────────────────────────────────────────────────
-  # Colors reference config.lib.stylix.colors so they update with the scheme.
-  # stylix.targets.waybar is disabled below — we own the full CSS here.
   programs.waybar = {
     enable = true;
 
@@ -259,8 +289,6 @@
       };
     };
 
-    # All hex values come from config.lib.stylix.colors — change the scheme in
-    # configuration.nix and the bar recolors on the next rebuild automatically.
     style = with config.lib.stylix.colors; ''
       * {
           border: none;
@@ -309,32 +337,27 @@
   };
 
   # ── Foot terminal ──────────────────────────────────────────────────────────────
-  # Colors managed by stylix (stylix.targets.foot enabled below).
   programs.foot = {
     enable = true;
     settings = {
-      main = {
-        term = "xterm-256color";
-        # font and dpi-aware are both set by stylix.targets.foot — do not set here
-      };
+      main.term            = "xterm-256color";
       mouse.hide-when-typing = "yes";
-      tweak.sixel = "yes";  # image previews in yazi
+      tweak.sixel          = "yes";
+      # font, dpi-aware, and colors are all set by stylix.targets.foot
     };
   };
 
   # ── Stylix targets ────────────────────────────────────────────────────────────
-  # Enable everything we want stylix to own.
-  # Disable only waybar — we write the CSS ourselves using stylix color refs above
-  # so colors still update when you change the scheme.
   stylix.targets = {
-    waybar.enable   = false;  # we handle CSS manually with config.lib.stylix.colors
-    hyprland.enable = false;  # we set borders manually via config.lib.stylix.colors in general{} above
-    gtk.enable      = true;
-    qt.enable       = true;
-    fuzzel.enable   = true;   # sets colors AND font from stylix.fonts.monospace
-    foot.enable     = true;   # sets colors AND font from stylix.fonts.monospace
-    # Disable librewolf/firefox stylix target — it conflicts with our programs.librewolf.settings
-    # (stylix tries to write userContent.css and userChrome.css which clash with HM's own writes)
-    librewolf.enable = false;
+    waybar.enable    = false;  # CSS managed manually above with stylix color refs
+    hyprland.enable  = false;  # borders set manually via config.lib.stylix.colors
+    gtk.enable       = true;
+    qt.enable        = true;
+    fuzzel.enable    = true;
+    foot.enable      = true;
+    librewolf.enable = false;  # conflicts with programs.librewolf.settings
+    # Disable the wallpaper target — we don't want any wallpaper displayed.
+    # stylix.image in configuration.nix is kept only because stylix requires it.
+    swaybg.enable    = false;
   };
 }
