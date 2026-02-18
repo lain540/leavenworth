@@ -3,7 +3,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ./modules/system/desktop.nix
+    ./modules/nixos/desktop.nix
     inputs.musnix.nixosModules.musnix
   ];
 
