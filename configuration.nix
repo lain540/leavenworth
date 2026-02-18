@@ -82,7 +82,7 @@
   stylix = {
     enable       = true;
     polarity     = "dark";
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/base16-default-dark.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/default-dark.yaml";
 
     # No stylix.image set — we use an explicit base16Scheme so stylix doesn't
     # need an image for colour extraction, and swaybg is disabled in
