@@ -82,13 +82,17 @@
   stylix = {
     enable       = true;
     polarity     = "dark";
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/default-dark.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/black-metal.yaml";
 
-    # No stylix.image set — we use an explicit base16Scheme so stylix doesn't
-    # need an image for colour extraction, and swaybg is disabled in
-    # home/desktop.nix so nothing tries to display a wallpaper.
-    # If the build fails with "stylix.image is not defined", your stylix version
-    # still requires it — set it to any image path as a workaround.
+    # stylix.image is required by the stylix module even when base16Scheme is
+    # set explicitly. We generate a minimal 1x1 transparent PNG so the option
+    # is satisfied without any wallpaper ever being visible.
+    # stylix's swaybg target is not enabled so this image is never displayed.
+    image = pkgs.runCommand "wallpaper-none.png" {
+      buildInputs = [ pkgs.imagemagick ];
+    } ''
+      magick -size 1x1 xc:none $out
+    '';
 
     # ── Cursor ────────────────────────────────────────────────────────────────
     # Setting this here ensures the cursor is applied system-wide (greetd, GTK,
