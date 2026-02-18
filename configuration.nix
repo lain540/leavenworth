@@ -1,97 +1,136 @@
 { config, pkgs, inputs, ... }:
 
 {
-  imports = [ 
+  imports = [
     ./hardware-configuration.nix
     ./modules/system/desktop.nix
     inputs.musnix.nixosModules.musnix
   ];
 
-  # Boot
+  # ── Boot ────────────────────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  # Limit boot menu entries - only show the last 3 generations
   boot.loader.systemd-boot.configurationLimit = 3;
 
-  # AMD Ryzen 7 5700G - Radeon Vega iGPU
-  # RADV (Vulkan) is enabled by default in nixpkgs - no need to add amdvlk manually.
-  # amdvlk was removed from nixpkgs because RADV is now the preferred driver.
+  # ── GPU — AMD Ryzen 7 5700G (Radeon Vega iGPU) ──────────────────────────────
+  # RADV Vulkan is enabled by default via Mesa — no need to add amdvlk.
   hardware.graphics = {
-    enable = true;
+    enable     = true;
     enable32Bit = true;
     extraPackages = with pkgs; [
-      # AMD ROCm OpenCL - required for DaVinci Resolve GPU compute
-      rocmPackages.clr
+      rocmPackages.clr        # AMD ROCm OpenCL for DaVinci Resolve GPU compute
       rocmPackages.clr.icd
-      # VDPAU / VAAPI video decode acceleration
-      libvdpau-va-gl
-      libva-vdpau-driver  # renamed from vaapiVdpau in nixpkgs-unstable
+      libvdpau-va-gl          # VDPAU/VAAPI video decode acceleration
+      libva-vdpau-driver      # renamed from vaapiVdpau in nixpkgs-unstable
     ];
   };
-
-  # amdgpu kernel driver - enables the iGPU properly
-  boot.initrd.kernelModules = [ "amdgpu" ];
+  boot.initrd.kernelModules   = [ "amdgpu" ];
   services.xserver.videoDrivers = [ "amdgpu" ];
 
-  # System
+  # ── System ───────────────────────────────────────────────────────────────────
   networking.hostName = "leavenworth";
-  time.timeZone = "Europe/Stockholm";
-  i18n.defaultLocale = "en_US.UTF-8";
-  
-  # Console (TTY) keyboard layout - uses XKB configuration
+  time.timeZone       = "Europe/Stockholm";
+  i18n.defaultLocale  = "en_US.UTF-8";
+
+  # Console keyboard layout derived from XKB settings below
   console = {
     useXkbConfig = true;
-    earlySetup = true;
+    earlySetup   = true;
   };
-  
-  # Even if you don't use X11, NixOS uses these settings to derive the console map
   services.xserver.xkb = {
-    layout = "us";
+    layout  = "us";
     variant = "workman";
   };
 
-  # Nix
+  # ── Nix ──────────────────────────────────────────────────────────────────────
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nix.settings.auto-optimise-store = true;
+  nix.settings.auto-optimise-store   = true;
   nix.gc = {
     automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
+    dates     = "weekly";
+    options   = "--delete-older-than 7d";
   };
   nixpkgs.config.allowUnfree = true;
 
-  # ROCm GPU target for Ryzen 7 5700G (Radeon Vega / gfx90c)
-  # Without this DaVinci Resolve can't detect the GPU for compute tasks
+  # ROCm target for Ryzen 7 5700G (gfx90c / Vega) — needed by DaVinci Resolve
   environment.variables = {
-    ROC_ENABLE_PRE_VEGA = "1";
+    ROC_ENABLE_PRE_VEGA      = "1";
     HSA_OVERRIDE_GFX_VERSION = "9.0.0";
   };
 
-  # Networking
+  # ── Networking ───────────────────────────────────────────────────────────────
   networking.networkmanager.enable = true;
 
-  # Fish shell - system-wide (adds to /etc/shells)
-  programs.fish.enable = true;
+  # ── Shell — Zsh ──────────────────────────────────────────────────────────────
+  # Enabling zsh system-wide adds it to /etc/shells, which is required for
+  # it to be a valid login shell. Do NOT set programs.fish.enable here —
+  # fish is no longer installed.
+  programs.zsh.enable = true;
 
-  # musnix - audio optimization
-  musnix.enable = true;
+  # ── musnix — real-time audio optimisation ────────────────────────────────────
+  musnix.enable         = true;
   musnix.kernel.realtime = false;
-  musnix.rtirq.enable = true;
+  musnix.rtirq.enable   = true;
 
-  # User
+  # ── Stylix — system-wide base16 theming ──────────────────────────────────────
+  # Stylix applies a coherent colour scheme across the system: terminal,
+  # editor, GTK apps, fonts etc. Change base16Scheme to swap the palette.
+  #
+  # Wallpaper: stylix needs an image for colour extraction. We provide a
+  # solid #212121 placeholder so the build succeeds. Replace 'stylix.image'
+  # with a path to your actual wallpaper:
+  #   stylix.image = /path/to/wallpaper.png;
+  # or via fetchurl:
+  #   stylix.image = pkgs.fetchurl { url = "..."; hash = "sha256-..."; };
+  stylix = {
+    enable       = true;
+    polarity     = "dark";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/charcoal-dark.yaml";
+
+    # Solid dark placeholder wallpaper — replace with your own image
+    image = pkgs.runCommand "wallpaper-placeholder.png" {
+      buildInputs = [ pkgs.imagemagick ];
+    } ''
+      magick -size 1920x1080 xc:#212121 $out
+    '';
+
+    # Terminus Nerd Font as the system-wide font (set in original config spec)
+    fonts = {
+      monospace = {
+        name    = "Hack Nerd Font Mono";
+        package = pkgs.nerd-fonts.hack;
+      };
+      sansSerif = {
+        name    = "Hack Nerd Font";
+        package = pkgs.nerd-fonts.hack;
+      };
+      serif = {
+        name    = "Hack Nerd Font Propo";
+        package = pkgs.nerd-fonts.hack;
+      };
+      sizes = {
+        terminal    = 11;
+        applications = 11;
+        desktop     = 11;
+        popups      = 11;
+      };
+    };
+  };
+
+  # ── User ─────────────────────────────────────────────────────────────────────
   users.users.svea = {
     isNormalUser = true;
-    extraGroups = [
+    extraGroups  = [
       "wheel" "networkmanager" "audio" "video" "input"
       "dialout" "plugdev" "storage" "optical" "scanner" "lp"
       "adbusers"
     ];
     initialPassword = "changeme";
-    shell = pkgs.fish;
+    shell           = pkgs.zsh;   # switched from fish to zsh
   };
   security.sudo.wheelNeedsPassword = true;
 
-  # System packages
+  # ── System packages ──────────────────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
     curl
     htop
