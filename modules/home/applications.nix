@@ -59,44 +59,54 @@
   };
 
   # ── Librewolf ─────────────────────────────────────────────────────────────
+  # Settings are placed inside an explicit named profile so that
+  # stylix.targets.librewolf.profileNames can find and theme it.
+  # Without an explicit profile block, stylix doesn't know where to write
+  # userChrome.css / userContent.css and the browser stays unthemed.
   programs.librewolf = {
     enable = true;
 
-    settings = {
-      # Sync — sign in at about:preferences#sync after first launch
-      "identity.fxaccounts.enabled" = true;
+    profiles.default = {
+      id   = 0;
+      name = "default";
+      isDefault = true;
 
-      # Session restore
-      "browser.startup.page"                     = 3;
-      "browser.sessionstore.resume_session_once" = false;
-      "browser.sessionstore.max_tabs_undo"       = 10;
+      settings = {
+        # Sync — sign in at about:preferences#sync after first launch
+        "identity.fxaccounts.enabled" = true;
 
-      # Stay logged in between sessions
-      "signon.rememberSignons"                       = true;
-      "privacy.clearOnShutdown.passwords"            = false;
-      "privacy.clearOnShutdown_v2.passwords"         = false;
-      "privacy.clearOnShutdown.cookies"              = false;
-      "privacy.clearOnShutdown_v2.cookiesAndStorage" = false;
-      "privacy.clearOnShutdown.offlineApps"          = false;
-      "privacy.clearOnShutdown.sessions"             = false;
+        # Session restore
+        "browser.startup.page"                     = 3;
+        "browser.sessionstore.resume_session_once" = false;
+        "browser.sessionstore.max_tabs_undo"       = 10;
 
-      # Only clear form/search bar history on exit
-      "privacy.clearOnShutdown.formdata"    = true;
-      "privacy.clearOnShutdown.history"     = false;
-      "privacy.clearOnShutdown.downloads"   = false;
-      "privacy.sanitize.sanitizeOnShutdown" = true;
+        # Stay logged in between sessions
+        "signon.rememberSignons"                       = true;
+        "privacy.clearOnShutdown.passwords"            = false;
+        "privacy.clearOnShutdown_v2.passwords"         = false;
+        "privacy.clearOnShutdown.cookies"              = false;
+        "privacy.clearOnShutdown_v2.cookiesAndStorage" = false;
+        "privacy.clearOnShutdown.offlineApps"          = false;
+        "privacy.clearOnShutdown.sessions"             = false;
 
-      # Appearance — dark mode, no titlebar
-      "browser.tabs.inTitlebar"     = 0;
-      "ui.systemUsesDarkTheme"      = 1;
-      "browser.theme.content-theme" = 0;
-      "browser.theme.toolbar-theme" = 0;
+        # Only clear form/search bar history on exit
+        "privacy.clearOnShutdown.formdata"    = true;
+        "privacy.clearOnShutdown.history"     = false;
+        "privacy.clearOnShutdown.downloads"   = false;
+        "privacy.sanitize.sanitizeOnShutdown" = true;
 
-      "gfx.webrender.all"                = true;
-      "browser.aboutConfig.showWarning"  = false;
-      # resistFingerprinting breaks Firefox Sync — keep it off
-      "privacy.resistFingerprinting"     = false;
-      "browser.search.defaultenginename" = "DuckDuckGo";
+        # Appearance — dark mode, no titlebar
+        "browser.tabs.inTitlebar"     = 0;
+        "ui.systemUsesDarkTheme"      = 1;
+        "browser.theme.content-theme" = 0;
+        "browser.theme.toolbar-theme" = 0;
+
+        "gfx.webrender.all"                = true;
+        "browser.aboutConfig.showWarning"  = false;
+        # resistFingerprinting breaks Firefox Sync — keep it off
+        "privacy.resistFingerprinting"     = false;
+        "browser.search.defaultenginename" = "DuckDuckGo";
+      };
     };
   };
 
