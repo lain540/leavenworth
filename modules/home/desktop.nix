@@ -29,19 +29,17 @@
         lines = 10;
         width = 40;
         terminal = "foot";
-        # No icons for minimal look
         icons-enabled = false;
       };
       colors = {
-        # base16-default-dark - all values are RRGGBBAA format
-        background     = "181818ff"; # base00 - background
-        text           = "d8d8d8ff"; # base05 - foreground
-        match          = "f7ca88ff"; # base0A - yellow (matched chars)
-        selection      = "383838ff"; # base02 - selection bg
-        selection-text = "f8f8f8ff"; # base07 - selection fg
-        selection-match= "f7ca88ff"; # base0A - matched chars in selection
-        counter        = "585858ff"; # base03 - counter text
-        border         = "585858ff"; # base03 - border
+        background      = "181818ff";
+        text            = "d8d8d8ff";
+        match           = "f7ca88ff";
+        selection       = "383838ff";
+        selection-text  = "f8f8f8ff";
+        selection-match = "f7ca88ff";
+        counter         = "585858ff";
+        border          = "585858ff";
       };
       border = {
         width  = 1;
@@ -53,203 +51,164 @@
   # GTK theme
   gtk = {
     enable = true;
-    
     theme = {
-      name = "Materia-dark";
+      name    = "Materia-dark";
       package = pkgs.materia-theme;
     };
-    
     iconTheme = {
-      name = "Papirus-Dark";
+      name    = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
     };
-    
     cursorTheme = {
-      name = "Adwaita";
+      name    = "Adwaita";
       package = pkgs.adwaita-icon-theme;
     };
-    
     font = {
       name = "Hack Nerd Font Mono";
       size = 11;
     };
-    
-    # GTK4 dark mode and disable window decorations (titlebars)
     gtk4.extraConfig = {
       gtk-application-prefer-dark-theme = 1;
-      gtk-decoration-layout = "";  # Removes close/minimize/maximize buttons
+      gtk-decoration-layout = "";
     };
-
     gtk3.extraConfig = {
-      gtk-decoration-layout = "";  # Also disable for GTK3 apps
+      gtk-decoration-layout = "";
     };
   };
 
-  # Qt theme to match GTK - dark mode
+  # Qt theme
   qt = {
     enable = true;
     platformTheme.name = "gtk";
     style = {
-      name = "adwaita-dark";
+      name    = "adwaita-dark";
       package = pkgs.adwaita-qt;
     };
   };
 
-  # Force Qt dark mode via environment
   home.sessionVariables = {
     QT_QPA_PLATFORMTHEME = "gtk2";
-    QT_STYLE_OVERRIDE = "adwaita-dark";
+    QT_STYLE_OVERRIDE    = "adwaita-dark";
   };
 
-  # Hyprland configuration - minimal
+  # ── Hyprland ────────────────────────────────────────────────────────────────
   wayland.windowManager.hyprland = {
-    enable = true;
+    enable         = true;
     xwayland.enable = true;
-    
+
     settings = {
-      # Monitors
-      # Real hardware - dual monitor setup
-      # HDMI-A-1: 3440x1440 ultrawide (primary, below), 125% scaling
-      # DP-1:     1920x1080 (secondary, centered above the ultrawide)
-      #
-      # Logical sizes after scaling:
-      #   HDMI-A-1 → 2752x1152 logical pixels (3440/1.25 × 1440/1.25)
-      #   DP-1     → 1920x1080 logical pixels (no scaling)
+      # ── Monitors ────────────────────────────────────────────────────────────
+      # Real hardware — dual monitor setup:
+      #   HDMI-A-1: 3440x1440 ultrawide (primary, bottom), 1.25x scaling
+      #   DP-1:     1920x1080 (secondary, centered above the ultrawide)
       #
       # DP-1 is centered above HDMI-A-1:
       #   x offset = (2752 - 1920) / 2 = 416
-      #   y offset = 0 (sits at top)
-      #   HDMI-A-1 y offset = 1080 (height of DP-1)
       monitor = [
         "HDMI-A-1,3440x1440@60,0x1080,1.25"
         "DP-1,1920x1080@60,416x0,1"
       ];
-      # VirtualBox - uncomment and comment out real monitors above when testing in VM
+      # VirtualBox — comment out the real monitors above and uncomment this:
       # monitor = [
       #   "Virtual-1,1920x1080@60,0x0,1"
       # ];
 
-      # Input configuration
+      # ── Input ───────────────────────────────────────────────────────────────
       input = {
-        kb_layout = "us,se";
+        kb_layout  = "us,se";
         kb_variant = "workman,";
-        # No grp toggle here - layout switch is handled by $mod+Space bind below
-        # so it shows up as an intentional action rather than an accidental keystroke
         kb_options = "";
-
         follow_mouse = 1;
         touchpad.natural_scroll = false;
         sensitivity = 0;
       };
 
-      # Cursor theme
       cursor = {
         no_hardware_cursors = true;
       };
-      
+
       env = [
         "XCURSOR_THEME,Adwaita"
         "XCURSOR_SIZE,16"
-        # Set default editor
         "EDITOR,nvim"
         "VISUAL,nvim"
-        # GTK theme - forces GTK apps including LibreWolf to use Materia dark
         "GTK_THEME,Materia-dark:dark"
-        # Mozilla Wayland support and theme
         "MOZ_ENABLE_WAYLAND,1"
         "MOZ_GTK_TITLEBAR_DECORATION,client"
-        # Qt dark mode
         "QT_QPA_PLATFORMTHEME,gtk2"
         "QT_STYLE_OVERRIDE,adwaita-dark"
         "QT_AUTO_SCREEN_SCALE_FACTOR,1"
       ];
 
-      # General settings - minimal
+      # ── General — minimal / DWM-esque ───────────────────────────────────────
       general = {
-        gaps_in = 0;
-        gaps_out = 0;
+        gaps_in    = 0;
+        gaps_out   = 0;
         border_size = 2;
-        "col.active_border" = "rgba(ffffffff)";
+        "col.active_border"   = "rgba(ffffffff)";
         "col.inactive_border" = "rgba(595959aa)";
         layout = "dwindle";
       };
 
-      # Disable splash
       misc = {
-        disable_hyprland_logo = true;
+        disable_hyprland_logo    = true;
         disable_splash_rendering = true;
       };
 
-      # Decoration - disabled for minimal look
       decoration = {
         rounding = 0;
-        blur = {
-          enabled = false;
-        };
-        shadow = {
-          enabled = false;
-        };
+        blur.enabled   = false;
+        shadow.enabled = false;
       };
 
-      # Animations - disabled
-      animations = {
-        enabled = false;
-      };
+      animations.enabled = false;
 
-      # Layout
       dwindle = {
-        pseudotile = true;
+        pseudotile     = true;
         preserve_split = true;
       };
 
-      # Keybindings - optimized for Workman keyboard layout
-      # ─────────────────────────────────────────────────────
-      # Workman physical key → produced keysym reference:
-      #   Physical HJKL → Y N E O  (used for navigation, same finger positions as vim)
-      #   Physical QWERTY rows:
-      #     Q D R W B J F U P ;     (top row)
-      #     A S H T G Y N E O I     (home row)
-      #     Z X M C V K L , . /     (bottom row)
+      # ── Keybindings ─────────────────────────────────────────────────────────
+      # Workman physical key reference (produced keysym → physical key):
+      #   Y N E O  =  H J K L  (vi navigation, home row right hand)
       "$mod" = "SUPER";
 
       bind = [
-        # ── Applications ───────────────────────────────────────────────
-        "$mod, Return,  exec, foot"              # Terminal (Return = universal)
-        "$mod, d,       exec, fuzzel"            # Launcher       (physical W, top row)
-        "$mod, w,       exec, foot -e yazi"      # Files          (physical R, top row)
-        "$mod, q,       killactive"              # Close window   (physical Q, easy reach, mnemonic quit)
-        "$mod SHIFT, q, exit"                    # Exit Hyprland  (shift guard to avoid accidents)
-        "$mod, f,       fullscreen"              # Fullscreen     (physical U, mnemonic full)
-        "$mod, t,       togglefloating"          # Float toggle   (physical F, mnemonic tile/float)
-        "$mod, s,       togglesplit"             # Toggle split   (physical S, home row)
-        "$mod, p,       pseudo"                  # Pseudo tile    (physical O)
+        # Applications
+        "$mod, Return,  exec, foot"
+        "$mod, d,       exec, fuzzel"
+        "$mod, w,       exec, foot -e yazi"
+        "$mod, q,       killactive"
+        "$mod SHIFT, q, exit"
+        "$mod, f,       fullscreen"
+        "$mod, t,       togglefloating"
+        "$mod, s,       togglesplit"
+        "$mod, p,       pseudo"
 
-        # ── Keyboard layout switch ─────────────────────────────────────
-        # Cycles through us/workman and se layouts
+        # Keyboard layout switch (us/workman ↔ se)
         "$mod, Space,   exec, hyprctl switchxkblayout all next"
 
-        # ── Focus - YNEO = physical HJKL (vi-style on Workman) ─────────
-        "$mod, y,       movefocus, l"            # physical H
-        "$mod, n,       movefocus, d"            # physical J
-        "$mod, e,       movefocus, u"            # physical K
-        "$mod, o,       movefocus, r"            # physical L
-        # Arrow keys kept as fallback
-        "$mod, left,    movefocus, l"
-        "$mod, right,   movefocus, r"
-        "$mod, up,      movefocus, u"
-        "$mod, down,    movefocus, d"
+        # Focus — YNEO = physical HJKL on Workman
+        "$mod, y,    movefocus, l"
+        "$mod, n,    movefocus, d"
+        "$mod, e,    movefocus, u"
+        "$mod, o,    movefocus, r"
+        "$mod, left,  movefocus, l"
+        "$mod, right, movefocus, r"
+        "$mod, up,    movefocus, u"
+        "$mod, down,  movefocus, d"
 
-        # ── Move windows - SHIFT + YNEO ────────────────────────────────
-        "$mod SHIFT, y, movewindow, l"
-        "$mod SHIFT, n, movewindow, d"
-        "$mod SHIFT, e, movewindow, u"
-        "$mod SHIFT, o, movewindow, r"
+        # Move windows
+        "$mod SHIFT, y,     movewindow, l"
+        "$mod SHIFT, n,     movewindow, d"
+        "$mod SHIFT, e,     movewindow, u"
+        "$mod SHIFT, o,     movewindow, r"
         "$mod SHIFT, left,  movewindow, l"
         "$mod SHIFT, right, movewindow, r"
         "$mod SHIFT, up,    movewindow, u"
         "$mod SHIFT, down,  movewindow, d"
 
-        # ── Workspaces ─────────────────────────────────────────────────
+        # Workspaces
         "$mod, 1, workspace, 1"
         "$mod, 2, workspace, 2"
         "$mod, 3, workspace, 3"
@@ -261,7 +220,7 @@
         "$mod, 9, workspace, 9"
         "$mod, 0, workspace, 10"
 
-        # ── Move window to workspace ────────────────────────────────────
+        # Move window to workspace
         "$mod SHIFT, 1, movetoworkspace, 1"
         "$mod SHIFT, 2, movetoworkspace, 2"
         "$mod SHIFT, 3, movetoworkspace, 3"
@@ -273,13 +232,14 @@
         "$mod SHIFT, 9, movetoworkspace, 9"
         "$mod SHIFT, 0, movetoworkspace, 10"
 
-        # ── Screenshots ────────────────────────────────────────────────
-        ", Print,       exec, hyprshot -m region --output-folder ~/Pictures/Screenshots"
-        "SHIFT, Print,  exec, hyprshot -m output --output-folder ~/Pictures/Screenshots"
+        # ── Screenshots ────────────────────────────────────────────────────────
+        # Area capture → clipboard only (no file saved)
+        ", Print,      exec, hyprshot -m region --clipboard-only"
+        # Full output → save to Screenshots folder
+        "SHIFT, Print, exec, hyprshot -m output --output-folder ~/Pictures/Screenshots"
 
-        # ── Audio ──────────────────────────────────────────────────────
-        # Physical A = A in Workman (home row, left hand)
-        "$mod, a,       exec, qpwgraph"                # PipeWire graph - visual audio routing
+        # Audio
+        "$mod, a, exec, qpwgraph"
 
         # Media keys
         ", XF86AudioPlay,        exec, playerctl play-pause"
@@ -291,67 +251,60 @@
         ", XF86AudioMute,        exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
       ];
 
-      # Mouse bindings
       bindm = [
         "$mod, mouse:272, movewindow"
         "$mod, mouse:273, resizewindow"
       ];
 
-      # Autostart
       exec-once = [
         "waybar"
-        "udiskie --tray"   # Auto-mount removable drives and phones
-        # wlsunset started after a short delay so Hyprland has time to
-        # register both display outputs before gamma control is requested
+        "udiskie --tray"
+        # wlsunset: 59.3°N 18.1°E = Stockholm
+        # Update coordinates if you move. Gradients between -t (night) and -T (day) colour temp.
         "bash -c 'sleep 3 && wlsunset -l 59.3 -L 18.1 -t 3500 -T 6500'"
-        # 59.3°N 18.1°E = Stockholm - wlsunset uses location to calculate
-        # sunrise/sunset times automatically. Update if you move.
       ];
     };
   };
 
-  # Waybar - status bar
+  # ── Waybar ──────────────────────────────────────────────────────────────────
   programs.waybar = {
     enable = true;
-    
+
     settings = {
       mainBar = {
-        layer = "bottom";
+        layer    = "bottom";
         position = "top";
-        height = 20;
-        spacing = 0;
-        
-        modules-left = [ "hyprland/workspaces" ];
+        height   = 20;
+        spacing  = 0;
+
+        modules-left   = [ "hyprland/workspaces" ];
         modules-center = [ "hyprland/window" ];
-        modules-right = [ "custom/pipewire" "clock" ];
+        modules-right  = [ "custom/pipewire" "clock" ];
 
         "hyprland/workspaces" = {
-          format = "{id}";
+          format   = "{id}";
           on-click = "activate";
-          tooltip = false;
+          tooltip  = false;
         };
 
         "hyprland/window" = {
-          format = "{}";
+          format     = "{}";
           max-length = 50;
-          tooltip = false;
+          tooltip    = false;
         };
 
         clock = {
-          format = "{:%H:%M}";
+          format  = "{:%H:%M}";
           tooltip = false;
         };
 
         "custom/pipewire" = {
-          # Poll every second with a script that retries until a sink exists.
-          # This handles the race between waybar starting and wireplumber
-          # enumerating sinks - the module will show as soon as audio is ready.
-          exec = ''wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk 'NF{if ($3=="[MUTED]") print "MUTE"; else print "VOL " int($2*100) "%"}' '';
-          interval = 1;
-          on-click = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
-          on-scroll-up = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+";
+          exec       = ''wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk 'NF{if ($3=="[MUTED]") print "MUTE"; else print "VOL " int($2*100) "%"}' '';
+          interval   = 1;
+          on-click   = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          on-scroll-up   = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+";
           on-scroll-down = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-";
-          tooltip = false;
+          tooltip    = false;
         };
       };
     };
@@ -364,76 +317,62 @@
           font-size: 12px;
           min-height: 0;
       }
-
       window#waybar {
           background-color: #181818;
           color: #d8d8d8;
       }
-
       #workspaces button {
           padding: 0 8px;
           background-color: #282828;
           color: #d8d8d8;
           margin: 0 2px;
       }
-
       #workspaces button.active {
           background-color: #d8d8d8;
           color: #181818;
       }
-
       #workspaces button.urgent {
           background-color: #ab4642;
           color: #f8f8f8;
       }
-
       #window {
           padding: 0 10px;
           background-color: #181818;
           color: #d8d8d8;
       }
-
-      #clock,
-      #custom-pipewire {
+      #clock, #custom-pipewire {
           padding: 0 10px;
           background-color: #181818;
           color: #d8d8d8;
       }
-
-      #clock:hover,
-      #custom-pipewire:hover {
+      #clock:hover, #custom-pipewire:hover {
           background-color: #282828;
       }
-
       #custom-pipewire {
           color: #b8b8b8;
       }
     '';
   };
 
-  # Foot terminal - minimal with Hack Nerd Font
+  # ── Foot terminal ────────────────────────────────────────────────────────────
   programs.foot = {
     enable = true;
     settings = {
       main = {
-        term = "xterm-256color";
-        font = "Hack Nerd Font Mono:size=11";
+        term      = "xterm-256color";
+        font      = "Hack Nerd Font Mono:size=11";
         dpi-aware = "yes";
       };
-
       mouse = {
         hide-when-typing = "yes";
       };
-
       colors = {
-        alpha = 1.0;
+        alpha      = 1.0;
         background = "181818";
         foreground = "d8d8d8";
       };
-
-      # Enable sixel for yazi image previews
       tweak = {
-        sixel = "yes";
+        sixel = "yes";  # image previews in yazi
       };
     };
   };
