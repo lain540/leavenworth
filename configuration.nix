@@ -10,7 +10,11 @@
   # ── Boot ─────────────────────────────────────────────────────────────────────
   boot.loader.systemd-boot.enable        = true;
   boot.loader.efi.canTouchEfiVariables   = true;
-  boot.loader.systemd-boot.configurationLimit = 3;  # keep last 3 generations in menu
+  boot.loader.systemd-boot.configurationLimit = 3;
+
+  # Tell the kernel to initialise HDMI-A-1 first so early boot text
+  # (initrd, greetd) renders on the ultrawide, not the secondary display.
+  boot.kernelParams = [ "video=HDMI-A-1:3440x1440@60" ];  # keep last 3 generations in menu
 
   # ── Hardware ──────────────────────────────────────────────────────────────────
   # AMD Ryzen 7 5700G — Radeon Vega iGPU (RADV Vulkan enabled by default via Mesa)
