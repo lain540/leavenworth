@@ -42,6 +42,11 @@
           home-manager.useUserPackages  = true;
           home-manager.users.svea       = import ./home.nix;
           home-manager.extraSpecialArgs = { inherit inputs; };
+          # When home-manager finds a file it wants to manage that already exists
+          # on disk (e.g. ~/.librewolf/profiles.ini, ~/.config/mimeapps.list),
+          # rename the existing file with this extension instead of aborting.
+          # After a successful rebuild you can delete the .bak files safely.
+          home-manager.backupFileExtension = "bak";
           home-manager.sharedModules    = [
             nvf.homeManagerModules.default
             # stylix.homeManagerModules.stylix is intentionally absent here —
