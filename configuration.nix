@@ -68,9 +68,9 @@
   programs.zsh.enable = true;
 
   # ── musnix — real-time audio optimisation ────────────────────────────────────
-  musnix.enable         = true;
-  musnix.kernel.realtime = false;
-  musnix.rtirq.enable   = true;
+  musnix.enable       = true;
+  musnix.rtirq.enable = true;
+  # musnix.kernel.realtime defaults to false — no need to set it explicitly
 
   # ── Stylix — system-wide base16 theming ──────────────────────────────────────
   # Stylix applies a coherent colour scheme across the system: terminal,
@@ -114,7 +114,7 @@
       };
       emoji = {
         name    = "Noto Color Emoji";
-        package = pkgs.noto-fonts-emoji;
+        package = pkgs.noto-fonts-color-emoji;  # renamed from noto-fonts-emoji
       };
       sizes = {
         terminal     = 11;
