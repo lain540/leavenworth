@@ -94,25 +94,33 @@
       magick -size 1920x1080 xc:#212121 $out
     '';
 
-    # Terminus Nerd Font as the system-wide font (set in original config spec)
+    # ── Fonts — Hack Nerd Font everywhere ────────────────────────────────────
+    # All four stylix font categories point to nerd-fonts.hack so that Hack
+    # is the default for terminals, GTK apps, the desktop, and popups.
+    # Stylix propagates these through fontconfig, GTK settings, and any
+    # target that reads stylix.fonts (foot, fuzzel, nvf lualine, etc.)
     fonts = {
       monospace = {
-        name    = "Hack Nerd Font Mono";
+        name    = "Hack Nerd Font Mono";  # terminals, editors, code
         package = pkgs.nerd-fonts.hack;
       };
       sansSerif = {
-        name    = "Hack Nerd Font";
+        name    = "Hack Nerd Font";       # GTK UI labels, buttons
         package = pkgs.nerd-fonts.hack;
       };
       serif = {
-        name    = "Hack Nerd Font Propo";
+        name    = "Hack Nerd Font Propo"; # proportional variant for body text
         package = pkgs.nerd-fonts.hack;
       };
+      emoji = {
+        name    = "Noto Color Emoji";
+        package = pkgs.noto-fonts-emoji;
+      };
       sizes = {
-        terminal    = 11;
+        terminal     = 11;
         applications = 11;
-        desktop     = 11;
-        popups      = 11;
+        desktop      = 11;
+        popups       = 11;
       };
     };
   };
