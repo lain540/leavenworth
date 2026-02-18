@@ -62,8 +62,6 @@
       ];
 
       # Pin workspaces so the ultrawide always owns 1–9, DP-1 owns 10.
-      # Without this Hyprland assigns workspace 1 to whichever output it
-      # initialises first, which may be DP-1.
       workspace = [
         "1,  monitor:HDMI-A-1, default:true"
         "2,  monitor:HDMI-A-1"
@@ -87,11 +85,22 @@
         touchpad.natural_scroll = false;
       };
 
-      cursor.no_hardware_cursors = true;
+      cursor = {
+        # Software cursor rendering — required on some AMD iGPU setups where
+        # hardware cursors show a second "ghost" cursor on the primary output.
+        no_hardware_cursors = true;
+
+        # Warp the cursor to the centre of the ultrawide when Hyprland starts.
+        # Without this the cursor can spawn on DP-1 and never move to HDMI-A-1
+        # until you physically move the mouse.
+        # Ultrawide centre: x = 3440/2 = 1720, y = 1080 + 1440/2 = 1800
+        warp_on_change_workspace = true;
+      };
 
       env = [
-        # Cursor
-        "XCURSOR_THEME,Adwaita" "XCURSOR_SIZE,24"
+        # Cursor — must match stylix.cursor in configuration.nix
+        "XCURSOR_THEME,Adwaita"
+        "XCURSOR_SIZE,24"
 
         # Editor
         "EDITOR,nvim" "VISUAL,nvim"
@@ -99,17 +108,13 @@
         # Mozilla native Wayland
         "MOZ_ENABLE_WAYLAND,1" "MOZ_GTK_TITLEBAR_DECORATION,client"
 
-        # Qt
+        # Qt / GTK — disable per-app self-scaling (no Hyprland fractional scale active)
         "QT_AUTO_SCREEN_SCALE_FACTOR,1"
+        "QT_SCALE_FACTOR,1"
+        "GDK_SCALE,1"
 
         # File manager
         "FILE_MANAGER,yazi"
-
-        # XWayland scaling — tell XWayland apps not to scale themselves
-        # (avoids blurry/doubled scaling on the native-resolution ultrawide)
-        "XCURSOR_SIZE,24"
-        "GDK_SCALE,1"
-        "QT_SCALE_FACTOR,1"
       ];
 
       general = {
@@ -172,12 +177,12 @@
         ", Print,      exec, hyprshot -m region --clipboard-only"
         "SHIFT, Print, exec, hyprshot -m output --output-folder ~/Pictures/Screenshots"
 
-        # Media keys (keyboard hardware buttons)
-        ", XF86AudioPlay,        exec, playerctl play-pause"
-        ", XF86AudioPause,       exec, playerctl play-pause"
-        ", XF86AudioNext,        exec, playerctl next"
-        ", XF86AudioPrev,        exec, playerctl previous"
-        ", XF86AudioMute,        exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+        # Media keys
+        ", XF86AudioPlay,  exec, playerctl play-pause"
+        ", XF86AudioPause, exec, playerctl play-pause"
+        ", XF86AudioNext,  exec, playerctl next"
+        ", XF86AudioPrev,  exec, playerctl previous"
+        ", XF86AudioMute,  exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
       ];
 
       bindm = [
@@ -185,18 +190,27 @@
         "$mod, mouse:273, resizewindow"
       ];
 
-      # bindel — repeatable binds for volume (keyboard keys + tablet dial).
-      # The tablet dial sends XF86AudioRaise/LowerVolume via OTD.
-      # In otd-gui: Bindings → set dial to output type "Key" →
-      #   clockwise = XF86AudioRaiseVolume, counter = XF86AudioLowerVolume.
+      # Repeatable volume binds — caught by both keyboard keys and tablet dial.
+      # In otd-gui: Bindings → dial → output type "Key" →
+      #   clockwise = XF86AudioRaiseVolume, counter = XF86AudioLowerVolume
       bindel = [
         ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 2%+"
         ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
       ];
 
       exec-once = [
+        # Force-load the cursor theme immediately so XWayland inherits it.
+        # Without this, XWayland renders its own default cursor until the first
+        # Wayland-native app opens, creating a visible "ghost" cursor on HDMI-A-1.
+        "hyprctl setcursor Adwaita 24"
+
+        # Warp the cursor to the centre of the ultrawide at startup.
+        # HDMI-A-1 spans y=1080–2520; centre = x=1720, y=1800
+        "hyprctl dispatch movecursor 1720 1800"
+
         "waybar"
         "udiskie --tray"
+
         # wlsunset: day 06:30–18:30 at 6500K, night at 2700K
         "bash -c 'sleep 3 && wlsunset -S 06:30 -s 18:30 -T 6500 -t 2700'"
       ];
