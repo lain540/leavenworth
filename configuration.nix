@@ -7,53 +7,51 @@
     inputs.musnix.nixosModules.musnix
   ];
 
-  # ── Boot ────────────────────────────────────────────────────────────────────
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.systemd-boot.configurationLimit = 3;
+  # ── Boot ─────────────────────────────────────────────────────────────────────
+  boot.loader.systemd-boot.enable        = true;
+  boot.loader.efi.canTouchEfiVariables   = true;
+  boot.loader.systemd-boot.configurationLimit = 3;  # keep last 3 generations in menu
 
-  # ── GPU — AMD Ryzen 7 5700G (Radeon Vega iGPU) ──────────────────────────────
+  # ── Hardware ──────────────────────────────────────────────────────────────────
+  # AMD Ryzen 7 5700G — Radeon Vega iGPU (RADV Vulkan enabled by default via Mesa)
+  boot.initrd.kernelModules     = [ "amdgpu" ];
+  services.xserver.videoDrivers = [ "amdgpu" ];
+
   hardware.graphics = {
     enable      = true;
     enable32Bit = true;
     extraPackages = with pkgs; [
-      rocmPackages.clr        # AMD ROCm OpenCL for DaVinci Resolve GPU compute
+      rocmPackages.clr      # ROCm OpenCL — needed for DaVinci Resolve GPU compute
       rocmPackages.clr.icd
-      libvdpau-va-gl          # VDPAU/VAAPI video decode acceleration
-      libva-vdpau-driver      # renamed from vaapiVdpau in nixpkgs-unstable
+      libvdpau-va-gl        # VDPAU/VAAPI video decode
+      libva-vdpau-driver
     ];
   };
-  boot.initrd.kernelModules    = [ "amdgpu" ];
-  services.xserver.videoDrivers = [ "amdgpu" ];
 
-  # ── Drawing tablet — OpenTabletDriver ────────────────────────────────────────
-  # Supports Gaomon M10K and most other USB tablets out of the box.
-  # After first boot run `otd-gui` to set pen area mapping and calibrate.
-  # The daemon runs as a systemd user service — starts automatically on login.
-  hardware.opentabletdriver = {
-    enable        = true;
-    daemon.enable = true;
-  };
-  # uinput — virtual input kernel module required by OpenTabletDriver
-  hardware.uinput.enable = true;
-  # NOTE: boot.initrd.kernelModules above already contains "amdgpu".
-  # We add "uinput" via hardware.uinput.enable; it handles the kernel module.
-
-  # ── System ───────────────────────────────────────────────────────────────────
-  networking.hostName = "leavenworth";
-  time.timeZone       = "Europe/Stockholm";
-  i18n.defaultLocale  = "en_US.UTF-8";
-
-  console = {
-    useXkbConfig = true;
-    earlySetup   = true;
-  };
-  services.xserver.xkb = {
-    layout  = "us";
-    variant = "workman";
+  # ROCm target override for Vega (gfx90c) — required by DaVinci Resolve
+  environment.variables = {
+    ROC_ENABLE_PRE_VEGA      = "1";
+    HSA_OVERRIDE_GFX_VERSION = "9.0.0";
   };
 
-  # ── Nix ──────────────────────────────────────────────────────────────────────
+  # Gaomon M10K drawing tablet — run `otd-gui` after first boot to calibrate
+  hardware.opentabletdriver.enable        = true;
+  hardware.opentabletdriver.daemon.enable = true;
+  hardware.uinput.enable                  = true;  # virtual input device, required by OTD
+
+  # ── System ────────────────────────────────────────────────────────────────────
+  networking.hostName      = "leavenworth";
+  networking.networkmanager.enable = true;
+  time.timeZone            = "Europe/Stockholm";
+  i18n.defaultLocale       = "en_US.UTF-8";
+
+  # Console keyboard follows XKB settings below
+  console = { useXkbConfig = true; earlySetup = true; };
+
+  # Default layout: US Workman; switch to Swedish with Super+Space in Hyprland
+  services.xserver.xkb = { layout = "us"; variant = "workman"; };
+
+  # ── Nix ───────────────────────────────────────────────────────────────────────
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.auto-optimise-store   = true;
   nix.gc = {
@@ -63,91 +61,56 @@
   };
   nixpkgs.config.allowUnfree = true;
 
-  environment.variables = {
-    ROC_ENABLE_PRE_VEGA      = "1";
-    HSA_OVERRIDE_GFX_VERSION = "9.0.0";
-  };
-
-  # ── Networking ───────────────────────────────────────────────────────────────
-  networking.networkmanager.enable = true;
-
-  # ── Shell ─────────────────────────────────────────────────────────────────────
+  # ── Shell & programs ──────────────────────────────────────────────────────────
   programs.zsh.enable = true;
 
-  # ── musnix ───────────────────────────────────────────────────────────────────
-  musnix.enable       = true;
-  musnix.rtirq.enable = true;
+  # ── musnix — real-time audio ──────────────────────────────────────────────────
+  # Sets CPU scheduler, rtirq priorities, and plugin path env vars automatically.
+  # Launch Reaper via `pw-jack reaper` to use the PipeWire JACK bridge.
+  musnix.enable        = true;
+  musnix.rtirq.enable  = true;
 
-  # ── Stylix ───────────────────────────────────────────────────────────────────
+  # ── Stylix — system-wide base16 theming ───────────────────────────────────────
+  # Change base16Scheme to swap the colour scheme everywhere at once.
+  # Available schemes: ls ${pkgs.base16-schemes}/share/themes/
   stylix = {
     enable       = true;
     polarity     = "dark";
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/black-metal.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/default-dark.yaml";
 
-    # stylix.image is required by the stylix module even when base16Scheme is
-    # set explicitly. We generate a minimal 1x1 transparent PNG so the option
-    # is satisfied without any wallpaper ever being visible.
-    # stylix's swaybg target is not enabled so this image is never displayed.
-    image = pkgs.runCommand "wallpaper-none.png" {
-      buildInputs = [ pkgs.imagemagick ];
-    } ''
-      magick -size 1x1 xc:none $out
-    '';
-
-    # ── Cursor ────────────────────────────────────────────────────────────────
-    # Setting this here ensures the cursor is applied system-wide (greetd, GTK,
-    # Hyprland, XWayland). Without it Hyprland falls back to its own logo cursor.
+    # Cursor — set system-wide so greetd, GTK, Hyprland and XWayland all agree
     cursor = {
       package = pkgs.adwaita-icon-theme;
       name    = "Adwaita";
       size    = 24;
     };
 
-    # ── Fonts — Hack Nerd Font everywhere ────────────────────────────────────
+    # Fonts — Hack Nerd Font for everything; stylix propagates through fontconfig,
+    # GTK, and any target that reads stylix.fonts (foot, fuzzel, nvf lualine…)
     fonts = {
-      monospace = {
-        name    = "Hack Nerd Font Mono";
-        package = pkgs.nerd-fonts.hack;
-      };
-      sansSerif = {
-        name    = "Hack Nerd Font";
-        package = pkgs.nerd-fonts.hack;
-      };
-      serif = {
-        name    = "Hack Nerd Font Propo";
-        package = pkgs.nerd-fonts.hack;
-      };
-      emoji = {
-        name    = "Noto Color Emoji";
-        package = pkgs.noto-fonts-color-emoji;
-      };
-      sizes = {
-        terminal     = 11;
-        applications = 11;
-        desktop      = 11;
-        popups       = 11;
-      };
+      monospace = { name = "Hack Nerd Font Mono";   package = pkgs.nerd-fonts.hack; };
+      sansSerif = { name = "Hack Nerd Font";         package = pkgs.nerd-fonts.hack; };
+      serif     = { name = "Hack Nerd Font Propo";   package = pkgs.nerd-fonts.hack; };
+      emoji     = { name = "Noto Color Emoji";        package = pkgs.noto-fonts-color-emoji; };
+      sizes     = { terminal = 11; applications = 11; desktop = 11; popups = 11; };
     };
   };
 
-  # ── User ─────────────────────────────────────────────────────────────────────
+  # ── User ──────────────────────────────────────────────────────────────────────
   users.users.svea = {
     isNormalUser = true;
+    shell        = pkgs.zsh;
+    initialPassword = "changeme";
     extraGroups  = [
-      "wheel" "networkmanager" "audio" "video" "input"
+      "wheel" "networkmanager"
+      "audio" "video" "input"
       "dialout" "plugdev" "storage" "optical" "scanner" "lp"
       "adbusers"
     ];
-    initialPassword = "changeme";
-    shell           = pkgs.zsh;
   };
   security.sudo.wheelNeedsPassword = true;
 
-  # ── System packages ──────────────────────────────────────────────────────────
-  environment.systemPackages = with pkgs; [
-    curl
-    htop
-  ];
+  environment.systemPackages = with pkgs; [ curl htop ];
 
   system.stateVersion = "25.11";
 }

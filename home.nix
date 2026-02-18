@@ -4,7 +4,7 @@
   imports = [
     ./modules/home/desktop.nix
     ./modules/home/applications.nix
-    ./modules/home/shell.nix      # zsh + prompt
+    ./modules/home/shell.nix
     ./modules/home/nvf.nix
   ];
 
@@ -14,52 +14,36 @@
 
   programs.home-manager.enable = true;
 
-  # ── Git ──────────────────────────────────────────────────────────────────────
+  # ── Git ───────────────────────────────────────────────────────────────────────
   programs.git = {
     enable    = true;
     userName  = "lain540";
     userEmail = "lain540@users.noreply.github.com";
-    settings = {
-      init.defaultBranch = "main";
-      pull.rebase        = false;
-    };
+    settings  = { init.defaultBranch = "main"; pull.rebase = false; };
   };
 
-  # ── XDG user directories ──────────────────────────────────────────────────────
-  xdg.userDirs = {
-    enable            = true;
-    createDirectories = true;
-  };
+  # ── XDG ───────────────────────────────────────────────────────────────────────
+  xdg.userDirs = { enable = true; createDirectories = true; };
 
-  # ── Yazi file manager ─────────────────────────────────────────────────────────
+  # ── Yazi ──────────────────────────────────────────────────────────────────────
   programs.yazi = {
-    enable                = true;
-    enableZshIntegration  = true;   # switched from fish to zsh
-    shellWrapperName      = "y";
-
+    enable               = true;
+    enableZshIntegration = true;
+    shellWrapperName     = "y";
     settings = {
-      manager = {
-        show_hidden    = false;
-        sort_by        = "natural";
-        sort_dir_first = true;
-      };
-      preview = {
-        image_protocol = "sixel";
-        max_width      = 600;
-        max_height     = 900;
-      };
+      manager = { show_hidden = false; sort_by = "natural"; sort_dir_first = true; };
+      preview = { image_protocol = "sixel"; max_width = 600; max_height = 900; };
     };
   };
 
   # ── Packages ──────────────────────────────────────────────────────────────────
   home.packages = with pkgs; [
-    ripgrep
-    fd
-    fzf
+    # CLI utilities
+    ripgrep fd fzf
 
     # Yazi dependencies
     ffmpegthumbnailer  # video thumbnails
-    unar               # RAR / archive extraction
+    unar               # archive extraction (RAR etc.)
     jq                 # JSON previews
     poppler-utils      # PDF previews
     imagemagick        # image previews
