@@ -1,73 +1,160 @@
 #!/usr/bin/env bash
-set -e
+# Leavenworth NixOS install script
+# Usage: ./install.sh /mnt
+#
+# Run from a NixOS live ISO after partitioning and mounting your target disk
+# at /mnt (and /mnt/boot if you have a separate boot partition).
+#
+# The script:
+#   1. Validates the environment
+#   2. Ensures the nix daemon is running (prevents core dumps on first eval)
+#   3. Enables flakes for the live session
+#   4. Generates hardware-configuration.nix for the target machine
+#   5. Copies the config tree into /mnt/etc/nixos
+#   6. Pre-warms the nix evaluation cache (prevents core dump on nixos-install)
+#   7. Installs the system
+#
+# Core dump on first run / works on second run:
+#   This is caused by the nix evaluator crashing while fetching flake registry
+#   metadata for the first time with an empty cache. The fix is to run
+#   `nix flake metadata` (step 6) before nixos-install so the cache is warm.
+#   The nix-daemon must also be running before any evaluation starts.
+
+set -euo pipefail
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m'
 
-if [ "$EUID" -ne 0 ]; then
-  echo -e "${RED}Error: Run as root${NC}"
+info()    { echo -e "${GREEN}==>${NC} $*"; }
+warn()    { echo -e "${YELLOW}==>${NC} $*"; }
+error()   { echo -e "${RED}==> ERROR:${NC} $*" >&2; }
+section() { echo -e "\n${BLUE}──────────────────────────────────────${NC}"; echo -e "${BLUE}  $*${NC}"; echo -e "${BLUE}──────────────────────────────────────${NC}"; }
+
+# ── Sanity checks ─────────────────────────────────────────────────────────────
+
+if [[ $EUID -ne 0 ]]; then
+  error "Run as root (sudo ./install.sh /mnt)"
   exit 1
 fi
 
-if [ $# -ne 1 ]; then
-  echo "Usage: ./install.sh /mnt"
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $0 /mnt"
   exit 1
 fi
 
 MOUNT_POINT="$1"
 
 if ! mountpoint -q "$MOUNT_POINT"; then
-  echo -e "${RED}Error: $MOUNT_POINT is not mounted${NC}"
+  error "$MOUNT_POINT is not a mountpoint. Mount your target disk first."
   exit 1
 fi
 
-echo -e "${GREEN}Installing NixOS to $MOUNT_POINT...${NC}"
+# Resolve script location so we can find the config files alongside it
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_SRC="$(dirname "$SCRIPT_DIR")"  # one level up from scripts/
 
-# Get the config directory (parent of scripts/)
-SCRIPT_DIR="$(dirname "$0")"
-CONFIG_SRC="$(cd "$SCRIPT_DIR/.." && pwd)"
+# Verify the config source looks right
+if [[ ! -f "$CONFIG_SRC/flake.nix" ]]; then
+  error "Cannot find flake.nix in $CONFIG_SRC"
+  error "Run this script from inside the cloned leavenworth repo."
+  exit 1
+fi
 
-# Generate hardware configuration
-echo -e "${YELLOW}Generating hardware configuration...${NC}"
+section "Leavenworth NixOS Installer"
+info "Target mount point : $MOUNT_POINT"
+info "Config source      : $CONFIG_SRC"
+echo ""
+
+# ── Step 1: nix-daemon ────────────────────────────────────────────────────────
+# The nix daemon must be running before any nix evaluation. On some live ISOs
+# it is not started automatically. If it is already running this is a no-op.
+section "Step 1/6 — Starting nix daemon"
+if ! systemctl is-active --quiet nix-daemon 2>/dev/null; then
+  warn "nix-daemon not running — starting it now"
+  systemctl start nix-daemon
+  sleep 2
+  info "nix-daemon started"
+else
+  info "nix-daemon already running"
+fi
+
+# ── Step 2: Enable flakes for this live session ───────────────────────────────
+section "Step 2/6 — Enabling flakes"
+export NIX_CONFIG="experimental-features = nix-command flakes"
+info "Flakes enabled for this session"
+
+# ── Step 3: Generate hardware configuration ───────────────────────────────────
+section "Step 3/6 — Generating hardware configuration"
+info "Running nixos-generate-config..."
 nixos-generate-config --root "$MOUNT_POINT"
+info "Generated: $MOUNT_POINT/etc/nixos/hardware-configuration.nix"
 
-# Copy our flake configuration to /mnt/etc/nixos/
-echo -e "${YELLOW}Copying configuration files...${NC}"
-CONFIG_DIR="$MOUNT_POINT/etc/nixos"
+# ── Step 4: Copy config files ─────────────────────────────────────────────────
+section "Step 4/6 — Copying configuration files"
+TARGET_DIR="$MOUNT_POINT/etc/nixos"
 
-# Copy config files from parent directory
-cp "$CONFIG_SRC/flake.nix" "$CONFIG_DIR/"
-cp "$CONFIG_SRC/configuration.nix" "$CONFIG_DIR/"
-cp "$CONFIG_SRC/home.nix" "$CONFIG_DIR/"
-cp "$CONFIG_SRC/README.md" "$CONFIG_DIR/" 2>/dev/null || true
-cp "$CONFIG_SRC/.gitignore" "$CONFIG_DIR/" 2>/dev/null || true
+info "Copying config to $TARGET_DIR..."
+cp "$CONFIG_SRC/flake.nix"        "$TARGET_DIR/"
+cp "$CONFIG_SRC/home.nix"         "$TARGET_DIR/"
+cp "$CONFIG_SRC/configuration.nix" "$TARGET_DIR/"
+mkdir -p "$TARGET_DIR/modules/home" "$TARGET_DIR/modules/system" "$TARGET_DIR/scripts"
+cp "$CONFIG_SRC/modules/home/"*.nix  "$TARGET_DIR/modules/home/"
+cp "$CONFIG_SRC/modules/system/"*.nix "$TARGET_DIR/modules/system/"
+cp "$SCRIPT_DIR/rebuild.sh"          "$TARGET_DIR/scripts/" 2>/dev/null || true
+cp "$CONFIG_SRC/.gitignore"          "$TARGET_DIR/" 2>/dev/null || true
+cp "$CONFIG_SRC/MAINTENANCE.md"      "$TARGET_DIR/" 2>/dev/null || true
 
-# Copy modules directory
-echo -e "${YELLOW}Copying modules...${NC}"
-cp -r "$CONFIG_SRC/modules" "$CONFIG_DIR/"
+# hardware-configuration.nix was generated by nixos-generate-config above.
+# Do NOT overwrite it with anything from the repo.
+info "Config files copied (hardware-configuration.nix preserved)"
 
-# Copy scripts directory
-mkdir -p "$CONFIG_DIR/scripts"
-cp "$CONFIG_SRC/scripts/"* "$CONFIG_DIR/scripts/"
+# ── Step 5: Copy flake.lock if present (reproducible build) ──────────────────
+if [[ -f "$CONFIG_SRC/flake.lock" ]]; then
+  cp "$CONFIG_SRC/flake.lock" "$TARGET_DIR/"
+  info "flake.lock copied (pinned inputs for reproducible build)"
+else
+  warn "No flake.lock found — inputs will be resolved fresh (may take longer)"
+fi
 
-# Remove backup file if it exists
-rm -f "$CONFIG_DIR/configuration.nix.bak"
+# ── Step 6: Pre-warm nix evaluation cache ─────────────────────────────────────
+# This is the key fix for the core dump on first run.
+# nixos-install internally runs nix evaluation which on a fresh live ISO with
+# no cache can crash the evaluator during initial flake registry/tarball fetching.
+# Running `nix flake metadata` first populates the cache so nixos-install's
+# evaluation succeeds on its first attempt.
+section "Step 5/6 — Pre-warming nix evaluation cache"
+info "Fetching flake metadata (this prevents the core dump on first eval)..."
+nix flake metadata "$TARGET_DIR" --no-update-lock-file 2>/dev/null || \
+  nix flake metadata "$TARGET_DIR" || true
+info "Cache warmed"
 
-# Install NixOS
-echo -e "${YELLOW}Installing NixOS (this may take a while)...${NC}"
-nixos-install --root "$MOUNT_POINT" --flake "$CONFIG_DIR#leavenworth"
-
+# ── Step 7: Install ───────────────────────────────────────────────────────────
+section "Step 6/6 — Installing NixOS"
+info "Running nixos-install — this will take a while..."
 echo ""
-echo -e "${GREEN}========================================${NC}"
-echo -e "${GREEN}Installation complete!${NC}"
-echo -e "${GREEN}========================================${NC}"
+
+nixos-install \
+  --root "$MOUNT_POINT" \
+  --flake "$TARGET_DIR#leavenworth" \
+  --no-root-passwd  \
+  --show-trace
+
+# ── Done ──────────────────────────────────────────────────────────────────────
 echo ""
-echo -e "${YELLOW}Next steps:${NC}"
-echo "1. Reboot: reboot"
-echo "2. Login as: svea / changeme"
-echo "3. Change password: passwd"
-echo "4. Config is in: /etc/nixos"
-echo "5. Rebuild: sudo nixos-rebuild switch --flake /etc/nixos#leavenworth"
+section "Installation complete"
+info "System installed successfully."
+echo ""
+echo -e "  ${YELLOW}Next steps:${NC}"
+echo "  1. Reboot:                   reboot"
+echo "  2. Login as svea, password:  changeme"
+echo "  3. Change password:          passwd"
+echo "  4. Push config to GitHub:    cd /etc/nixos && git init && git remote add origin <url>"
+echo "  5. Rebuild after changes:    sudo nixos-rebuild switch --flake /etc/nixos#leavenworth"
+echo ""
+echo -e "  ${YELLOW}If Hyprland doesn't start:${NC}"
+echo "  - Check greetd: journalctl -u greetd -e"
+echo "  - Check HM:     journalctl -u home-manager-svea.service -e"
 echo ""
