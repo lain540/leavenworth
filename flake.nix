@@ -44,7 +44,10 @@
           home-manager.extraSpecialArgs = { inherit inputs; };
           home-manager.sharedModules    = [
             nvf.homeManagerModules.default
-            stylix.homeManagerModules.stylix
+            # stylix.homeManagerModules.stylix is intentionally absent here —
+            # stylix.nixosModules.stylix (above) already injects the home-manager
+            # module for every user automatically. Adding it again causes:
+            # "stylix.base16 is read-only, set multiple times"
           ];
         }
       ];
