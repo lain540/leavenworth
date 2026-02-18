@@ -1,13 +1,21 @@
 { config, pkgs, lib, ... }:
 
 {
-  # Neovim via nvf - https://github.com/NotAShelf/nvf
+  # Neovim via nvf — https://github.com/NotAShelf/nvf
+  #
+  # ── Stylix + nvf conflict notes ────────────────────────────────────────────
+  # stylix.targets.nvf (enabled at the bottom) sets:
+  #   • vim.theme.*              — colorscheme (base16 via mini.base16)
+  #   • vim.statusline.lualine.theme — set to "base16"
+  # Our config must NOT set either of those or nix evaluation fails with
+  # "conflicting definition values". They are intentionally absent here.
+  # To change the colorscheme, change stylix.base16Scheme in configuration.nix.
+
   programs.nvf = {
     enable = true;
 
     settings.vim = {
-      # ── Editor options via raw lua ────────────────────────────────────
-      # luaConfigRC values are plain strings in nvf, not DAG entries
+      # ── Editor options ────────────────────────────────────────────────────
       luaConfigRC.options = ''
         vim.opt.number         = true
         vim.opt.relativenumber = true
@@ -27,37 +35,11 @@
         vim.g.maplocalleader   = " "
       '';
 
-      # ── Theme - base16-default-dark matching foot/waybar ─────────────
-      # base16 theme requires all 16 colors to be explicitly provided
-      # https://nvf.notashelf.dev/options.html#option-vim-theme-enable
-      theme = {
-        enable      = true;
-        name        = "base16";
-        style       = "dark";
-        transparent = false;
+      # ── Theme — owned by stylix ───────────────────────────────────────────
+      # Do NOT set vim.theme here — stylix.targets.nvf handles it.
+      # Setting it here AND having stylix enabled = "conflicting definition values".
 
-        # Same hex values used in foot terminal and waybar
-        base16-colors = {
-          base00 = "181818"; # background
-          base01 = "282828"; # lighter background
-          base02 = "383838"; # selection background
-          base03 = "585858"; # comments / inactive
-          base04 = "b8b8b8"; # dark foreground
-          base05 = "d8d8d8"; # foreground
-          base06 = "e8e8e8"; # light foreground
-          base07 = "f8f8f8"; # light background
-          base08 = "ab4642"; # red
-          base09 = "dc9656"; # orange
-          base0A = "f7ca88"; # yellow
-          base0B = "a1b56c"; # green
-          base0C = "86c1b9"; # cyan
-          base0D = "7cafc2"; # blue
-          base0E = "ba8baf"; # magenta
-          base0F = "a16946"; # brown
-        };
-      };
-
-      # ── Keymaps ───────────────────────────────────────────────────────
+      # ── Keymaps ───────────────────────────────────────────────────────────
       maps.normal = {
         "<leader>e"  = { action = "<cmd>Yazi<CR>";                          desc = "Open yazi"; };
         "<leader>ff" = { action = "<cmd>Telescope find_files<CR>";          desc = "Find files"; };
@@ -69,60 +51,79 @@
         "<leader>ca" = { action = "<cmd>lua vim.lsp.buf.code_action()<CR>"; desc = "Code action"; };
       };
 
-      # ── LSP ───────────────────────────────────────────────────────────
+      # ── LSP ───────────────────────────────────────────────────────────────
       lsp = {
-        enable        = true;
-        formatOnSave  = false;
-        lspkind.enable        = false;
-        lightbulb.enable      = false;
-        lspsaga.enable        = false;
-        trouble.enable        = false;
+        enable               = true;
+        formatOnSave         = false;
+        lspkind.enable       = false;
+        lightbulb.enable     = false;
+        lspsaga.enable       = false;
+        trouble.enable       = false;
         nvim-docs-view.enable = false;
       };
 
-      # ── Languages ─────────────────────────────────────────────────────
+      # ── Languages ─────────────────────────────────────────────────────────
       languages = {
         enableLSP        = true;
         enableTreesitter = true;
 
-        # C / C++
         clang = {
-          enable             = true;
-          lsp.enable         = true;
-          treesitter.enable  = true;
+          enable            = true;
+          lsp.enable        = true;
+          treesitter.enable = true;
         };
 
-        # Lua
         lua = {
-          enable             = true;
-          lsp.enable         = true;
-          treesitter.enable  = true;
+          enable            = true;
+          lsp.enable        = true;
+          treesitter.enable = true;
         };
 
-        # Nix - treesitter only
         nix = {
-          enable             = true;
-          lsp.enable         = false;
-          treesitter.enable  = true;
+          enable            = true;
+          lsp.enable        = false;
+          treesitter.enable = true;
         };
 
-        # Julia - treesitter only
         julia = {
-          enable             = true;
-          lsp.enable         = false;
-          treesitter.enable  = true;
+          enable            = true;
+          lsp.enable        = false;
+          treesitter.enable = true;
+        };
+
+        # Python
+        python = {
+          enable            = true;
+          lsp.enable        = true;
+          treesitter.enable = true;
+        };
+
+        # Rust
+        rust = {
+          enable            = true;
+          lsp.enable        = true;
+          treesitter.enable = true;
+        };
+
+        # Bash / shell
+        bash = {
+          enable            = true;
+          lsp.enable        = true;
+          treesitter.enable = true;
         };
       };
 
-      # ── Completion ────────────────────────────────────────────────────
+      # ── Completion ────────────────────────────────────────────────────────
       autocomplete.nvim-cmp.enable = true;
 
-      # ── UI plugins ────────────────────────────────────────────────────
+      # ── UI plugins ────────────────────────────────────────────────────────
       telescope.enable = true;
 
+      # Lualine theme — owned by stylix (stylix.targets.nvf sets it to "base16")
+      # Do NOT set statusline.lualine.theme here.
       statusline.lualine = {
         enable = true;
-        theme  = "auto";
+        # theme is intentionally absent — stylix sets it
       };
 
       treesitter = {
@@ -132,25 +133,25 @@
         indent.enable    = true;
       };
 
-      filetree.neo-tree = {
-        enable = true;
-      };
+      filetree.neo-tree.enable = true;
 
-      # ── Yazi integration ─────────────────────────────────────────────
-      # https://github.com/mikavilpas/yazi.nvim
+      # ── Yazi integration ──────────────────────────────────────────────────
       extraPlugins = {
         yazi-nvim = {
           package = pkgs.vimPlugins.yazi-nvim;
           setup = ''
             require("yazi").setup({
               open_for_directories = false,
-              keymaps = {
-                show_help = "<f1>",
-              },
+              keymaps = { show_help = "<f1>" },
             })
           '';
         };
       };
     };
   };
+
+  # ── Stylix target for nvf ─────────────────────────────────────────────────
+  # Enables the base16 colorscheme and sets lualine's theme to match.
+  # This is what would conflict if we also set vim.theme or lualine.theme above.
+  stylix.targets.nvf.enable = true;
 }

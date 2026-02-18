@@ -33,7 +33,7 @@
     enable = true;
     settings = {
       main = {
-        font          = "Hack Nerd Font Mono:size=12";
+        # font is set by stylix via stylix.targets.fuzzel — do not set here
         lines         = 10;
         width         = 40;
         terminal      = "foot";
@@ -315,7 +315,7 @@
     settings = {
       main = {
         term      = "xterm-256color";
-        font      = "Hack Nerd Font Mono:size=11";
+        # font is set by stylix via stylix.targets.foot — do not set here
         dpi-aware = "yes";
       };
       mouse.hide-when-typing = "yes";
@@ -332,7 +332,10 @@
     hyprland.enable = false;  # we set borders manually via config.lib.stylix.colors in general{} above
     gtk.enable      = true;
     qt.enable       = true;
-    fuzzel.enable   = true;
-    foot.enable     = true;
+    fuzzel.enable   = true;   # sets colors AND font from stylix.fonts.monospace
+    foot.enable     = true;   # sets colors AND font from stylix.fonts.monospace
+    # Disable librewolf/firefox stylix target — it conflicts with our programs.librewolf.settings
+    # (stylix tries to write userContent.css and userChrome.css which clash with HM's own writes)
+    librewolf.enable = false;
   };
 }
