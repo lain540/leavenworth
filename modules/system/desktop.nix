@@ -20,11 +20,7 @@
     };
   };
 
-  # Fonts
-  fonts.packages = with pkgs; [
-    nerd-fonts.hack
-    hack-font
-  ];
+  # Fonts are managed by stylix.fonts in configuration.nix — no need to list them here.
 
   # Portals for screen sharing, file pickers, etc.
   xdg.portal = {
