@@ -19,7 +19,7 @@
     userName  = "lain540";
     userEmail = "lain540@users.noreply.github.com";
 
-    extraConfig = {
+    settings = {
       init.defaultBranch = "main";
       pull.rebase        = false;
     };
@@ -43,10 +43,9 @@
   programs.yazi = {
     enable                = true;
     enableFishIntegration = true;
-
-    # Replaces the deprecated 'programs.yazi.shellWrapperName' warning.
-    # The wrapper is now always named "y" (was previously configurable as "yy").
-    # If you want a different alias, add it as a fish shellAliases entry instead.
+    # Explicitly set to "y" (new default) to silence the migration warning.
+    # The old default was "yy"; if you prefer that, change it here.
+    shellWrapperName      = "y";
 
     settings = {
       manager = {
