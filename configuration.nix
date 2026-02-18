@@ -13,9 +13,8 @@
   boot.loader.systemd-boot.configurationLimit = 3;
 
   # ── GPU — AMD Ryzen 7 5700G (Radeon Vega iGPU) ──────────────────────────────
-  # RADV Vulkan is enabled by default via Mesa — no need to add amdvlk.
   hardware.graphics = {
-    enable     = true;
+    enable      = true;
     enable32Bit = true;
     extraPackages = with pkgs; [
       rocmPackages.clr        # AMD ROCm OpenCL for DaVinci Resolve GPU compute
@@ -24,15 +23,27 @@
       libva-vdpau-driver      # renamed from vaapiVdpau in nixpkgs-unstable
     ];
   };
-  boot.initrd.kernelModules   = [ "amdgpu" ];
+  boot.initrd.kernelModules    = [ "amdgpu" ];
   services.xserver.videoDrivers = [ "amdgpu" ];
+
+  # ── Drawing tablet — OpenTabletDriver ────────────────────────────────────────
+  # Supports Gaomon M10K and most other USB tablets out of the box.
+  # After first boot run `otd-gui` to set pen area mapping and calibrate.
+  # The daemon runs as a systemd user service — starts automatically on login.
+  hardware.opentabletdriver = {
+    enable        = true;
+    daemon.enable = true;
+  };
+  # uinput — virtual input kernel module required by OpenTabletDriver
+  hardware.uinput.enable = true;
+  # NOTE: boot.initrd.kernelModules above already contains "amdgpu".
+  # We add "uinput" via hardware.uinput.enable; it handles the kernel module.
 
   # ── System ───────────────────────────────────────────────────────────────────
   networking.hostName = "leavenworth";
   time.timeZone       = "Europe/Stockholm";
   i18n.defaultLocale  = "en_US.UTF-8";
 
-  # Console keyboard layout derived from XKB settings below
   console = {
     useXkbConfig = true;
     earlySetup   = true;
@@ -52,7 +63,6 @@
   };
   nixpkgs.config.allowUnfree = true;
 
-  # ROCm target for Ryzen 7 5700G (gfx90c / Vega) — needed by DaVinci Resolve
   environment.variables = {
     ROC_ENABLE_PRE_VEGA      = "1";
     HSA_OVERRIDE_GFX_VERSION = "9.0.0";
@@ -61,60 +71,56 @@
   # ── Networking ───────────────────────────────────────────────────────────────
   networking.networkmanager.enable = true;
 
-  # ── Shell — Zsh ──────────────────────────────────────────────────────────────
-  # Enabling zsh system-wide adds it to /etc/shells, which is required for
-  # it to be a valid login shell. Do NOT set programs.fish.enable here —
-  # fish is no longer installed.
+  # ── Shell ─────────────────────────────────────────────────────────────────────
   programs.zsh.enable = true;
 
-  # ── musnix — real-time audio optimisation ────────────────────────────────────
+  # ── musnix ───────────────────────────────────────────────────────────────────
   musnix.enable       = true;
   musnix.rtirq.enable = true;
-  # musnix.kernel.realtime defaults to false — no need to set it explicitly
 
-  # ── Stylix — system-wide base16 theming ──────────────────────────────────────
-  # Stylix applies a coherent colour scheme across the system: terminal,
-  # editor, GTK apps, fonts etc. Change base16Scheme to swap the palette.
-  #
-  # Wallpaper: stylix needs an image for colour extraction. We provide a
-  # solid #212121 placeholder so the build succeeds. Replace 'stylix.image'
-  # with a path to your actual wallpaper:
-  #   stylix.image = /path/to/wallpaper.png;
-  # or via fetchurl:
-  #   stylix.image = pkgs.fetchurl { url = "..."; hash = "sha256-..."; };
+  # ── Stylix ───────────────────────────────────────────────────────────────────
   stylix = {
     enable       = true;
     polarity     = "dark";
     base16Scheme = "${pkgs.base16-schemes}/share/themes/charcoal-dark.yaml";
 
-    # Solid dark placeholder wallpaper — replace with your own image
+    # stylix.image is required by stylix even when stylix.targets.swaybg is
+    # disabled. This 1×1 pixel placeholder satisfies the requirement without
+    # displaying anything — the swaybg target is disabled in home/desktop.nix.
+    # To use a real wallpaper, replace this with:
+    #   image = /path/to/your/wallpaper.png;
     image = pkgs.runCommand "wallpaper-placeholder.png" {
       buildInputs = [ pkgs.imagemagick ];
     } ''
-      magick -size 1920x1080 xc:#212121 $out
+      magick -size 1x1 xc:#212121 $out
     '';
 
+    # ── Cursor ────────────────────────────────────────────────────────────────
+    # Setting this here ensures the cursor is applied system-wide (greetd, GTK,
+    # Hyprland, XWayland). Without it Hyprland falls back to its own logo cursor.
+    cursor = {
+      package = pkgs.adwaita-icon-theme;
+      name    = "Adwaita";
+      size    = 24;
+    };
+
     # ── Fonts — Hack Nerd Font everywhere ────────────────────────────────────
-    # All four stylix font categories point to nerd-fonts.hack so that Hack
-    # is the default for terminals, GTK apps, the desktop, and popups.
-    # Stylix propagates these through fontconfig, GTK settings, and any
-    # target that reads stylix.fonts (foot, fuzzel, nvf lualine, etc.)
     fonts = {
       monospace = {
-        name    = "Hack Nerd Font Mono";  # terminals, editors, code
+        name    = "Hack Nerd Font Mono";
         package = pkgs.nerd-fonts.hack;
       };
       sansSerif = {
-        name    = "Hack Nerd Font";       # GTK UI labels, buttons
+        name    = "Hack Nerd Font";
         package = pkgs.nerd-fonts.hack;
       };
       serif = {
-        name    = "Hack Nerd Font Propo"; # proportional variant for body text
+        name    = "Hack Nerd Font Propo";
         package = pkgs.nerd-fonts.hack;
       };
       emoji = {
         name    = "Noto Color Emoji";
-        package = pkgs.noto-fonts-color-emoji;  # renamed from noto-fonts-emoji
+        package = pkgs.noto-fonts-color-emoji;
       };
       sizes = {
         terminal     = 11;
@@ -134,7 +140,7 @@
       "adbusers"
     ];
     initialPassword = "changeme";
-    shell           = pkgs.zsh;   # switched from fish to zsh
+    shell           = pkgs.zsh;
   };
   security.sudo.wheelNeedsPassword = true;
 
