@@ -9,26 +9,19 @@
     wireplumber
     playerctl
     wlsunset
-    papirus-icon-theme
+    swaybg          # used in exec-once to paint the base00 background colour
   ];
 
-  # ── Cursor — system pointer theme ────────────────────────────────────────────
-  # home.pointerCursor propagates the cursor to all Wayland clients and GTK apps.
-  # stylix.cursor in configuration.nix sets it at the system level (greetd etc).
-  # Both need to agree on the same theme or you get mixed cursors.
-  home.pointerCursor = {
-    gtk.enable = true;
-    package    = pkgs.adwaita-icon-theme;
-    name       = "Adwaita";
-    size       = 24;
-  };
+  # ── Cursor ───────────────────────────────────────────────────────────────────
+  # stylix.cursor in configuration.nix sets home.pointerCursor automatically.
+  # Do NOT declare home.pointerCursor here — it would conflict (defined twice).
 
   # ── GTK icon theme ────────────────────────────────────────────────────────────
   gtk = {
     enable    = true;
     iconTheme = {
-      name    = "Papirus-Dark";
-      package = pkgs.papirus-icon-theme;
+      name    = "Tela-Black";
+      package = pkgs.tela-icon-theme;
     };
     gtk4.extraConfig.gtk-decoration-layout = "";
     gtk3.extraConfig.gtk-decoration-layout = "";
@@ -215,6 +208,15 @@
         "$mod, mouse:273, resizewindow"
       ];
 
+      # ── MX Master 3S extra buttons ─────────────────────────────────────────────
+      # mouse:276 = back button (left side, lower)
+      # mouse:275 = forward button (left side, upper)
+      # Bound to workspace prev/next — remove $mod to trigger without modifier.
+      bind = bind ++ [
+        ", mouse:276, workspace, -1"
+        ", mouse:275, workspace, +1"
+      ];
+
       # ── Gaomon M10K touch dial → volume ───────────────────────────────────────
       # The touch strip/dial is exposed as scroll events on the tablet device.
       # These binds catch scroll events from any device and route them to volume.
@@ -230,19 +232,16 @@
         "waybar"
         "udiskie --tray"
 
-        # ── wlsunset — fixed schedule blue light filter ────────────────────────
-        # Uses explicit times instead of GPS location for predictable behaviour.
-        #
-        # Flags:
-        #   -S HH:MM  sunrise  — when to start transitioning TO day temperature
-        #   -s HH:MM  sunset   — when to start transitioning TO night temperature
-        #   -T        day colour temperature  (6500K = neutral / slightly cool)
-        #   -t        night colour temperature (2700K = very warm amber)
-        #
-        # 2700K at night is quite obvious — screens go clearly orange.
-        # Raise -t toward 4000K if you want a subtler effect.
-        #
-        # Schedule: day 06:30–18:30 / night 18:30–06:30
+        # ── Solid base00 background ───────────────────────────────────────────
+        # Paints the desktop with the charcoal-dark base00 (#212121) colour.
+        # When you change stylix.base16Scheme the hex here won't auto-update —
+        # replace it manually or look it up with: nix eval .#... (see comment)
+        # charcoal-dark base00 = #212121
+        "swaybg -m solid_color -c '#${config.lib.stylix.colors.base00}'"
+
+        # ── wlsunset — fixed schedule blue light filter ───────────────────────
+        # Day:   06:30–18:30 → 6500K (neutral/cool)
+        # Night: 18:30–06:30 → 2700K (very warm amber — obviously visible)
         "bash -c 'sleep 3 && wlsunset -S 06:30 -s 18:30 -T 6500 -t 2700'"
       ];
     };
@@ -355,10 +354,8 @@
     qt.enable        = true;
     fuzzel.enable    = true;
     foot.enable      = true;
-    # librewolf — stylix writes userChrome.css/userContent.css which is separate
-    # from programs.librewolf.settings (user.js) — no conflict, enable theming
     librewolf.enable = true;
-    # swaybg — no image is set so there is nothing to display; keep disabled
-    #swaybg.enable    = false;
+    # swaybg: no valid stylix target exists for it — background is set via
+    # exec-once with swaybg -c in the Hyprland config above
   };
 }
