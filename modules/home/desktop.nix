@@ -314,9 +314,8 @@
     enable = true;
     settings = {
       main = {
-        term      = "xterm-256color";
-        # font is set by stylix via stylix.targets.foot — do not set here
-        dpi-aware = "yes";
+        term = "xterm-256color";
+        # font and dpi-aware are both set by stylix.targets.foot — do not set here
       };
       mouse.hide-when-typing = "yes";
       tweak.sixel = "yes";  # image previews in yazi

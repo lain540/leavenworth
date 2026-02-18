@@ -64,8 +64,8 @@
 
       # ── Languages ─────────────────────────────────────────────────────────
       languages = {
-        enableLSP        = true;
-        enableTreesitter = true;
+        # enableLSP renamed to vim.lsp.enable in newer nvf — set per-language below
+        # enableTreesitter renamed to vim.treesitter.enable — set per-language below
 
         clang = {
           enable            = true;
