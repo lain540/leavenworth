@@ -359,6 +359,6 @@
     # from programs.librewolf.settings (user.js) — no conflict, enable theming
     librewolf.enable = true;
     # swaybg — no image is set so there is nothing to display; keep disabled
-    swaybg.enable    = false;
+    #swaybg.enable    = false;
   };
 }
