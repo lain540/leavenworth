@@ -1,6 +1,3 @@
-# Machine-specific — regenerate with nixos-generate-config on each machine
-hardware-configuration.nix
-
 # Secrets
 secrets.nix
 *.secret
