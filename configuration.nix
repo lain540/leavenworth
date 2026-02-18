@@ -84,16 +84,11 @@
     polarity     = "dark";
     base16Scheme = "${pkgs.base16-schemes}/share/themes/charcoal-dark.yaml";
 
-    # stylix.image is required by stylix even when stylix.targets.swaybg is
-    # disabled. This 1×1 pixel placeholder satisfies the requirement without
-    # displaying anything — the swaybg target is disabled in home/desktop.nix.
-    # To use a real wallpaper, replace this with:
-    #   image = /path/to/your/wallpaper.png;
-    image = pkgs.runCommand "wallpaper-placeholder.png" {
-      buildInputs = [ pkgs.imagemagick ];
-    } ''
-      magick -size 1x1 xc:#212121 $out
-    '';
+    # No stylix.image set — we use an explicit base16Scheme so stylix doesn't
+    # need an image for colour extraction, and swaybg is disabled in
+    # home/desktop.nix so nothing tries to display a wallpaper.
+    # If the build fails with "stylix.image is not defined", your stylix version
+    # still requires it — set it to any image path as a workaround.
 
     # ── Cursor ────────────────────────────────────────────────────────────────
     # Setting this here ensures the cursor is applied system-wide (greetd, GTK,
