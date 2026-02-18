@@ -329,11 +329,10 @@
   # so colors still update when you change the scheme.
   stylix.targets = {
     waybar.enable   = false;  # we handle CSS manually with config.lib.stylix.colors
-    hyprland.enable = true;   # stylix sets border colors — overridden by general{} above
-                              # so this is safe; it will also theme other hyprland elements
-    gtk.enable      = true;   # stylix sets gtk.theme and gtk.font
-    qt.enable       = true;   # stylix sets qt.platformTheme and qt.style
-    fuzzel.enable   = true;   # stylix sets all fuzzel colors
-    foot.enable     = true;   # stylix sets all terminal colors
+    hyprland.enable = false;  # we set borders manually via config.lib.stylix.colors in general{} above
+    gtk.enable      = true;
+    qt.enable       = true;
+    fuzzel.enable   = true;
+    foot.enable     = true;
   };
 }
