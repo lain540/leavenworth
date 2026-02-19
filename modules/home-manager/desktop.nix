@@ -155,13 +155,11 @@
         "$mod, d,       exec, fuzzel"
         "$mod, w,       exec, foot -e yazi"
         "$mod, q,       killactive"
-        # Power menu — fuzzel --dmenu yes/no prompt.
-        # Super+Shift+Q: exit Hyprland (returns to greetd)
-        # Super+Shift+P: shutdown
-        # Super+Shift+R: reboot
-        "$mod SHIFT, q, exec, echo -e 'yes\nno' | fuzzel --dmenu --prompt='Exit Hyprland? ' | grep -q yes && hyprctl dispatch exit"
-        "$mod SHIFT, p, exec, echo -e 'yes\nno' | fuzzel --dmenu --prompt='Shut down? ' | grep -q yes && systemctl poweroff"
-        "$mod SHIFT, r, exec, echo -e 'yes\nno' | fuzzel --dmenu --prompt='Reboot? ' | grep -q yes && systemctl reboot"
+        # Power menu — fuzzel dmenu prompts (scripts in ~/.local/bin/)
+        # Super+Shift+Q: exit Hyprland   Super+Shift+P: shutdown   Super+Shift+R: reboot
+        "$mod SHIFT, q, exec, power-exit"
+        "$mod SHIFT, p, exec, power-shutdown"
+        "$mod SHIFT, r, exec, power-reboot"
         "$mod, f,       fullscreen"
         "$mod, t,       togglefloating"
         "$mod, s,       togglesplit"
@@ -219,7 +217,6 @@
       ];
 
       exec-once = [
-        # Polkit agent — must start before anything that needs device permissions.
         # Polkit agent — handles device permission prompts for udiskie etc.
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
 
@@ -248,7 +245,7 @@
     settings.mainBar = {
       layer    = "bottom";
       position = "top";
-      height   = 20;
+      height   = 28;
       spacing  = 0;
 
       modules-left   = [ "hyprland/workspaces" ];
@@ -270,7 +267,7 @@
     };
 
     style = with config.lib.stylix.colors; ''
-      * { border: none; border-radius: 0; font-family: "Hack Nerd Font Mono"; font-size: 12px; min-height: 0; }
+      * { border: none; border-radius: 0; font-family: "Hack Nerd Font Mono"; font-size: 14px; min-height: 0; line-height: 1; }
       window#waybar             { background-color: #${base00}; color: #${base05}; }
       #workspaces button        { padding: 0 8px; background-color: #${base01}; color: #${base05}; margin: 0 2px; }
       #workspaces button.active { background-color: #${base05}; color: #${base00}; }
