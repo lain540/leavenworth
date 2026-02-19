@@ -195,10 +195,6 @@
         ", Print,      exec, hyprshot -m region --clipboard-only"
         "SHIFT, Print, exec, hyprshot -m output --output-folder ~/Pictures/Screenshots"
 
-        # hyprsunset toggle — F5 disables, F6 re-enables via systemctl
-        "$mod, F5, exec, systemctl --user stop hyprsunset.service"
-        "$mod, F6, exec, systemctl --user start hyprsunset.service"
-
         # Media keys
         ", XF86AudioPlay,  exec, playerctl play-pause"
         ", XF86AudioPause, exec, playerctl play-pause"
@@ -292,14 +288,14 @@
   };
 
   # ── hyprsunset — blue light filter ───────────────────────────────────────────
-  # Managed as a home-manager service so it starts with the session automatically.
-  # Profile: full temperature during the day, extreme warm at night for sleeping.
-  # Adjust times and temperatures here; toggle off/on with Super+F5 / Super+F6.
+  # Managed as a home-manager service, starts automatically with the session.
+  # To stop/start manually: systemctl --user stop|start hyprsunset.service
   services.hyprsunset = {
     enable = true;
     settings = {
       profile = [
         { time = "7:00";  identity    = true; }   # full brightness from 07:00
+        { time = "19:00"; temperature = 3400; }   # warm transition from 19:00
         { time = "21:00"; temperature = 1200; }   # extreme warm from 21:00
       ];
     };
