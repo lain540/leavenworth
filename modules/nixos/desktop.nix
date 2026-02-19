@@ -10,7 +10,7 @@
 
   # ── Greeter ───────────────────────────────────────────────────────────────────
   # boot.kernelParams in configuration.nix hints the kernel to initialise
-  # HDMI-A-1 first. That's the best we can do for monitor ordering at the
+  # DP-1 first. That's the best we can do for monitor ordering at the
   # greetd/TTY level — tuigreet has no output-selection flag or env var.
   services.greetd = {
     enable = true;
@@ -31,7 +31,8 @@
   # Launch Reaper via `pw-jack reaper` to use the JACK bridge.
   # AKAI MPK Mini Mk3 is USB class-compliant — appears automatically in
   # Reaper under Preferences → Audio → MIDI devices.
-  security.rtkit.enable = true;
+  security.rtkit.enable    = true;
+  security.polkit.enable   = true;  # required for gvfs MTP and udiskie
 
   services.pipewire = {
     enable            = true;
@@ -68,6 +69,10 @@
   environment.systemPackages = with pkgs; [
     # MTP / automount
     jmtpfs libmtp udiskie
+
+    # Polkit agent — needed so gvfs can prompt for device permissions
+    # (without this, plugging in an Android phone silently fails)
+    polkit_gnome
 
     # pw-jack — launch Reaper in JACK mode: pw-jack reaper
     pipewire
