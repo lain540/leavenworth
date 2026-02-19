@@ -9,8 +9,6 @@
     # Audio / media control
     wireplumber playerctl
 
-    # Blue light filter
-    hyprsunset
   ];
 
   # ── GTK ───────────────────────────────────────────────────────────────────────
@@ -197,9 +195,9 @@
         ", Print,      exec, hyprshot -m region --clipboard-only"
         "SHIFT, Print, exec, hyprshot -m output --output-folder ~/Pictures/Screenshots"
 
-        # hyprsunset toggle — F5 kills it (off), F6 starts it at 1200K (on)
-        "$mod, F5, exec, pkill hyprsunset || true"
-        "$mod, F6, exec, hyprsunset -t 1200"
+        # hyprsunset toggle — F5 disables, F6 re-enables via systemctl
+        "$mod, F5, exec, systemctl --user stop hyprsunset.service"
+        "$mod, F6, exec, systemctl --user start hyprsunset.service"
 
         # Media keys
         ", XF86AudioPlay,  exec, playerctl play-pause"
@@ -236,9 +234,7 @@
         "waybar"
         "udiskie --tray"
 
-        # hyprsunset: start at 1200K (extreme warm). Toggle off with Super+F5.
-        # Super+F5 kills it (full brightness), Super+F6 restarts at 1200K.
-        "bash -c 'sleep 3 && hyprsunset -t 1200'"
+
       ];
     };
   };
@@ -292,6 +288,20 @@
       main  = { term = "xterm-256color"; };
       mouse = { hide-when-typing = "yes"; };
       tweak = { sixel = "yes"; };
+    };
+  };
+
+  # ── hyprsunset — blue light filter ───────────────────────────────────────────
+  # Managed as a home-manager service so it starts with the session automatically.
+  # Profile: full temperature during the day, extreme warm at night for sleeping.
+  # Adjust times and temperatures here; toggle off/on with Super+F5 / Super+F6.
+  services.hyprsunset = {
+    enable = true;
+    settings = {
+      profile = [
+        { time = "7:00";  identity    = true; }   # full brightness from 07:00
+        { time = "21:00"; temperature = 1200; }   # extreme warm from 21:00
+      ];
     };
   };
 
