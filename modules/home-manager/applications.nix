@@ -156,14 +156,12 @@
   programs.mpv = {
     enable = true;
     config = {
-      # vulkan backend — better performance on AMD than opengl
       gpu-api  = "vulkan";
       vo       = "gpu-next";
-      # Tells mpv to use the display's actual colorspace instead of assuming
-      # HDR/wide-gamut, silencing Hyprland's "WCG enabled but not 10bit" warning.
-      target-colorspace-hint = true;
-      sub-auto       = "fuzzy";
-      audio-file-auto = "fuzzy";
+      target-colorspace-hint = "no";
+      target-prim = "bt.709";
+      target-trc = "srgb";
+      tone-mapping = "bt.2446a";
     };
   };
 
