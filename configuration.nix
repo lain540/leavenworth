@@ -82,12 +82,16 @@
   programs.nix-ld = {
     enable = true;
     libraries = with pkgs; [
-      stdenv.cc.cc.lib  # libstdc++
-      glib
-      glibc
-      libGL
-      xorg.libX11
-      xorg.libXext
+      stdenv.cc.cc.lib  # libstdc++.so.6
+      glibc             # libc, libm
+      freetype          # libfreetype.so.6
+      libpng            # libpng16.so.16
+      zlib              # libz.so.1
+      fontconfig        # libfontconfig.so.1
+      libepoxy          # libepoxy.so.0
+      gtk3              # libgtk-3.so.0, libgdk-3.so.0
+      cairo             # libcairo.so.2
+      glib              # libgobject-2.0.so.0, libglib-2.0.so.0
     ];
   };
 
