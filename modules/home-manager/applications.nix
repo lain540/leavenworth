@@ -33,6 +33,12 @@
   home.sessionVariables = {
     LUA_PATH  = "/run/current-system/sw/share/lua/5.4/?.lua;/run/current-system/sw/share/lua/5.4/?/init.lua;;";
     LUA_CPATH = "/run/current-system/sw/lib/lua/5.4/?.so;;";
+
+    # ReaPack downloads pre-compiled .so extensions (ReaImGui etc.) that link
+    # against standard Linux library paths which don't exist on NixOS.
+    # Pointing LD_LIBRARY_PATH at the system profile's lib dir makes them find
+    # freetype, gtk3, cairo, glib, fontconfig, libepoxy and friends at runtime.
+    LD_LIBRARY_PATH = "/run/current-system/sw/lib";
   };
 
   # ── Directory scaffold ────────────────────────────────────────────────────────
