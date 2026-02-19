@@ -264,7 +264,7 @@
     };
 
     style = with config.lib.stylix.colors; ''
-      * { border: none; border-radius: 0; font-family: "Hack Nerd Font Mono"; font-size: 14px; min-height: 0; line-height: 1; }
+      * { border: none; border-radius: 0; font-family: "Hack Nerd Font Mono"; font-size: 14px; min-height: 0; }
       window#waybar             { background-color: #${base00}; color: #${base05}; }
       #workspaces button        { padding: 0 8px; background-color: #${base01}; color: #${base05}; margin: 0 2px; }
       #workspaces button.active { background-color: #${base05}; color: #${base00}; }
