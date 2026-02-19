@@ -211,8 +211,8 @@
         "waybar"
         "udiskie --tray"
 
-        # wlsunset: day 06:30–18:30 at 6500K, night at 2700K
-        "bash -c 'sleep 3 && wlsunset -S 06:30 -s 18:30 -T 6500 -t 2700'"
+        # wlsunset: day 06:30–18:30 at 6500K, night at 1200K (extreme warm for sleeping)
+        "bash -c 'sleep 3 && wlsunset -S 06:30 -s 18:30 -T 6500 -t 1200'"
       ];
     };
   };
