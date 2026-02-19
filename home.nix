@@ -1,25 +1,25 @@
 { config, pkgs, inputs, ... }:
 
-# Zsh colour palette — baked in at build time, no runtime deps.
-# Palette: base16-default-dark. Update hex values if you change the scheme.
+# Map stylix base16 colors to readable names for use in zsh/prompt config.
+# Changing stylix.base16Scheme in configuration.nix updates these automatically.
 let
-  c = {
-    bg     = "181818"; # base00
-    bgAlt  = "282828"; # base01
-    sel    = "383838"; # base02
-    cmt    = "585858"; # base03
-    fgDark = "b8b8b8"; # base04
-    fg     = "d8d8d8"; # base05
-    fgLt   = "e8e8e8"; # base06
-    white  = "f8f8f8"; # base07
-    red    = "ab4642"; # base08
-    orange = "dc9656"; # base09
-    yellow = "f7ca88"; # base0A
-    green  = "a1b56c"; # base0B
-    cyan   = "86c1b9"; # base0C
-    blue   = "7cafc2"; # base0D
-    purple = "ba8baf"; # base0E
-    brown  = "a16946"; # base0F
+  c = with config.lib.stylix.colors; {
+    bg     = base00;
+    bgAlt  = base01;
+    sel    = base02;
+    cmt    = base03;
+    fgDark = base04;
+    fg     = base05;
+    fgLt   = base06;
+    white  = base07;
+    red    = base08;
+    orange = base09;
+    yellow = base0A;
+    green  = base0B;
+    cyan   = base0C;
+    blue   = base0D;
+    purple = base0E;
+    brown  = base0F;
   };
 in
 {
