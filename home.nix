@@ -69,12 +69,6 @@ in
     plugins = [{ name = "zsh-vi-mode"; src = pkgs.zsh-vi-mode; }];
 
     initContent = ''
-      # Auto-start Hyprland on TTY1 after getty autologin.
-      # Guards: only on TTY1, only if Hyprland isn't already running.
-      if [[ -z $WAYLAND_DISPLAY && $(tty) == /dev/tty1 ]]; then
-        exec Hyprland
-      fi
-
       setopt AUTO_CD CORRECT HIST_VERIFY PROMPT_SUBST NO_BEEP
 
       # ── Prompt — ~/dir (branch) ❯ ───────────────────────────────────────────
