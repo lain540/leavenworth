@@ -112,7 +112,7 @@
     # Leave the TTY/console unstyled — plain text before Hyprland starts.
     targets.console.enable = false;
 
-    # Cursor — set system-wide so greetd, GTK, Hyprland and XWayland all agree
+    # Cursor — set system-wide so GTK, Hyprland and XWayland all agree
     cursor = {
       package = pkgs.adwaita-icon-theme;
       name    = "Adwaita";
@@ -126,7 +126,7 @@
       sansSerif = { name = "Hack Nerd Font";         package = pkgs.nerd-fonts.hack; };
       serif     = { name = "Hack Nerd Font Propo";   package = pkgs.nerd-fonts.hack; };
       emoji     = { name = "Noto Color Emoji";        package = pkgs.noto-fonts-color-emoji; };
-      sizes     = { terminal = 11; applications = 11; desktop = 11; popups = 11; };
+      sizes     = { terminal = 14; applications = 14; desktop = 14; popups = 14; };
     };
   };
 
