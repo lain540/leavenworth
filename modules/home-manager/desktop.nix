@@ -203,6 +203,14 @@
         # Without this, gvfs MTP (Android phones) silently fails to mount.
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
 
+        # gvfs user-session daemons — required for MTP (Android phones).
+        # gvfsd is the main broker; gvfsd-fuse exposes mounts under
+        # /run/user/1000/gvfs/ so you can browse them in yazi/foot.
+        # After plugging in: unlock phone → allow USB → select File Transfer.
+        # Check with: gio mount -l
+        "${pkgs.gvfs}/libexec/gvfsd"
+        "${pkgs.gvfs}/libexec/gvfsd-fuse /run/user/1000/gvfs -f"
+
         # Force-load the cursor theme immediately so XWayland inherits it.
         # Without this, XWayland renders its own default cursor until the first
         # Wayland-native app opens, creating a visible "ghost" cursor on DP-1.
