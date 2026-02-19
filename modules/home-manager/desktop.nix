@@ -200,16 +200,8 @@
 
       exec-once = [
         # Polkit agent — must start before anything that needs device permissions.
-        # Without this, gvfs MTP (Android phones) silently fails to mount.
+        # Polkit agent — handles device permission prompts for udiskie etc.
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
-
-        # gvfs user-session daemons — required for MTP (Android phones).
-        # gvfsd is the main broker; gvfsd-fuse exposes mounts under
-        # /run/user/1000/gvfs/ so you can browse them in yazi/foot.
-        # After plugging in: unlock phone → allow USB → select File Transfer.
-        # Check with: gio mount -l
-        "${pkgs.gvfs}/libexec/gvfsd"
-        "${pkgs.gvfs}/libexec/gvfsd-fuse /run/user/1000/gvfs"
 
         # Force-load the cursor theme immediately so XWayland inherits it.
         # Without this, XWayland renders its own default cursor until the first
