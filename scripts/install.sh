@@ -70,10 +70,11 @@ mkdir -p "$(dirname "$TARGET_DIR")"
 info "Cloning $BRANCH branch..."
 git clone --branch "$BRANCH" --depth 1 "$REPO" "$TARGET_DIR"
 
-info "Generating hardware-configuration.nix..."
+info "Generating hardware-configuration.nix for this machine..."
 nixos-generate-config --root "$MOUNT_POINT"
-# nixos-generate-config writes to /mnt/etc/nixos/ — which is our TARGET_DIR,
-# but hardware-configuration.nix is in .gitignore so it won't be committed.
+# nixos-generate-config overwrites the hardware-configuration.nix that came from
+# git with one freshly detected for this machine. After first boot, commit the
+# new hardware-configuration.nix: git add hardware-configuration.nix && git commit
 info "hardware-configuration.nix generated"
 
 # ── Step 4: Pre-warm evaluation cache ────────────────────────────────────────
