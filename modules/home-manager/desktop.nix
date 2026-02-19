@@ -38,6 +38,22 @@
     };
   };
 
+  # ── Yazi desktop entry ───────────────────────────────────────────────────────
+  # xdg-open uses .desktop files to launch apps. Yazi is a TUI so it needs to
+  # be wrapped in foot. Without this file, "Open directory" in Reaper/Librewolf
+  # does nothing because there is no valid handler for inode/directory.
+  home.file.".local/share/applications/yazi.desktop".text = ''
+    [Desktop Entry]
+    Name=Yazi
+    Comment=Terminal file manager
+    Exec=foot -e yazi %u
+    Terminal=false
+    Type=Application
+    MimeType=inode/directory;application/zip;application/x-tar;application/x-bzip2;application/x-gzip;application/x-xz;application/x-zstd;application/x-rar;application/x-7z-compressed;
+    Icon=utilities-terminal
+    Categories=System;FileTools;FileManager;
+  '';
+
   # ── Fuzzel launcher ───────────────────────────────────────────────────────────
   programs.fuzzel = {
     enable   = true;
@@ -196,9 +212,7 @@
         "$mod, mouse:273, resizewindow"
       ];
 
-      # Repeatable volume binds — caught by both keyboard keys and tablet dial.
-      # In otd-gui: Bindings → dial → output type "Key" →
-      #   clockwise = XF86AudioRaiseVolume, counter = XF86AudioLowerVolume
+      # Repeatable volume keys (keyboard media keys)
       bindel = [
         ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 2%+"
         ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
