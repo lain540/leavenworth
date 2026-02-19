@@ -14,7 +14,14 @@
 
   # Tell the kernel to initialise HDMI-A-1 first so early boot text
   # (initrd, greetd) renders on the ultrawide, not the secondary display.
-  boot.kernelParams = [ "video=HDMI-A-1:3440x1440@60" ];  # keep last 3 generations in menu
+  boot.kernelParams = [
+    # Set both connectors to their native resolution at kernel/TTY level.
+    # Without this the framebuffer initialises at the first detected resolution
+    # (1080p from DP-1) and the ultrawide TTY ends up capped at that size.
+    # HDMI-A-1 listed first so the framebuffer console prefers it.
+    "video=HDMI-A-1:3440x1440@60"
+    "video=DP-1:1920x1080@60"
+  ];
 
   # ── Hardware ──────────────────────────────────────────────────────────────────
   # AMD Ryzen 7 5700G — Radeon Vega iGPU (RADV Vulkan enabled by default via Mesa)
