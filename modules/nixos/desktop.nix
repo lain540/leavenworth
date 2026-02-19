@@ -82,7 +82,7 @@
     zam-plugins       # dynamics, EQ, limiting (LV2/VST)
 
     infamousPlugins   # supersaw, powercut and other creative effects (LV2)
-    distrho-ports     # ports of classic Linux synths/effects incl. Vitalium (LV2/VST)
+    distrho-ports     # ports of classic synths incl. Vitalium, OBXd, MaBitcrush (LV2/VST)
 
     # ── Tape / saturation / modelling ───────────────────────────────────────────
     wolf-shaper       # waveshaper / distortion with custom curve (LV2)
@@ -97,7 +97,7 @@
     dexed             # Yamaha DX7 FM (VST3)
 
     odin2             # semi-modular synth (VST3/LV2)
-    obxd              # Oberheim OB-X emulation (VST3/LV2)
+
     zynaddsubfx       # additive / subtractive / pad synth (LV2/VST)
     geonkick          # percussion / kick drum synth (LV2/VST3)
 
