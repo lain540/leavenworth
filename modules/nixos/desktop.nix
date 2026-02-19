@@ -59,7 +59,8 @@
   # udev runs. Using tmpfiles.rules means home-manager never tries to manage
   # or traverse it, avoiding I/O errors when a stale jmtpfs mount is present.
   systemd.tmpfiles.rules = [
-    "d /home/svea/Phone 0755 svea users -"
+    "d /home/svea/Phone 0755 svea users -"  # create dir if missing
+    "r /home/svea/Phone/.keep - - - - -"    # remove stale .keep so jmtpfs can mount
   ];
 
   # ── Storage & devices ─────────────────────────────────────────────────────────
