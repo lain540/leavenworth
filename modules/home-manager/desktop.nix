@@ -139,7 +139,13 @@
         "$mod, d,       exec, fuzzel"
         "$mod, w,       exec, foot -e yazi"
         "$mod, q,       killactive"
-        "$mod SHIFT, q, exit"
+        # Power menu — fuzzel --dmenu yes/no prompt.
+        # Super+Shift+Q: exit Hyprland (returns to greetd)
+        # Super+Shift+P: shutdown
+        # Super+Shift+R: reboot
+        "$mod SHIFT, q, exec, echo -e 'yes\nno' | fuzzel --dmenu --prompt='Exit Hyprland? ' | grep -q yes && hyprctl dispatch exit"
+        "$mod SHIFT, p, exec, echo -e 'yes\nno' | fuzzel --dmenu --prompt='Shut down? ' | grep -q yes && systemctl poweroff"
+        "$mod SHIFT, r, exec, echo -e 'yes\nno' | fuzzel --dmenu --prompt='Reboot? ' | grep -q yes && systemctl reboot"
         "$mod, f,       fullscreen"
         "$mod, t,       togglefloating"
         "$mod, s,       togglesplit"
