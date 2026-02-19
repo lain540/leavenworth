@@ -10,7 +10,7 @@
     wireplumber playerctl
 
     # Blue light filter
-    wlsunset
+    hyprsunset
   ];
 
   # ── GTK ───────────────────────────────────────────────────────────────────────
@@ -155,11 +155,11 @@
         "$mod, d,       exec, fuzzel"
         "$mod, w,       exec, foot -e yazi"
         "$mod, q,       killactive"
-        # Power menu — fuzzel dmenu prompts (scripts in ~/.local/bin/)
-        # Super+Shift+Q: exit Hyprland   Super+Shift+P: shutdown   Super+Shift+R: reboot
-        "$mod SHIFT, q, exec, power-exit"
-        "$mod SHIFT, p, exec, power-shutdown"
-        "$mod SHIFT, r, exec, power-reboot"
+        # Power menu — fuzzel dmenu prompts
+        # Super+Shift+Q: exit   Super+Shift+P: shutdown   Super+Shift+R: reboot
+        "$mod SHIFT, q, exec, bash -c 'printf "yes\nno\n" | fuzzel --dmenu --prompt="Exit Hyprland? " | grep -q yes && hyprctl dispatch exit'"
+        "$mod SHIFT, p, exec, bash -c 'printf "yes\nno\n" | fuzzel --dmenu --prompt="Shut down? " | grep -q yes && systemctl poweroff'"
+        "$mod SHIFT, r, exec, bash -c 'printf "yes\nno\n" | fuzzel --dmenu --prompt="Reboot? " | grep -q yes && systemctl reboot'"
         "$mod, f,       fullscreen"
         "$mod, t,       togglefloating"
         "$mod, s,       togglesplit"
@@ -197,6 +197,10 @@
         ", Print,      exec, hyprshot -m region --clipboard-only"
         "SHIFT, Print, exec, hyprshot -m output --output-folder ~/Pictures/Screenshots"
 
+        # hyprsunset toggle — F5 kills it (off), F6 starts it at 1200K (on)
+        "$mod, F5, exec, pkill hyprsunset || true"
+        "$mod, F6, exec, hyprsunset -t 1200"
+
         # Media keys
         ", XF86AudioPlay,  exec, playerctl play-pause"
         ", XF86AudioPause, exec, playerctl play-pause"
@@ -232,8 +236,9 @@
         "waybar"
         "udiskie --tray"
 
-        # wlsunset: day 06:30–18:30 at 6500K, night at 1200K (extreme warm for sleeping)
-        "bash -c 'sleep 3 && wlsunset -S 06:30 -s 18:30 -T 6500 -t 1200'"
+        # hyprsunset: start at 1200K (extreme warm). Toggle off with Super+F5.
+        # Super+F5 kills it (full brightness), Super+F6 restarts at 1200K.
+        "bash -c 'sleep 3 && hyprsunset -t 1200'"
       ];
     };
   };
