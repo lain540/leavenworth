@@ -12,15 +12,15 @@
   boot.loader.efi.canTouchEfiVariables   = true;
   boot.loader.systemd-boot.configurationLimit = 3;
 
-  # Tell the kernel to initialise HDMI-A-1 first so early boot text
+  # Tell the kernel to initialise DP-1 first so early boot text
   # (initrd, greetd) renders on the ultrawide, not the secondary display.
   boot.kernelParams = [
     # Set both connectors to their native resolution at kernel/TTY level.
     # Without this the framebuffer initialises at the first detected resolution
-    # (1080p from DP-1) and the ultrawide TTY ends up capped at that size.
-    # HDMI-A-1 listed first so the framebuffer console prefers it.
-    "video=HDMI-A-1:3440x1440@60"
-    "video=DP-1:1920x1080@60"
+    # (1080p from HDMI-A-1) and the ultrawide TTY ends up capped at that size.
+    # DP-1 listed first so the framebuffer console prefers it.
+    "video=DP-1:3440x1440@60"
+    "video=HDMI-A-1:1920x1080@60"
   ];
 
   # ── Hardware ──────────────────────────────────────────────────────────────────
