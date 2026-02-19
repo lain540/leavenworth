@@ -74,6 +74,23 @@
   # ── Shell & programs ──────────────────────────────────────────────────────────
   programs.zsh.enable = true;
 
+  # nix-ld — run unpatched pre-compiled binaries on NixOS.
+  # ReaPack downloads native .so extensions (ReaImGui, etc.) that are linked
+  # against glibc at /lib/x86_64-linux-gnu/ which doesn't exist on NixOS.
+  # nix-ld provides a stub ld.so at that path so those binaries load correctly.
+  # libraries: common C/C++ runtimes that downloaded plugins typically need.
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      stdenv.cc.cc.lib  # libstdc++
+      glib
+      glibc
+      libGL
+      xorg.libX11
+      xorg.libXext
+    ];
+  };
+
   # ── musnix — real-time audio ──────────────────────────────────────────────────
   # Sets CPU scheduler, rtirq priorities, and plugin path env vars automatically.
   # Launch Reaper via `pw-jack reaper` to use the PipeWire JACK bridge.
