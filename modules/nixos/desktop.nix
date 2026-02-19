@@ -8,17 +8,10 @@
     xwayland.enable = true;
   };
 
-  # ── Greeter ───────────────────────────────────────────────────────────────────
-  # boot.kernelParams in configuration.nix hints the kernel to initialise
-  # DP-1 first. That's the best we can do for monitor ordering at the
-  # greetd/TTY level — tuigreet has no output-selection flag or env var.
-  services.greetd = {
-    enable = true;
-    settings.default_session = {
-      command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd start-hyprland";
-      user    = "greeter";
-    };
-  };
+  # ── Auto-login → Hyprland ─────────────────────────────────────────────────────
+  # Auto-login as svea on TTY1. Hyprland is then launched from zsh initContent
+  # (see home.nix) when the session is on TTY1 and WAYLAND_DISPLAY is unset.
+  services.getty.autologinUser = "svea";
 
   # ── XDG portals ───────────────────────────────────────────────────────────────
   xdg.portal = {
@@ -55,19 +48,9 @@
     };
   };
 
-  # ~/Phone — mount point for Android phone via jmtpfs (manual).
-  # Mount:   jmtpfs ~/Phone
-  # Unmount: fusermount -u ~/Phone
-  systemd.tmpfiles.rules = [
-    "d /home/svea/Phone 0755 svea users -"
-  ];
-
   # ── Storage & devices ─────────────────────────────────────────────────────────
   services.udisks2.enable = true;
   services.gvfs.enable    = true;  # trash and SFTP support
-
-
-
 
   # ── System packages ───────────────────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
