@@ -109,6 +109,9 @@
     polarity     = "dark";
     base16Scheme = "${pkgs.base16-schemes}/share/themes/default-dark.yaml";
 
+    # Leave the TTY/console unstyled — plain text before Hyprland starts.
+    targets.console.enable = false;
+
     # Cursor — set system-wide so greetd, GTK, Hyprland and XWayland all agree
     cursor = {
       package = pkgs.adwaita-icon-theme;
