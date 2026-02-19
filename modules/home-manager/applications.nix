@@ -24,7 +24,6 @@
 
   # ── Directory scaffold ────────────────────────────────────────────────────────
   home.file = {
-    "Phone/.keep".text                      = "";  # Android MTP mount point
     "Music/.keep".text                      = "";
     "Downloads/nicotine/.keep".text         = "";
     "Pictures/Screenshots/.keep".text       = "";
