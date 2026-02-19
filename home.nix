@@ -29,6 +29,7 @@ in
   ];
 
   home.username      = "svea";
+  home.sessionPath   = [ "$HOME/.local/bin" ];
   home.homeDirectory = "/home/svea";
   home.stateVersion  = "25.11";
 
