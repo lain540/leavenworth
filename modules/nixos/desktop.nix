@@ -80,7 +80,7 @@
     dragonfly-reverb  # hall / room / plate reverb (VST3/LV2)
     x42-plugins       # meters, MIDI tools, tuner, filters (LV2)
     zam-plugins       # dynamics, EQ, limiting (LV2/VST)
-    wolf-spectrum     # spectrum analyser (LV2)
+
     infamousPlugins   # supersaw, powercut and other creative effects (LV2)
     distrho-ports     # ports of classic Linux synths/effects (LV2/VST)
 
@@ -99,8 +99,8 @@
     obxd              # Oberheim OB-X emulation (VST3/LV2)
     zynaddsubfx       # additive / subtractive / pad synth (LV2/VST)
     geonkick          # percussion / kick drum synth (LV2/VST3)
-    k1v               # Nils' compact synth (LV2)
-    bespoke-synth     # modular live-coding synth environment (standalone)
+
+    bespokesynth      # modular live-coding synth environment (standalone)
 
     # ── Guitar ──────────────────────────────────────────────────────────────────
     guitarix          # guitar amp + effects rack (LV2/standalone)
