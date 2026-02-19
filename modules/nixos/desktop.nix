@@ -57,18 +57,27 @@
 
   # ── Storage & devices ─────────────────────────────────────────────────────────
   services.udisks2.enable = true;
+  services.gvfs.enable    = true;  # trash, SFTP and other non-MTP backends
 
-  # gvfs: Android phones mount automatically at /run/user/1000/gvfs/ when you
-  # plug in, unlock the screen, and select "File Transfer (MTP)" on the phone.
-  # Check mounts with: gio mount -l   or   ls /run/user/1000/gvfs/
-  # Manual fallback: jmtpfs ~/Phone && fusermount -u ~/Phone when done
-  services.gvfs.enable = true;
+  # Android phone automount via udev + jmtpfs.
+  # When an MTP device is plugged in and set to File Transfer mode, udev fires
+  # a systemd service that mounts it to /home/svea/Phone (created by home-manager).
+  # On unplug the umount service runs fusermount to clean up.
+  # The 2 second sleep on mount gives the phone time to expose its MTP interface.
+  services.udev.extraRules = with pkgs; ''
+    SUBSYSTEM=="usb", ENV{ID_MTP_DEVICE}=="1", ACTION=="add", \
+      RUN+="${systemd}/bin/systemd-run --uid=1000 --gid=1000 \
+        /bin/sh -c 'sleep 2 && ${jmtpfs}/bin/jmtpfs /home/svea/Phone'"
+    SUBSYSTEM=="usb", ENV{ID_MTP_DEVICE}=="1", ACTION=="remove", \
+      RUN+="${systemd}/bin/systemd-run --uid=1000 --gid=1000 \
+        /bin/sh -c '${fuse}/bin/fusermount -u /home/svea/Phone 2>/dev/null || true'"
+  '';
 
 
   # ── System packages ───────────────────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
     # MTP / automount
-    jmtpfs libmtp udiskie
+    jmtpfs libmtp udiskie fuse
 
     # Polkit agent — needed so gvfs can prompt for device permissions
     # (without this, plugging in an Android phone silently fails)
