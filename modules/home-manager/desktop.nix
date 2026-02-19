@@ -153,11 +153,11 @@
         "$mod, d,       exec, fuzzel"
         "$mod, w,       exec, foot -e yazi"
         "$mod, q,       killactive"
-        # Power menu — fuzzel dmenu yes/no prompt
+        # Power menu — fuzzel dmenu Yes/No prompt
         # Super+Shift+Q: exit   Super+Shift+P: shutdown   Super+Shift+R: reboot
-        "$mod SHIFT, q, exec, bash -c 'echo -e yes\\nno | fuzzel --dmenu --prompt=Exit? | grep -q yes && hyprctl dispatch exit'"
-        "$mod SHIFT, p, exec, bash -c 'echo -e yes\\nno | fuzzel --dmenu --prompt=Shutdown? | grep -q yes && systemctl poweroff'"
-        "$mod SHIFT, r, exec, bash -c 'echo -e yes\\nno | fuzzel --dmenu --prompt=Reboot? | grep -q yes && systemctl reboot'"
+        "$mod SHIFT, q, exec, sh -c 'printf \"Yes\\nNo\\n\" | fuzzel --dmenu --prompt=Exit? | grep -q Yes && hyprctl dispatch exit'"
+        "$mod SHIFT, p, exec, sh -c 'printf \"Yes\\nNo\\n\" | fuzzel --dmenu --prompt=Shutdown? | grep -q Yes && systemctl poweroff'"
+        "$mod SHIFT, r, exec, sh -c 'printf \"Yes\\nNo\\n\" | fuzzel --dmenu --prompt=Reboot? | grep -q Yes && systemctl reboot'"
         "$mod, f,       fullscreen"
         "$mod, t,       togglefloating"
         "$mod, s,       togglesplit"
