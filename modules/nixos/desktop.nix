@@ -8,10 +8,16 @@
     xwayland.enable = true;
   };
 
-  # ── Auto-login → Hyprland ─────────────────────────────────────────────────────
-  # Auto-login as svea on TTY1. Hyprland is then launched from zsh initContent
-  # (see home.nix) when the session is on TTY1 and WAYLAND_DISPLAY is unset.
-  services.getty.autologinUser = "svea";
+  # ── Greeter — greetd launching Hyprland directly ──────────────────────────────
+  # greetd runs start-hyprland straight away with no TUI/GUI greeter in between.
+  # Other TTYs (Ctrl+Alt+F2…F6) remain available as normal login consoles.
+  services.greetd = {
+    enable = true;
+    settings.default_session = {
+      command = "start-hyprland";
+      user    = "svea";
+    };
+  };
 
   # ── XDG portals ───────────────────────────────────────────────────────────────
   xdg.portal = {
