@@ -55,13 +55,20 @@
     };
   };
 
+  # Create ~/Phone as a proper directory owned by svea before home-manager or
+  # udev runs. Using tmpfiles.rules means home-manager never tries to manage
+  # or traverse it, avoiding I/O errors when a stale jmtpfs mount is present.
+  systemd.tmpfiles.rules = [
+    "d /home/svea/Phone 0755 svea users -"
+  ];
+
   # ── Storage & devices ─────────────────────────────────────────────────────────
   services.udisks2.enable = true;
   services.gvfs.enable    = true;  # trash, SFTP and other non-MTP backends
 
   # Android phone automount via udev + jmtpfs.
   # When an MTP device is plugged in and set to File Transfer mode, udev fires
-  # a systemd service that mounts it to /home/svea/Phone (created by home-manager).
+  # a systemd service that mounts it to /home/svea/Phone (created by systemd-tmpfiles).
   # On unplug the umount service runs fusermount to clean up.
   # The 2 second sleep on mount gives the phone time to expose its MTP interface.
   services.udev.extraRules = with pkgs; ''
