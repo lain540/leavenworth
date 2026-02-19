@@ -15,12 +15,11 @@
   # Tell the kernel to initialise DP-1 first so early boot text
   # (initrd, greetd) renders on the ultrawide, not the secondary display.
   boot.kernelParams = [
-    # Set the ultrawide to its native resolution in the kernel framebuffer.
+    # Pin the ultrawide to its native resolution in the kernel framebuffer.
+    # Only specifying DP-1 here — adding video=HDMI-A-1:d to disable the
+    # secondary at TTY level also disables it at the DRM level on amdgpu,
+    # preventing Hyprland from bringing it back up.
     "video=DP-1:3440x1440@60"
-    # Disable the secondary monitor at the TTY/framebuffer level so it doesn't
-    # interfere with the ultrawide after it initialises. Hyprland uses DRM/KMS
-    # directly and ignores this flag, so it will enable both monitors normally.
-    "video=HDMI-A-1:d"
   ];
 
   # ── Hardware ──────────────────────────────────────────────────────────────────
