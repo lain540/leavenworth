@@ -24,6 +24,17 @@
     ffmpegthumbnailer unar jq poppler-utils imagemagick file
   ];
 
+  # ── Reaper / ReaPack library access ──────────────────────────────────────────
+  # ReaPack scripts run inside Reaper's embedded Lua interpreter. When they
+  # call require() on a C extension (e.g. luasocket, luafilesystem) the
+  # interpreter searches LUA_CPATH. On NixOS all Lua libs are in the nix store
+  # so we point LUA_CPATH at the system profile's Lua 5.4 cpath.
+  # LUA_PATH covers pure-Lua modules in the same location.
+  home.sessionVariables = {
+    LUA_PATH  = "/run/current-system/sw/share/lua/5.4/?.lua;/run/current-system/sw/share/lua/5.4/?/init.lua;;";
+    LUA_CPATH = "/run/current-system/sw/lib/lua/5.4/?.so;;";
+  };
+
   # ── Directory scaffold ────────────────────────────────────────────────────────
   home.file = {
     "Music/.keep".text                      = "";
