@@ -71,8 +71,8 @@
       # Ultrawide primary (bottom), 1080p secondary (centred above).
       # HDMI-A-1 x-offset = (3440 - 1920) / 2 = 760
       monitor = [
-        "DP-1,3440x1440@60,0x1080,1"
-        "HDMI-A-1,1920x1080@60,760x0,1"
+        "DP-1,3440x1440@60,0x1080,1,bitdepth, 8"
+        "HDMI-A-1,1920x1080@60,760x0,1,bitdepth, 8"
       ];
 
       # Pin workspaces so the ultrawide always owns 1–9, HDMI-A-1 owns 10.
