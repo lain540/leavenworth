@@ -63,8 +63,6 @@
   # Manual fallback: jmtpfs ~/Phone && fusermount -u ~/Phone when done
   services.gvfs.enable = true;
 
-  # android-udev-rules gives the kernel correct permissions for MTP/ADB devices
-  services.udev.packages = [ pkgs.android-udev-rules ];
 
   # ── System packages ───────────────────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
@@ -92,7 +90,7 @@
     chow-centaur      # Klon Centaur emulation (VST3)
 
     # ── Synths ──────────────────────────────────────────────────────────────────
-    surge-XT          # wavetable / subtractive (VST3/LV2)
+    surge-xt          # wavetable / subtractive (VST3/LV2)
     cardinal          # VCV Rack modular (VST3/LV2)
     dexed             # Yamaha DX7 FM (VST3)
 
@@ -100,6 +98,7 @@
 
     zynaddsubfx       # additive / subtractive / pad synth (LV2/VST)
     geonkick          # percussion / kick drum synth (LV2/VST3)
+    sfizz             # SFZ sampler / player (LV2/VST3)
 
     bespokesynth      # modular live-coding synth environment (standalone)
 
