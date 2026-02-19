@@ -9,10 +9,9 @@
   };
 
   # ── Greeter ───────────────────────────────────────────────────────────────────
-  # tuigreet does not have an --output flag in the nixpkgs build.
-  # GREETD_OUTPUT is the correct way to pin the session to a connector.
-  # boot.kernelParams in configuration.nix ensures the kernel itself initialises
-  # HDMI-A-1 first so that DRM/KMS and greetd both agree on the primary output.
+  # boot.kernelParams in configuration.nix hints the kernel to initialise
+  # HDMI-A-1 first. That's the best we can do for monitor ordering at the
+  # greetd/TTY level — tuigreet has no output-selection flag or env var.
   services.greetd = {
     enable = true;
     settings.default_session = {
@@ -20,7 +19,6 @@
       user    = "greeter";
     };
   };
-  environment.sessionVariables.GREETD_OUTPUT = "HDMI-A-1";
 
   # ── XDG portals ───────────────────────────────────────────────────────────────
   xdg.portal = {
@@ -30,7 +28,7 @@
   };
 
   # ── Audio — PipeWire + JACK bridge ────────────────────────────────────────────
-  # Launch Reaper via `pw-jack reaper` to connect to the JACK bridge.
+  # Launch Reaper via `pw-jack reaper` to use the JACK bridge.
   # AKAI MPK Mini Mk3 is USB class-compliant — appears automatically in
   # Reaper under Preferences → Audio → MIDI devices.
   security.rtkit.enable = true;
@@ -42,7 +40,7 @@
     pulse.enable      = true;
     jack.enable       = true;
 
-    # 256/48000 ≈ 5.3 ms latency; lower quantum = less latency, more CPU
+    # 256/48000 ≈ 5.3 ms; lower quantum = less latency, more CPU
     extraConfig.pipewire."99-leavenworth-audio"."context.properties" = {
       "default.clock.rate"        = 48000;
       "default.clock.quantum"     = 256;
@@ -50,37 +48,61 @@
       "default.clock.max-quantum" = 2048;
     };
 
-    # Expose ALSA MIDI sequencer ports (MPK Mini Mk3) into PipeWire
     wireplumber = {
       enable = true;
       extraConfig."99-leavenworth-midi"."monitor.alsa.midi".enable = true;
     };
   };
 
-  # ── Audio plugins — system-level ──────────────────────────────────────────────
-  # Must be in systemPackages so musnix's VST3_PATH/LV2_PATH covers them.
-  # Plugins in home.packages land in ~/.nix-profile/lib/* which musnix ignores.
+  # ── Storage & devices ─────────────────────────────────────────────────────────
+  services.udisks2.enable = true;
+
+  # gvfs: Android phones mount automatically at /run/user/1000/gvfs/ when you
+  # plug in, unlock the screen, and select "File Transfer (MTP)" on the phone.
+  # Check mounts with: gio mount -l   or   ls /run/user/1000/gvfs/
+  # Manual fallback: jmtpfs ~/Phone && fusermount -u ~/Phone when done
+  services.gvfs.enable = true;
+
+  # android-udev-rules gives the kernel correct permissions for MTP/ADB devices
+  services.udev.packages = [ pkgs.android-udev-rules ];
+
+  # ── System packages ───────────────────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
     # MTP / automount
     jmtpfs libmtp udiskie
 
-    # pw-jack — launch Reaper with `pw-jack reaper`
+    # pw-jack — launch Reaper in JACK mode: pw-jack reaper
     pipewire
 
-    # Audio plugins
-    lsp-plugins       # Linux Studio Plugins (LV2/VST3)
-    surge-XT          # wavetable / subtractive synth (VST3/LV2)
-    cardinal          # VCV Rack modular (VST3/LV2)
-    dexed             # Yamaha DX7 FM (VST3)
-    airwindows-lv2    # large collection of subtle effects (LV2)
-    dragonfly-reverb  # hall/room/plate reverb (VST3/LV2)
-    chow-tape-model   # analog tape emulation (VST3)
+    # ── Processors / utility plugins ────────────────────────────────────────────
+    lsp-plugins       # Linux Studio Plugins — EQs, compressors, dynamics (LV2/VST3)
+    airwindows-lv2    # subtle console/tape effects (LV2)
+    dragonfly-reverb  # hall / room / plate reverb (VST3/LV2)
+    x42-plugins       # meters, MIDI tools, tuner, filters (LV2)
+    zam-plugins       # dynamics, EQ, limiting (LV2/VST)
+    wolf-spectrum     # spectrum analyser (LV2)
+    infamousPlugins   # supersaw, powercut and other creative effects (LV2)
+    distrho-ports     # ports of classic Linux synths/effects (LV2/VST)
+
+    # ── Tape / saturation / modelling ───────────────────────────────────────────
+    chow-tape-model   # analog tape machine (VST3)
     chow-phaser       # phaser (VST3)
     chow-kick         # kick drum synth (VST3)
     chow-centaur      # Klon Centaur emulation (VST3)
-  ];
 
-  # ── Storage & devices ─────────────────────────────────────────────────────────
-  services.udisks2.enable = true;
-  services.gvfs.enable    = true;  # MTP, SFTP, trash — Android phones via gvfs
+    # ── Synths ──────────────────────────────────────────────────────────────────
+    surge-XT          # wavetable / subtractive (VST3/LV2)
+    cardinal          # VCV Rack modular (VST3/LV2)
+    dexed             # Yamaha DX7 FM (VST3)
+    vitalium          # Vital wavetable synth open-source fork (LV2/VST3)
+    odin2             # semi-modular synth (VST3/LV2)
+    obxd              # Oberheim OB-X emulation (VST3/LV2)
+    zynaddsubfx       # additive / subtractive / pad synth (LV2/VST)
+    geonkick          # percussion / kick drum synth (LV2/VST3)
+    k1v               # Nils' compact synth (LV2)
+    bespoke-synth     # modular live-coding synth environment (standalone)
+
+    # ── Guitar ──────────────────────────────────────────────────────────────────
+    guitarix          # guitar amp + effects rack (LV2/standalone)
+  ];
 }
