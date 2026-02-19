@@ -41,6 +41,33 @@
     LD_LIBRARY_PATH = "/run/current-system/sw/lib";
   };
 
+  # ── Power menu scripts ────────────────────────────────────────────────────────
+  # Wrapper scripts so hyprland keybinds don't have to deal with shell quoting.
+  # printf is used instead of echo -e for portability.
+  home.file.".local/bin/power-exit".text    = ''
+    #!/bin/sh
+    printf 'yes
+no
+' | fuzzel --dmenu --prompt='Exit Hyprland? ' | grep -q '^yes$' && hyprctl dispatch exit
+  '';
+  home.file.".local/bin/power-exit".executable    = true;
+
+  home.file.".local/bin/power-shutdown".text = ''
+    #!/bin/sh
+    printf 'yes
+no
+' | fuzzel --dmenu --prompt='Shut down? ' | grep -q '^yes$' && systemctl poweroff
+  '';
+  home.file.".local/bin/power-shutdown".executable = true;
+
+  home.file.".local/bin/power-reboot".text  = ''
+    #!/bin/sh
+    printf 'yes
+no
+' | fuzzel --dmenu --prompt='Reboot? ' | grep -q '^yes$' && systemctl reboot
+  '';
+  home.file.".local/bin/power-reboot".executable  = true;
+
   # ── Directory scaffold ────────────────────────────────────────────────────────
   home.file = {
     "Music/.keep".text                      = "";
