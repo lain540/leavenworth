@@ -36,10 +36,13 @@ in
 
   # ── Git ───────────────────────────────────────────────────────────────────────
   programs.git = {
-    enable    = true;
-    userName  = "lain540";
-    userEmail = "261604810+lain540@users.noreply.github.com";
-    settings  = { init.defaultBranch = "stable"; pull.rebase = false; };
+    enable = true;
+    settings = {
+      user.name   = "lain540";
+      user.email  = "261604810+lain540@users.noreply.github.com";
+      init.defaultBranch = "stable";
+      pull.rebase = false;
+    };
   };
 
   # ── XDG ───────────────────────────────────────────────────────────────────────
