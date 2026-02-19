@@ -55,24 +55,24 @@
     settings = {
       # ── Monitors ────────────────────────────────────────────────────────────
       # Ultrawide primary (bottom), 1080p secondary (centred above).
-      # DP-1 x-offset = (3440 - 1920) / 2 = 760
+      # HDMI-A-1 x-offset = (3440 - 1920) / 2 = 760
       monitor = [
-        "HDMI-A-1,3440x1440@60,0x1080,1"
-        "DP-1,1920x1080@60,760x0,1"
+        "DP-1,3440x1440@60,0x1080,1"
+        "HDMI-A-1,1920x1080@60,760x0,1"
       ];
 
-      # Pin workspaces so the ultrawide always owns 1–9, DP-1 owns 10.
+      # Pin workspaces so the ultrawide always owns 1–9, HDMI-A-1 owns 10.
       workspace = [
-        "1,  monitor:HDMI-A-1, default:true"
-        "2,  monitor:HDMI-A-1"
-        "3,  monitor:HDMI-A-1"
-        "4,  monitor:HDMI-A-1"
-        "5,  monitor:HDMI-A-1"
-        "6,  monitor:HDMI-A-1"
-        "7,  monitor:HDMI-A-1"
-        "8,  monitor:HDMI-A-1"
-        "9,  monitor:HDMI-A-1"
-        "10, monitor:DP-1, default:true"
+        "1,  monitor:DP-1, default:true"
+        "2,  monitor:DP-1"
+        "3,  monitor:DP-1"
+        "4,  monitor:DP-1"
+        "5,  monitor:DP-1"
+        "6,  monitor:DP-1"
+        "7,  monitor:DP-1"
+        "8,  monitor:DP-1"
+        "9,  monitor:DP-1"
+        "10, monitor:HDMI-A-1, default:true"
       ];
 
       # ── Input ───────────────────────────────────────────────────────────────
@@ -91,7 +91,7 @@
         no_hardware_cursors = true;
 
         # Warp the cursor to the centre of the ultrawide when Hyprland starts.
-        # Without this the cursor can spawn on DP-1 and never move to HDMI-A-1
+        # Without this the cursor can spawn on HDMI-A-1 and never move to DP-1
         # until you physically move the mouse.
         # Ultrawide centre: x = 3440/2 = 1720, y = 1080 + 1440/2 = 1800
         warp_on_change_workspace = true;
@@ -199,13 +199,17 @@
       ];
 
       exec-once = [
+        # Polkit agent — must start before anything that needs device permissions.
+        # Without this, gvfs MTP (Android phones) silently fails to mount.
+        "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
+
         # Force-load the cursor theme immediately so XWayland inherits it.
         # Without this, XWayland renders its own default cursor until the first
-        # Wayland-native app opens, creating a visible "ghost" cursor on HDMI-A-1.
+        # Wayland-native app opens, creating a visible "ghost" cursor on DP-1.
         "hyprctl setcursor Adwaita 24"
 
         # Warp the cursor to the centre of the ultrawide at startup.
-        # HDMI-A-1 spans y=1080–2520; centre = x=1720, y=1800
+        # DP-1 spans y=1080–2520; centre = x=1720, y=1800
         "hyprctl dispatch movecursor 1720 1800"
 
         "waybar"
