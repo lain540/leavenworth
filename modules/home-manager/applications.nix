@@ -5,6 +5,8 @@
   home.packages = with pkgs; [
     # DAW — launch with `pw-jack reaper` for JACK/MIDI support
     reaper
+    reaper-reapack-extension  # package manager for REAPER scripts and plugins
+    reaper-sws-extension      # SWS/S&M extension — hundreds of extra actions
 
     # PipeWire patchbay
     qpwgraph
