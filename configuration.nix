@@ -141,7 +141,23 @@
   };
   security.sudo.wheelNeedsPassword = true;
 
-  environment.systemPackages = with pkgs; [ curl htop ];
+  environment.systemPackages = with pkgs; [
+    curl htop
+
+    # These must be in systemPackages so they land in /run/current-system/sw/lib.
+    # nix-ld.libraries alone does NOT put them there — it only exposes them to
+    # the nix-ld stub linker. ReaPack extensions (ReaImGui etc.) need them at
+    # the standard LD_LIBRARY_PATH location to load at runtime.
+    freetype     # libfreetype.so.6
+    libpng        # libpng16.so.16
+    zlib          # libz.so.1
+    fontconfig    # libfontconfig.so.1
+    libepoxy      # libepoxy.so.0
+    gtk3          # libgtk-3.so.0, libgdk-3.so.0
+    cairo         # libcairo.so.2
+    glib          # libgobject-2.0.so.0, libglib-2.0.so.0
+    stdenv.cc.cc.lib  # libstdc++.so.6
+  ];
 
   system.stateVersion = "25.11";
 }
