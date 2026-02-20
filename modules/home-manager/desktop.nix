@@ -163,6 +163,9 @@
         "$mod, p,       pseudo"
         "$mod, a,       exec, qpwgraph"
 
+        # Lock screen
+        "$mod, l,       exec, hyprlock"
+
         # Layout switch us/workman ↔ se
         "$mod, Space, exec, hyprctl switchxkblayout all next"
 
@@ -228,8 +231,97 @@
 
         "waybar"
         "udiskie --tray"
+      ];
+    };
+  };
 
+  # ── Hyprlock ──────────────────────────────────────────────────────────────────
+  # Minimal base16 lock screen. No fancy backgrounds — just the colour scheme.
+  # Bind: Super+L  (see hyprland bind above)
+  # To unlock: type your password and press Enter (no visible cursor indicator).
+  programs.hyprlock = {
+    enable = true;
 
+    settings = {
+      general = {
+        # Disable the "Loading…" spinner that appears before the first frame
+        disable_loading_bar = true;
+        # Grace period in seconds — screen unlocks immediately on mouse move
+        # within this window (useful if you lock accidentally)
+        grace = 2;
+        # Hide cursor while the lock screen is active
+        hide_cursor = true;
+        # Do not re-render every frame — saves power on idle
+        no_fade_in  = true;
+        no_fade_out = true;
+      };
+
+      background = [
+        {
+          # Solid colour from base00 — no wallpaper on the lock screen
+          monitor = "";
+          color   = "rgba(${config.lib.stylix.colors.base00}ff)";
+          blur_passes = 0;
+        }
+      ];
+
+      input-field = [
+        {
+          monitor  = "";          # appears on every monitor
+          size     = "280, 36";
+
+          # Position: centred horizontally, slightly below middle vertically
+          position = "0, -60";
+          halign   = "center";
+          valign   = "center";
+
+          # Colours drawn from the active base16 scheme
+          outer_color         = "rgba(${config.lib.stylix.colors.base03}ff)";
+          inner_color         = "rgba(${config.lib.stylix.colors.base01}ff)";
+          font_color          = "rgba(${config.lib.stylix.colors.base05}ff)";
+          check_color         = "rgba(${config.lib.stylix.colors.base0B}ff)";
+          fail_color          = "rgba(${config.lib.stylix.colors.base08}ff)";
+
+          # Replace typed characters with dots
+          dots_size        = 0.25;
+          dots_spacing     = 0.3;
+          dots_center      = true;
+          fade_on_empty    = false;
+
+          # Placeholder text shown when the field is empty
+          placeholder_text = "";
+
+          # Thin border — matches the Hyprland active border weight
+          outline_thickness = 2;
+
+          # Remove rounded corners to match the sharp WM aesthetic
+          rounding = 0;
+        }
+      ];
+
+      label = [
+        {
+          # Clock — large, centred, slightly above the password field
+          monitor  = "";
+          text     = ''cmd[update:1000] date "+%H:%M"'';
+          color    = "rgba(${config.lib.stylix.colors.base05}ff)";
+          font_size = 48;
+          font_family = "Hack Nerd Font Mono";
+          position = "0, 80";
+          halign   = "center";
+          valign   = "center";
+        }
+        {
+          # Date — smaller, directly below the clock
+          monitor  = "";
+          text     = ''cmd[update:60000] date "+%A, %d %B %Y"'';
+          color    = "rgba(${config.lib.stylix.colors.base04}ff)";
+          font_size = 14;
+          font_family = "Hack Nerd Font Mono";
+          position = "0, 24";
+          halign   = "center";
+          valign   = "center";
+        }
       ];
     };
   };
@@ -304,6 +396,7 @@
   stylix.targets = {
     waybar.enable    = false;  # CSS managed manually above
     hyprland.enable  = false;  # borders managed manually above
+    hyprlock.enable  = false;  # colours managed manually above
     librewolf.enable = false;
     gtk.enable       = true;
     qt.enable        = true;
