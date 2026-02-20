@@ -293,9 +293,9 @@
     enable = true;
     settings = {
       profile = [
-        { time = "7:00";  identity    = true; }   # full brightness from 07:00
-        { time = "19:00"; temperature = 3400; }   # warm transition from 19:00
-        { time = "21:00"; temperature = 1200; }   # extreme warm from 21:00
+        { time = "6:00";  identity    = true; }   # full brightness from 07:00
+        { time = "18:00"; temperature = 3400; }   # warm transition from 19:00
+        { time = "20:00"; temperature = 1200; }   # extreme warm from 21:00
       ];
     };
   };
